@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  taxmcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: taxmcp-server
+    ports:
+      - "8000:8000"
+    environment:
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8000
+      - DEBUG=false
+      - LOG_LEVEL=info
+      # ⚠️ 重要: 本番環境では強力なSECRET_KEYに変更してください
+      # 詳細: SECRET_KEY_SETUP_GUIDE.md を参照
+      - SECRET_KEY=your-secret-key-change-in-production
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_HOURS=24
+      - TAX_DATA_UPDATE_INTERVAL_HOURS=24
+      - AUDIT_LOG_ENABLED=true
+    volumes:
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - taxmcp-network
+
+  # 開発用のデータベース（将来的な拡張用）
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: taxmcp-db
+  #   environment:
+  #     POSTGRES_DB: taxmcp
+  #     POSTGRES_USER: taxmcp
+  #     POSTGRES_PASSWORD: taxmcp_password
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - taxmcp-network
+
+  # Redis（キャッシュ用、将来的な拡張用）
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: taxmcp-redis
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - taxmcp-network
+
+networks:
+  taxmcp-network:
+    driver: bridge
+
+# volumes:
+#   postgres_data:
+#   redis_data:
