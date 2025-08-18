@@ -17,7 +17,7 @@ sys.path.insert(0, str(project_root))
 
 from tests.utils.test_config import TaxMCPTestCase, SecurityTestMixin
 from tests.utils.assertion_helpers import SecurityAssertions
-from tests.utils.mock_external_apis import MockSecurityManager
+from tests.utils.mock_security_manager import MockSecurityManager
 
 
 class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
@@ -54,7 +54,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ログ記録結果: {log_result}")
         
         # 認証成功ログのアサーション
-        SecurityAssertions.assert_audit_log_recorded(log_result)
+        SecurityAssertions.assert_audit_log_recorded(self.security_manager, auth_success_event)
         self.assertTrue(log_result["logged"], "認証成功イベントがログに記録されている")
         self.assertEqual(log_result["event_type"], "authentication_success")
         self.assertIn("log_id", log_result, "ログIDが生成されている")
@@ -82,7 +82,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ログ記録結果: {log_result}")
         
         # 認証失敗ログのアサーション
-        SecurityAssertions.assert_audit_log_recorded(log_result)
+        SecurityAssertions.assert_audit_log_recorded(self.security_manager, auth_failure_event)
         self.assertTrue(log_result["logged"], "認証失敗イベントがログに記録されている")
         self.assertEqual(log_result["event_type"], "authentication_failure")
         self.assertEqual(log_result["failure_reason"], "invalid_api_key")
@@ -114,7 +114,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ログ記録結果: {log_result}")
         
         # アクセス制御ログのアサーション
-        SecurityAssertions.assert_audit_log_recorded(log_result)
+        SecurityAssertions.assert_audit_log_recorded(self.security_manager, unauthorized_access_event)
         self.assertTrue(log_result["logged"], "権限不足アクセス試行がログに記録されている")
         self.assertEqual(log_result["event_type"], "unauthorized_access_attempt")
         self.assertEqual(log_result["requested_resource"], "/admin/tax_rates")
@@ -142,7 +142,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ログ記録結果: {log_result}")
         
         # 権限昇格ログのアサーション
-        SecurityAssertions.assert_audit_log_recorded(log_result)
+        SecurityAssertions.assert_audit_log_recorded(self.security_manager, privilege_escalation_event)
         self.assertTrue(log_result["logged"], "権限昇格試行がログに記録されている")
         self.assertEqual(log_result["event_type"], "privilege_escalation_attempt")
         self.assertEqual(log_result["attempted_action"], "modify_tax_rates")
@@ -175,7 +175,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ログ記録結果: {log_result}")
         
         # データアクセスログのアサーション
-        SecurityAssertions.assert_audit_log_recorded(log_result)
+        SecurityAssertions.assert_audit_log_recorded(self.security_manager, sensitive_data_access)
         self.assertTrue(log_result["logged"], "機密データアクセスがログに記録されている")
         self.assertEqual(log_result["event_type"], "sensitive_data_access")
         self.assertEqual(log_result["data_type"], "personal_tax_records")
@@ -205,7 +205,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ログ記録結果: {log_result}")
         
         # データ変更ログのアサーション
-        SecurityAssertions.assert_audit_log_recorded(log_result)
+        SecurityAssertions.assert_audit_log_recorded(self.security_manager, data_modification_event)
         self.assertTrue(log_result["logged"], "データ変更がログに記録されている")
         self.assertEqual(log_result["event_type"], "data_modification")
         self.assertEqual(log_result["operation"], "UPDATE")
@@ -240,7 +240,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ログ記録結果: {log_result}")
         
         # セキュリティインシデントログのアサーション
-        SecurityAssertions.assert_security_incident_logged(log_result)
+        SecurityAssertions.assert_security_incident_logged(self.security_manager, sql_injection_incident)
         self.assertTrue(log_result["logged"], "SQLインジェクション攻撃がログに記録されている")
         self.assertEqual(log_result["incident_type"], "sql_injection_attempt")
         self.assertEqual(log_result["severity"], "high")
@@ -270,7 +270,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ログ記録結果: {log_result}")
         
         # ブルートフォース攻撃ログのアサーション
-        SecurityAssertions.assert_security_incident_logged(log_result)
+        SecurityAssertions.assert_security_incident_logged(self.security_manager, brute_force_incident)
         self.assertTrue(log_result["logged"], "ブルートフォース攻撃がログに記録されている")
         self.assertEqual(log_result["incident_type"], "brute_force_attack")
         self.assertEqual(log_result["attempt_count"], 50)
@@ -308,7 +308,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ログ記録結果: {log_result}")
         
         # システムイベントログのアサーション
-        SecurityAssertions.assert_audit_log_recorded(log_result)
+        SecurityAssertions.assert_audit_log_recorded(self.security_manager, system_startup_event)
         self.assertTrue(log_result["logged"], "システム起動イベントがログに記録されている")
         self.assertEqual(log_result["system_event_type"], "server_startup")
         
@@ -337,7 +337,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ログ記録結果: {log_result}")
         
         # 設定変更ログのアサーション
-        SecurityAssertions.assert_audit_log_recorded(log_result)
+        SecurityAssertions.assert_audit_log_recorded(self.security_manager, config_change_event)
         self.assertTrue(log_result["logged"], "設定変更イベントがログに記録されている")
         self.assertEqual(log_result["system_event_type"], "configuration_change")
         
@@ -372,7 +372,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"整合性検証結果: {integrity_check}")
         
         # ログ整合性のアサーション
-        SecurityAssertions.assert_log_integrity_valid(integrity_check)
+        SecurityAssertions.assert_log_integrity_valid(self.security_manager, integrity_check)
         self.assertTrue(integrity_check["valid"], "ログチェーンの整合性が保たれている")
         self.assertEqual(integrity_check["verified_entries"], 5, "5つのエントリが検証されている")
         
@@ -393,7 +393,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"改ざん後の整合性検証: {tampered_integrity_check}")
         
         # 改ざん検出のアサーション
-        SecurityAssertions.assert_log_tampering_detected(tampered_integrity_check)
+        SecurityAssertions.assert_log_tampering_detected(self.security_manager, tampered_integrity_check)
         self.assertFalse(tampered_integrity_check["valid"], "ログ改ざんが検出されている")
         self.assertIn(tampered_log_id, tampered_integrity_check["tampered_entries"])
         
@@ -429,7 +429,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ログ保持ポリシー: {retention_policy}")
         
         # 保持ポリシーのアサーション
-        SecurityAssertions.assert_retention_policy_valid(retention_policy)
+        SecurityAssertions.assert_retention_policy_valid(self.security_manager, retention_policy)
         self.assertGreaterEqual(retention_policy["retention_days"], 365, "最低1年間の保持期間")
         self.assertTrue(retention_policy["archival_enabled"], "アーカイブ機能が有効")
         
@@ -444,7 +444,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"アーカイブ結果: {archive_result}")
         
         # アーカイブのアサーション
-        SecurityAssertions.assert_log_archival_successful(archive_result)
+        SecurityAssertions.assert_log_archival_successful(self.security_manager, archive_result)
         self.assertTrue(archive_result["success"], "ログアーカイブが成功している")
         self.assertGreater(archive_result["archived_count"], 0, "アーカイブされたログがある")
         
@@ -488,7 +488,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"IP検索結果: {ip_search_result}")
         
         # IP検索のアサーション
-        SecurityAssertions.assert_log_search_successful(ip_search_result)
+        SecurityAssertions.assert_log_search_successful(self.security_manager, ip_search_result)
         self.assertGreaterEqual(ip_search_result["match_count"], 3, "3件以上のマッチ")
         
         print("✓ IPアドレス検索成功")
@@ -500,7 +500,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"ユーザー検索結果: {user_search_result}")
         
         # ユーザー検索のアサーション
-        SecurityAssertions.assert_log_search_successful(user_search_result)
+        SecurityAssertions.assert_log_search_successful(self.security_manager, user_search_result)
         self.assertGreaterEqual(user_search_result["match_count"], 2, "2件以上のマッチ")
         
         print("✓ ユーザーID検索成功")
@@ -514,7 +514,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"インシデント分析結果: {incident_analysis}")
         
         # インシデント分析のアサーション
-        SecurityAssertions.assert_incident_analysis_valid(incident_analysis)
+        SecurityAssertions.assert_incident_analysis_valid(self.security_manager, incident_analysis)
         self.assertGreater(incident_analysis["total_incidents"], 0, "インシデントが検出されている")
         self.assertIn("203.0.113.100", incident_analysis["suspicious_ips"])
         
@@ -552,7 +552,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"監視設定結果: {monitoring_setup}")
         
         # 監視設定のアサーション
-        SecurityAssertions.assert_monitoring_setup_successful(monitoring_setup)
+        SecurityAssertions.assert_monitoring_setup_successful(self.security_manager, monitoring_setup)
         self.assertTrue(monitoring_setup["success"], "監視設定が成功している")
         self.assertEqual(len(monitoring_setup["active_rules"]), 2, "2つのルールが有効")
         
@@ -580,7 +580,7 @@ class TestAuditLogging(TaxMCPTestCase, SecurityTestMixin):
         print(f"発生したアラート: {alerts}")
         
         # アラートのアサーション
-        SecurityAssertions.assert_alerts_triggered(alerts)
+        SecurityAssertions.assert_alerts_triggered(self.security_manager, alerts)
         self.assertGreater(len(alerts), 0, "アラートが発生している")
         
         # 複数認証失敗アラートの確認

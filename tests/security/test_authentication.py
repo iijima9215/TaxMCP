@@ -16,7 +16,7 @@ sys.path.insert(0, str(project_root))
 
 from tests.utils.test_config import TaxMCPTestCase, SecurityTestMixin
 from tests.utils.assertion_helpers import SecurityAssertions
-from tests.utils.mock_external_apis import MockSecurityManager
+from tests.utils.mock_security_manager import MockSecurityManager
 
 
 class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
@@ -67,7 +67,7 @@ class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
         print(f"期待される結果: {expected_result}")
         
         # アサーション
-        SecurityAssertions.assert_authentication_success(auth_result)
+        SecurityAssertions.assert_authentication_success(self.security_manager, valid_api_key)
         self.assertTrue(auth_result["authenticated"], "認証が成功している")
         self.assertIn("session_token", auth_result, "セッショントークンが含まれている")
         self.assertIn("expires_at", auth_result, "有効期限が設定されている")
@@ -111,7 +111,7 @@ class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
         print(f"期待される結果: {expected_result}")
         
         # アサーション
-        SecurityAssertions.assert_authentication_failure(auth_result)
+        SecurityAssertions.assert_authentication_failure(self.security_manager, invalid_api_key)
         self.assertFalse(auth_result["authenticated"], "認証が失敗している")
         self.assertIn("error", auth_result, "エラーメッセージが含まれている")
         
@@ -155,7 +155,7 @@ class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
         print(f"期待される結果: {expected_result}")
         
         # アサーション
-        SecurityAssertions.assert_session_valid(validation_result)
+        SecurityAssertions.assert_session_valid(self.security_manager, session_token)
         self.assertTrue(validation_result["valid"], "セッションが有効")
         self.assertEqual(validation_result["user_id"], "test_user", "ユーザーIDが正しい")
         
@@ -190,7 +190,7 @@ class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
         print(f"検証結果: {validation_result}")
         
         # アサーション
-        SecurityAssertions.assert_session_invalid(validation_result)
+        SecurityAssertions.assert_session_invalid(self.security_manager, expired_token)
         self.assertFalse(validation_result["valid"], "セッションが無効")
         self.assertIn("expired", validation_result["error"].lower(), "期限切れエラー")
         
@@ -231,7 +231,7 @@ class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
                 print(f"制限詳細: {rate_check}")
                 
                 # レート制限エラーのアサーション
-                SecurityAssertions.assert_rate_limit_exceeded(rate_check)
+                SecurityAssertions.assert_rate_limit_exceeded(self.security_manager, client_id)
                 self.assertFalse(rate_check["allowed"], "レート制限が適用されている")
                 self.assertIn("retry_after", rate_check, "リトライ時間が指定されている")
                 break
@@ -303,13 +303,13 @@ class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
                 
                 # アサーション
                 if expected_access:
-                    SecurityAssertions.assert_access_granted(access_result)
+                    SecurityAssertions.assert_access_granted(self.security_manager, user["user_id"], test["required_permission"])
                     self.assertTrue(
                         access_result["granted"],
                         f"{user['description']}は{test['description']}にアクセス可能"
                     )
                 else:
-                    SecurityAssertions.assert_access_denied(access_result)
+                    SecurityAssertions.assert_access_denied(self.security_manager, user["user_id"], test["required_permission"])
                     self.assertFalse(
                         access_result["granted"],
                         f"{user['description']}は{test['description']}にアクセス不可"
@@ -363,7 +363,7 @@ class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
         print(f"期待される結果: {expected_validation}")
         
         # アサーション
-        SecurityAssertions.assert_security_headers_valid(header_validation)
+        SecurityAssertions.assert_security_headers_valid(self.security_manager, secure_request["headers"])
         self.assertTrue(header_validation["valid"], "セキュリティヘッダーが有効")
         self.assertGreaterEqual(
             header_validation["security_score"],
@@ -412,7 +412,7 @@ class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
                 print(f"ブルートフォース攻撃として検出・ブロック")
                 
                 # ブロック状態のアサーション
-                SecurityAssertions.assert_brute_force_blocked(protection_check)
+                SecurityAssertions.assert_brute_force_blocked(self.security_manager, attacker_client)
                 self.assertTrue(protection_check["blocked"], "攻撃がブロックされている")
                 self.assertIn("lockout_duration", protection_check, "ロックアウト期間が設定")
                 break
@@ -475,7 +475,7 @@ class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
         print(f"期待される結果: {expected_mfa_result}")
         
         # アサーション
-        SecurityAssertions.assert_mfa_success(totp_result)
+        SecurityAssertions.assert_mfa_success(self.security_manager, first_factor_result["session_token"], totp_code)
         self.assertTrue(totp_result["mfa_completed"], "多要素認証が完了")
         self.assertIn("totp", totp_result["mfa_factors"], "TOTPが認証要素に含まれる")
         
@@ -520,7 +520,7 @@ class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
             print(f"ログ結果: {log_result}")
             
             # ログ記録のアサーション
-            SecurityAssertions.assert_audit_log_recorded(log_result)
+            SecurityAssertions.assert_audit_log_recorded(self.security_manager, event)
             self.assertTrue(log_result["logged"], "監査ログが記録されている")
             self.assertIn("log_id", log_result, "ログIDが生成されている")
         

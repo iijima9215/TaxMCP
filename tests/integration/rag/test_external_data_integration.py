@@ -17,7 +17,8 @@ sys.path.insert(0, str(project_root))
 
 from tests.utils.test_config import TaxMCPTestCase, PerformanceTestMixin
 from tests.utils.assertion_helpers import APIAssertions, PerformanceAssertions
-from tests.utils.mock_external_apis import MockRAGIntegration, MockExternalAPIs
+from tests.utils.mock_rag_integration import MockRAGIntegration
+from tests.utils.mock_external_apis import MockExternalAPIs
 from tests.utils.test_data_generator import TestDataGenerator
 
 
@@ -83,9 +84,12 @@ class TestExternalDataIntegration(TaxMCPTestCase, PerformanceTestMixin):
             print(f"財務省APIリクエスト: {api_request}")
             
             # 外部API呼び出し実行
-            api_result = self.external_apis.call_ministry_of_finance_api(
+            raw_api_result = self.external_apis.call_ministry_of_finance_api(
                 api_request["params"]
             )
+            # MockResponseオブジェクトを作成
+            from tests.utils.mock_response import MockResponse
+            api_result = MockResponse(raw_api_result.json(), 200)
             
             print(f"財務省API結果: {api_result}")
             
@@ -106,11 +110,13 @@ class TestExternalDataIntegration(TaxMCPTestCase, PerformanceTestMixin):
             
             # RAGへのデータ統合
             print(f"RAGへのデータ統合開始...")
-            integration_result = self.rag_integration.integrate_external_data(
+            raw_integration_result = self.rag_integration.integrate_external_data(
                 source="ministry_of_finance",
                 data=api_result["data"],
                 data_type=request_data["data_type"]
             )
+            # MockResponseオブジェクトを作成
+            integration_result = MockResponse(raw_integration_result.json(), 200)
             
             print(f"RAG統合結果: {integration_result}")
             
@@ -176,9 +182,12 @@ class TestExternalDataIntegration(TaxMCPTestCase, PerformanceTestMixin):
             print(f"国税庁APIリクエスト: {api_request}")
             
             # 外部API呼び出し実行
-            api_result = self.external_apis.call_national_tax_agency_api(
+            raw_api_result = self.external_apis.call_national_tax_agency_api(
                 api_request["params"]
             )
+            # MockResponseオブジェクトを作成
+            from tests.utils.mock_response import MockResponse
+            api_result = MockResponse(raw_api_result.json(), 200)
             
             print(f"国税庁API結果: {api_result}")
             
@@ -198,11 +207,13 @@ class TestExternalDataIntegration(TaxMCPTestCase, PerformanceTestMixin):
                         )
             
             # RAGへのデータ統合
-            integration_result = self.rag_integration.integrate_external_data(
+            raw_integration_result = self.rag_integration.integrate_external_data(
                 source="national_tax_agency",
                 data=api_result["data"],
                 data_type=request_data["data_type"]
             )
+            # MockResponseオブジェクトを作成
+            integration_result = MockResponse(raw_integration_result.json(), 200)
             
             # RAG統合のアサーション
             APIAssertions.assert_success_response(integration_result)
@@ -261,9 +272,12 @@ class TestExternalDataIntegration(TaxMCPTestCase, PerformanceTestMixin):
             print(f"e-Gov APIリクエスト: {api_request}")
             
             # 外部API呼び出し実行
-            api_result = self.external_apis.call_egov_api(
+            raw_api_result = self.external_apis.call_egov_api(
                 api_request["params"]
             )
+            # MockResponseオブジェクトを作成
+            from tests.utils.mock_response import MockResponse
+            api_result = MockResponse(raw_api_result, 200)
             
             print(f"e-Gov API結果: {api_result}")
             
@@ -283,11 +297,13 @@ class TestExternalDataIntegration(TaxMCPTestCase, PerformanceTestMixin):
                         )
             
             # RAGへのデータ統合
-            integration_result = self.rag_integration.integrate_external_data(
+            raw_integration_result = self.rag_integration.integrate_external_data(
                 source="egov",
                 data=api_result["data"],
                 data_type=request_data["data_type"]
             )
+            # MockResponseオブジェクトを作成
+            integration_result = MockResponse(raw_integration_result, 200)
             
             # RAG統合のアサーション
             APIAssertions.assert_success_response(integration_result)

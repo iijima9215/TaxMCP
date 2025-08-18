@@ -15,7 +15,7 @@ sys.path.insert(0, str(project_root))
 
 from tests.utils.test_config import TaxMCPTestCase, SecurityTestMixin
 from tests.utils.assertion_helpers import SecurityAssertions
-from tests.utils.mock_external_apis import MockSecurityManager
+from tests.utils.mock_security_manager import MockSecurityManager
 
 
 class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):

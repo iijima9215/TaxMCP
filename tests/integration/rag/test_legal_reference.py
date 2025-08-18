@@ -17,7 +17,7 @@ sys.path.insert(0, str(project_root))
 
 from tests.utils.test_config import TaxMCPTestCase, PerformanceTestMixin
 from tests.utils.assertion_helpers import APIAssertions, PerformanceAssertions
-from tests.utils.mock_external_apis import MockRAGIntegration
+from tests.utils.mock_rag_integration import MockRAGIntegration
 from tests.utils.test_data_generator import TestDataGenerator
 
 
@@ -84,7 +84,8 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
                 search_request["params"]["query"],
                 search_request["params"]["tax_category"]
             )
-            search_result = {"success": True, "result": raw_search_result} # APIAssertionsが期待する形式に変換
+            # MockResponseオブジェクトを作成
+            search_result = raw_search_result
             
             print(f"検索結果: {search_result}")
             
@@ -92,13 +93,13 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
             APIAssertions.assert_success_response(search_result)
             self.assertTrue(search_result["success"], "法令検索が成功している")
             self.assertGreater(
-                len(search_result["result"]),
+                len(search_result["result"]["results"]),
                 0,
                 "検索結果が返されている"
             )
             
             # 期待される条文の確認
-            found_articles = [result["article"] for result in search_result["result"]]
+            found_articles = [result["article"] for result in search_result["result"]["results"]]
             for expected_article in query_data["expected_articles"]:
                 self.assertIn(
                     expected_article,
@@ -107,7 +108,7 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
                 )
             
             # 検索結果の品質確認
-            for result in search_result["result"]:
+            for result in search_result["result"]["results"]:
                 self.assertIn("article", result, "条文番号が含まれている")
                 self.assertIn("content", result, "条文内容が含まれている")
                 # relevance_scoreはモックデータに含まれていないのでコメントアウト
@@ -173,13 +174,19 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
                 search_request["params"]["query"],
                 search_request["params"]["tax_category"]
             )
-            search_result = {"success": True, "result": raw_search_result} # APIAssertionsが期待する形式に変換
+            # MockResponseオブジェクトを作成
+            search_result = raw_search_result
             
             print(f"検索結果: {search_result}")
             
             # 検索結果のアサーション
             APIAssertions.assert_success_response(search_result)
             self.assertTrue(search_result["success"], "法人税法検索が成功している")
+            self.assertGreater(
+                len(search_result["result"]["results"]),
+                0,
+                "法人税法検索結果が返されている"
+            )
             
             # 関連条文の確認（モックデータには含まれていないのでコメントアウト）
             # if search_request["params"]["include_related"]:
@@ -244,13 +251,20 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
                 search_request["params"]["query"],
                 search_request["params"]["tax_category"]
             )
-            search_result = {"success": True, "result": raw_search_result} # APIAssertionsが期待する形式に変換
+            # MockResponseオブジェクトを作成
+            from tests.utils.mock_response import MockResponse
+            search_result = MockResponse(raw_search_result.json(), 200)
             
             print(f"検索結果: {search_result}")
             
             # 検索結果のアサーション
             APIAssertions.assert_success_response(search_result)
             self.assertTrue(search_result["success"], "消費税法検索が成功している")
+            self.assertGreater(
+                len(search_result["result"]["results"]),
+                0,
+                "消費税法検索結果が返されている"
+            )
             
             # 実例の確認（モックデータには含まれていないのでコメントアウト）
             # if search_request["params"]["include_examples"]:
@@ -311,7 +325,9 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
                 search_request["params"]["query"],
                 search_request["params"]["tax_year"]
             )
-            search_result = {"success": True, "result": raw_search_result} # APIAssertionsが期待する形式に変換
+            # MockResponseオブジェクトを作成
+            from tests.utils.mock_response import MockResponse
+            search_result = MockResponse(raw_search_result.json(), 200)
             
             print(f"横断検索結果: {search_result}")
             
@@ -321,13 +337,13 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
             
             # 複数の法律からの結果確認（モックデータはリスト形式なので修正）
             self.assertGreater(
-                len(search_result["result"]),
+                len(search_result["result"]["results"]),
                 0,
                 "横断検索結果が返されている"
             )
             
             # 検索結果の基本構造確認
-            for result in search_result["result"]:
+            for result in search_result["result"]["results"]:
                 self.assertIn("article", result, "条文が含まれている")
                 self.assertIn("content", result, "内容が含まれている")
                 self.assertIn("relevance_score", result, "関連度スコアが含まれている")
@@ -398,7 +414,9 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
                 search_request["params"]["query"],
                 json.dumps(search_request["params"]["context"]) # contextをJSON文字列に変換して渡す
             )
-            search_result = {"success": True, "result": raw_search_result} # APIAssertionsが期待する形式に変換
+            # MockResponseオブジェクトを作成
+            from tests.utils.mock_response import MockResponse
+            search_result = MockResponse(raw_search_result.json(), 200)
             
             print(f"セマンティック検索結果: {search_result}")
             
@@ -407,7 +425,7 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
             self.assertTrue(search_result["success"], "セマンティック検索が成功している")
             
             # 関連度スコアの確認（モックデータではrelevance_scoreを使用）
-            for result in search_result["result"]:
+            for result in search_result["result"]["results"]:
                 self.assertGreaterEqual(
                     result["relevance_score"],
                     0.5,  # モックデータの固定値
@@ -416,7 +434,7 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
             
             # セマンティックキーワードの確認
             found_content = " ".join([
-                result["content"] for result in search_result["result"]
+                result["content"] for result in search_result["result"]["results"]
             ])
             
             print(f"文脈的検索結果: {search_result}")
@@ -434,13 +452,13 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
             
             # 基本的な検索結果の確認
             self.assertGreater(
-                len(search_result["result"]),
+                len(search_result["result"]["results"]),
                 0,
                 "文脈的検索結果が返されている"
             )
             
             # 検索結果の基本構造確認
-            for result in search_result["result"]:
+            for result in search_result["result"]["results"]:
                 self.assertIn("article", result, "条文が含まれている")
                 self.assertIn("content", result, "内容が含まれている")
             
@@ -500,7 +518,9 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
                 search_request["params"]["query"],
                 search_request["params"]["tax_category"]
             )
-            search_result = {"success": True, "result": raw_search_result} # APIAssertionsが期待する形式に変換
+            # MockResponseオブジェクトを作成
+            from tests.utils.mock_response import MockResponse
+            search_result = MockResponse(raw_search_result.json(), 200)
             
             print(f"セマンティック検索結果: {search_result}")
             
@@ -509,7 +529,7 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
             self.assertTrue(search_result["success"], "セマンティック検索が成功している")
             
             # 関連度スコアの確認（モックデータではscoreを使用）
-            for result in search_result["result"]:
+            for result in search_result["result"]["results"]:
                 self.assertGreaterEqual(
                     result["score"],
                     0.8,  # モックデータの固定値
@@ -518,7 +538,7 @@ class TestLegalReference(TaxMCPTestCase, PerformanceTestMixin):
             
             # セマンティックキーワードの確認
             found_content = " ".join([
-                result["summary"] for result in search_result["result"]  # モックデータではsummaryフィールドを使用
+                result["summary"] for result in search_result["result"]["results"]  # モックデータではsummaryフィールドを使用
             ])
             
             for keyword in test_case["semantic_keywords"]:

@@ -58,6 +58,9 @@ class TestMetadataManagement(TaxMCPTestCase, PerformanceTestMixin):
         """メタデータ管理テーブルの作成"""
         cursor = self.connection.cursor()
         
+        # 外部キー制約を有効化
+        cursor.execute("PRAGMA foreign_keys = ON")
+        
         # 文書メタデータテーブル
         cursor.execute("""
             CREATE TABLE document_metadata (
@@ -1214,10 +1217,12 @@ class TestMetadataManagement(TaxMCPTestCase, PerformanceTestMixin):
         
         orphaned_docs = cursor.fetchall()
         
+        # 統計情報のない文書があっても警告のみで、テストは成功とする
         if len(orphaned_docs) > 0:
             print(f"警告: 統計情報のない文書が{len(orphaned_docs)}件存在")
             for doc in orphaned_docs:
                 print(f"  - {doc[0]}")
+            print("✓ 参照整合性確認完了（警告あり）")
         else:
             print("✓ 全ての文書に統計情報が存在")
         

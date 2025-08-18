@@ -244,6 +244,10 @@ class TestFullTextSearch(TaxMCPTestCase, PerformanceTestMixin):
                 current_time, current_time
             ))
         
+        # FTSテーブルにデータを挿入
+        cursor.execute("INSERT INTO tax_documents_fts(tax_documents_fts) VALUES('rebuild')")
+        cursor.execute("INSERT INTO legal_precedents_fts(legal_precedents_fts) VALUES('rebuild')")
+        
         # 税務通達データ
         tax_circulars = [
             {
@@ -491,7 +495,7 @@ class TestFullTextSearch(TaxMCPTestCase, PerformanceTestMixin):
         """ワイルドカード検索テスト"""
         print("\n=== ワイルドカード検索テスト ===")
         
-        # ワイルドカード検索テストケース
+        # ワイルドカード検索テストケース（FTS5では前方一致のみサポート）
         wildcard_cases = [
             {
                 "query": "控除*",
@@ -499,14 +503,14 @@ class TestFullTextSearch(TaxMCPTestCase, PerformanceTestMixin):
                 "description": "控除で始まる語の検索"
             },
             {
-                "query": "*税",
-                "table": "tax_documents_fts",
-                "description": "税で終わる語の検索"
-            },
-            {
                 "query": "法人*",
                 "table": "tax_documents_fts",
                 "description": "法人で始まる語の検索"
+            },
+            {
+                "query": "所得*",
+                "table": "tax_documents_fts",
+                "description": "所得で始まる語の検索"
             }
         ]
         
@@ -685,11 +689,11 @@ class TestFullTextSearch(TaxMCPTestCase, PerformanceTestMixin):
             # ランキング付き検索実行
             cursor = self.connection.cursor()
             cursor.execute(f"""
-                SELECT rowid, rank, title, 
-                       snippet({case['table']}, 1, '<mark>', '</mark>', '...', 32) as snippet
+                SELECT rowid, bm25({case['table']}) as rank, title, 
+                       snippet({case['table']}, -1, '<mark>', '</mark>', '...', 32) as snippet
                 FROM {case['table']}
                 WHERE {case['table']} MATCH ?
-                ORDER BY rank
+                ORDER BY bm25({case['table']})
                 LIMIT 5
             """, (case["query"],))
             
@@ -707,12 +711,12 @@ class TestFullTextSearch(TaxMCPTestCase, PerformanceTestMixin):
                 print(f"  タイトル: {title}")
                 print(f"  スニペット: {snippet}")
                 
-                # ランクが降順になっていることを確認
+                # ランクが昇順になっていることを確認（BM25では低い値が良いスコア）
                 if previous_rank is not None:
-                    self.assertGreaterEqual(
+                    self.assertLessEqual(
                         previous_rank,
                         rank,
-                        f"ランクが降順: {previous_rank} >= {rank}"
+                        f"ランクが昇順: {previous_rank} <= {rank}"
                     )
                 
                 previous_rank = rank
@@ -724,10 +728,10 @@ class TestFullTextSearch(TaxMCPTestCase, PerformanceTestMixin):
                     f"ランクが数値: {rank}"
                 )
                 
-                self.assertGreater(
+                # BM25スコアは負の値も有効なので、数値であることのみ確認
+                self.assertIsNotNone(
                     rank,
-                    0,
-                    f"ランクが正の値: {rank}"
+                    f"ランクが存在: {rank}"
                 )
             
             print(f"✓ {case['description']} 成功")
@@ -759,10 +763,10 @@ class TestFullTextSearch(TaxMCPTestCase, PerformanceTestMixin):
             cursor = self.connection.cursor()
             cursor.execute(f"""
                 SELECT rowid, 
-                       snippet({case['table']}, {case['column_index']}, '<b>', '</b>', '...', 64) as highlighted_text
+                       snippet({case['table']}, -1, '<b>', '</b>', '...', 64) as highlighted_text
                 FROM {case['table']}
                 WHERE {case['table']} MATCH ?
-                ORDER BY rank
+                ORDER BY bm25({case['table']})
                 LIMIT 3
             """, (case["query"],))
             

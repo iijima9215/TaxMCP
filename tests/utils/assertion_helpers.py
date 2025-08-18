@@ -243,6 +243,40 @@ class APIAssertions:
             assert "total_pages" in pagination, "ページネーション情報にtotal_pages属性がありません"
             assert pagination["total_pages"] == expected_total_pages, \
                 f"全ページ数が期待値と異なります: {pagination['total_pages']} != {expected_total_pages}"
+    
+    @staticmethod
+    def assert_success_response(response, expected_keys: List[str] = None):
+        """成功レスポンスをアサート
+        
+        Args:
+            response: APIレスポンス
+            expected_keys: 期待されるキーのリスト
+        """
+        APIAssertions.assert_status_code(response, 200)
+        APIAssertions.assert_json_response(response)
+        
+        data = response.json()
+        if expected_keys:
+            for key in expected_keys:
+                assert key in data, f"レスポンスに必要なキー '{key}' がありません"
+    
+    @staticmethod
+    def assert_mcp_response(response, expected_id: Optional[Union[int, str]] = None):
+        """MCPレスポンスをアサート
+        
+        Args:
+            response: MCPレスポンス
+            expected_id: 期待されるリクエストID
+        """
+        APIAssertions.assert_json_response(response)
+        
+        data = response.json()
+        assert "jsonrpc" in data, "MCPレスポンスにjsonrpcフィールドがありません"
+        assert data["jsonrpc"] == "2.0", f"JSONRPCバージョンが2.0ではありません: {data['jsonrpc']}"
+        
+        if expected_id is not None:
+            assert "id" in data, "MCPレスポンスにidフィールドがありません"
+            assert data["id"] == expected_id, f"レスポンスIDが期待値と異なります: {data['id']} != {expected_id}"
 
 
 class SecurityAssertions:
@@ -388,6 +422,7 @@ class SecurityAssertions:
         assert not result["valid"], "総合的な入力検証が失敗していません"
         assert "threats_detected" in result, "検出された脅威が記録されていません"
         assert len(result["threats_detected"]) > 0, "少なくとも1つの脅威が検出されるべきです"
+        assert "violations" in result, "検出された違反が記録されていません"
         assert "security_score" in result, "セキュリティスコアが記録されていません"
         assert result["security_score"] <= 50, "危険なリクエストのセキュリティスコアが低すぎます"
 

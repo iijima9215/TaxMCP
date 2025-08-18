@@ -17,7 +17,7 @@ sys.path.insert(0, str(project_root))
 
 from tests.utils.test_config import TaxMCPTestCase, PerformanceTestMixin
 from tests.utils.assertion_helpers import APIAssertions, PerformanceAssertions
-from tests.utils.mock_external_apis import MockRAGIntegration
+from tests.utils.mock_rag_integration import MockRAGIntegration
 from tests.utils.test_data_generator import TestDataGenerator
 
 
@@ -90,9 +90,12 @@ class TestTaxDataSearch(TaxMCPTestCase, PerformanceTestMixin):
             start_time = self.start_performance_measurement()
             
             # セマンティック検索実行
-            search_result = self.rag_integration.semantic_search(
+            raw_search_result = self.rag_integration.semantic_search(
                 search_request["params"]
             )
+            # MockResponseオブジェクトを作成
+            from tests.utils.mock_response import MockResponse
+            search_result = MockResponse(raw_search_result.json(), 200)
             
             # パフォーマンス測定終了
             performance_result = self.end_performance_measurement(start_time)
@@ -194,9 +197,12 @@ class TestTaxDataSearch(TaxMCPTestCase, PerformanceTestMixin):
             print(f"検索リクエスト: {search_request}")
             
             # キーワード検索実行
-            search_result = self.rag_integration.keyword_search(
+            raw_search_result = self.rag_integration.keyword_search(
                 search_request["params"]
             )
+            # MockResponseオブジェクトを作成
+            from tests.utils.mock_response import MockResponse
+            search_result = MockResponse(raw_search_result.json(), 200)
             
             print(f"検索結果: {search_result}")
             
@@ -299,9 +305,12 @@ class TestTaxDataSearch(TaxMCPTestCase, PerformanceTestMixin):
             print(f"検索リクエスト: {search_request}")
             
             # ハイブリッド検索実行
-            search_result = self.rag_integration.hybrid_search(
+            raw_search_result = self.rag_integration.hybrid_search(
                 search_request["params"]
             )
+            # MockResponseオブジェクトを作成
+            from tests.utils.mock_response import MockResponse
+            search_result = MockResponse(raw_search_result.json(), 200)
             
             print(f"検索結果: {search_result}")
             
@@ -410,9 +419,12 @@ class TestTaxDataSearch(TaxMCPTestCase, PerformanceTestMixin):
             print(f"検索リクエスト: {search_request}")
             
             # ファセット検索実行
-            search_result = self.rag_integration.faceted_search(
+            raw_search_result = self.rag_integration.faceted_search(
                 search_request["params"]
             )
+            # MockResponseオブジェクトを作成
+            from tests.utils.mock_response import MockResponse
+            search_result = MockResponse(raw_search_result.json(), 200)
             
             print(f"検索結果: {search_result}")
             

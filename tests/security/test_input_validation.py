@@ -15,7 +15,7 @@ sys.path.insert(0, str(project_root))
 
 from tests.utils.test_config import TaxMCPTestCase, SecurityTestMixin
 from tests.utils.assertion_helpers import SecurityAssertions
-from tests.utils.mock_external_apis import MockSecurityManager
+from tests.utils.mock_security_manager import MockSecurityManager
 
 
 class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
@@ -67,7 +67,7 @@ class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
             print(f"検証結果: {validation_result}")
             
             # SQLインジェクション検出のアサーション
-            SecurityAssertions.assert_sql_injection_blocked(validation_result)
+            SecurityAssertions.assert_sql_injection_blocked(self.security_manager, pattern)
             self.assertFalse(
                 validation_result["valid"],
                 "SQLインジェクションが検出・ブロックされている"
@@ -120,7 +120,7 @@ class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
             print(f"検証結果: {validation_result}")
             
             # XSS検出のアサーション
-            SecurityAssertions.assert_xss_blocked(validation_result)
+            SecurityAssertions.assert_xss_blocked(self.security_manager, pattern)
             self.assertFalse(
                 validation_result["valid"],
                 "XSS攻撃が検出・ブロックされている"
@@ -173,7 +173,7 @@ class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
             print(f"検証結果: {validation_result}")
             
             # コマンドインジェクション検出のアサーション
-            SecurityAssertions.assert_command_injection_blocked(validation_result)
+            SecurityAssertions.assert_command_injection_blocked(self.security_manager, pattern)
             self.assertFalse(
                 validation_result["valid"],
                 "コマンドインジェクションが検出・ブロックされている"
@@ -226,7 +226,7 @@ class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
             print(f"検証結果: {validation_result}")
             
             # パストラバーサル検出のアサーション
-            SecurityAssertions.assert_path_traversal_blocked(validation_result)
+            SecurityAssertions.assert_path_traversal_blocked(self.security_manager, pattern)
             self.assertFalse(
                 validation_result["valid"],
                 "パストラバーサル攻撃が検出・ブロックされている"
@@ -260,7 +260,7 @@ class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
             {
                 "field": "deductions",
                 "value": "invalid_array",
-                "expected_type": "array",
+                "expected_type": "number",
                 "description": "控除に配列以外"
             },
             {
@@ -298,7 +298,7 @@ class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
             print(f"検証結果: {validation_result}")
             
             # データ型検証のアサーション
-            SecurityAssertions.assert_data_type_invalid(validation_result)
+            SecurityAssertions.assert_data_type_invalid(self.security_manager, test_case["field"], test_case["value"], test_case["expected_type"])
             self.assertFalse(
                 validation_result["valid"],
                 f"{test_case['field']}のデータ型が無効として検出されている"
@@ -365,7 +365,7 @@ class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
             print(f"検証結果: {validation_result}")
             
             # 入力長検証のアサーション
-            SecurityAssertions.assert_input_length_exceeded(validation_result)
+            SecurityAssertions.assert_input_length_exceeded(self.security_manager, test_case["field"], test_case["value"])
             self.assertFalse(
                 validation_result["valid"],
                 f"{test_case['field']}の入力長制限違反が検出されている"
@@ -434,7 +434,7 @@ class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
             print(f"検証結果: {validation_result}")
             
             # 特殊文字検証のアサーション
-            SecurityAssertions.assert_special_characters_blocked(validation_result)
+            SecurityAssertions.assert_special_characters_blocked(self.security_manager, test_case["input"])
             self.assertFalse(
                 validation_result["valid"],
                 f"{test_case['description']}が検出・ブロックされている"
@@ -488,12 +488,12 @@ class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
             print(f"検証結果: {validation_result}")
             
             # JSON構造検証のアサーション
-            SecurityAssertions.assert_json_invalid(validation_result)
+            SecurityAssertions.assert_json_invalid(self.security_manager, test_case["json_data"])
             self.assertFalse(
                 validation_result["valid"],
                 f"{test_case['description']}が検出されている"
             )
-            self.assertIn(
+            self.assertEqual(
                 "syntax_error",
                 validation_result["error_type"],
                 "JSON構文エラーが検出されている"
@@ -569,7 +569,7 @@ class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
             print(f"検証結果: {validation_result}")
             
             # ビジネスロジック検証のアサーション
-            SecurityAssertions.assert_business_logic_violation(validation_result)
+            SecurityAssertions.assert_business_logic_violation(self.security_manager, test_case["params"])
             self.assertFalse(
                 validation_result["valid"],
                 f"{test_case['description']}が検出されている"
@@ -611,7 +611,7 @@ class TestInputValidation(TaxMCPTestCase, SecurityTestMixin):
         print(f"総合検証結果: {comprehensive_validation}")
         
         # 総合検証のアサーション
-        SecurityAssertions.assert_comprehensive_validation_failed(comprehensive_validation)
+        SecurityAssertions.assert_comprehensive_validation_failed(self.security_manager, malicious_comprehensive_request["params"])
         self.assertFalse(
             comprehensive_validation["valid"],
             "総合的な入力検証で脅威が検出されている"

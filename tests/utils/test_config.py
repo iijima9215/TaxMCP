@@ -158,9 +158,9 @@ class TaxMCPTestCase(AsyncTestCase):
     
     def setup_mocks(self):
         """モックオブジェクトをセットアップ"""
-        from tests.utils.mock_external_apis import (
-            MockRAGIntegration, MockSQLiteIndexer, MockSecurityManager
-        )
+        from .mock_rag_integration import MockRAGIntegration
+        from .mock_sqlite_indexer import MockSQLiteIndexer
+        from .mock_security_manager import MockSecurityManager
         
         self.patches = []
         
