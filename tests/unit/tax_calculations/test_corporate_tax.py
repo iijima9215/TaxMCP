@@ -53,7 +53,7 @@ class TestCorporateTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         # 期待される結果（中小法人税率15%）
         expected_result = {
             "total_tax": 2000000,
-            "corporate_tax": 1200000,  # 8,000,000 * 0.15
+            "corporate_tax": {"amount": 1200000},  # 8,000,000 * 0.15
             "local_corporate_tax": 120000,  # 1,200,000 * 0.10
             "business_tax": 680000,  # 8,000,000 * 0.085
             "tax_year": 2025,
@@ -73,10 +73,10 @@ class TestCorporateTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         print(f"期待される結果: {expected_result}")
         
         # アサーション
-        TaxAssertions.assert_corporate_tax_result(expected_result)
+        TaxAssertions.assert_corporate_tax_calculation(expected_result, expected_result["corporate_tax"]["amount"]) 
         TaxAssertions.assert_tax_rate_validity(expected_result["tax_rate"], 0.0, 0.30)
         TaxAssertions.assert_tax_amount_accuracy(
-            expected_result["corporate_tax"], 1200000, tolerance=1.0
+            expected_result["corporate_tax"]["amount"], 1200000, tolerance=1.0
         )
         
         print("✓ 中小法人の法人税計算テスト成功")
@@ -98,7 +98,7 @@ class TestCorporateTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         # 期待される結果（大法人税率23%）
         expected_result = {
             "total_tax": 252000000,
-            "corporate_tax": 184000000,  # 800,000,000 * 0.23
+            "corporate_tax": {"amount": 184000000},  # 800,000,000 * 0.23
             "local_corporate_tax": 18400000,  # 184,000,000 * 0.10
             "business_tax": 49600000,  # 800,000,000 * 0.062
             "tax_year": 2025,
@@ -118,7 +118,7 @@ class TestCorporateTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         print(f"期待される結果: {expected_result}")
         
         # アサーション
-        TaxAssertions.assert_corporate_tax_result(expected_result)
+        TaxAssertions.assert_corporate_tax_calculation(expected_result, expected_result["corporate_tax"]["amount"]) 
         TaxAssertions.assert_tax_rate_validity(expected_result["tax_rate"], 0.20, 0.30)
         self.assertGreater(expected_result["total_tax"], 100000000, "大法人の税額は適切")
         
@@ -145,7 +145,7 @@ class TestCorporateTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         # 期待される結果（赤字のため税額なし）
         expected_result = {
             "total_tax": 0,
-            "corporate_tax": 0,
+            "corporate_tax": {"amount": 0},
             "local_corporate_tax": 0,
             "business_tax": 0,
             "tax_year": 2025,
@@ -163,7 +163,7 @@ class TestCorporateTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         print(f"期待される結果: {expected_result}")
         
         # アサーション
-        TaxAssertions.assert_corporate_tax_result(expected_result)
+        TaxAssertions.assert_corporate_tax_calculation(expected_result, expected_result["corporate_tax"]["amount"]) 
         self.assertEqual(expected_result["total_tax"], 0, "赤字企業の税額は0")
         self.assertIn("loss_carryforward", expected_result["calculation_details"], "繰越欠損金が記録されている")
         
@@ -204,7 +204,7 @@ class TestCorporateTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         # 期待される結果
         expected_result = {
             "total_tax": 4450000,
-            "corporate_tax": 3150000,  # (30,000,000 - 9,000,000) * 0.15
+            "corporate_tax": {"amount": 3150000},  # (30,000,000 - 9,000,000) * 0.15
             "local_corporate_tax": 315000,
             "business_tax": 985000,
             "tax_year": 2025,
@@ -225,7 +225,7 @@ class TestCorporateTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         print(f"期待される結果: {expected_result}")
         
         # アサーション
-        TaxAssertions.assert_corporate_tax_result(expected_result)
+        TaxAssertions.assert_corporate_tax_calculation(expected_result, expected_result["corporate_tax"]["amount"]) 
         self.assertEqual(
             expected_result["calculation_details"]["total_deductions"],
             9000000,
@@ -259,7 +259,7 @@ class TestCorporateTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
             time.sleep(0.05)  # 50ms の処理時間をシミュレート
             return {
                 "total_tax": 3750000,
-                "corporate_tax": 2250000,
+                "corporate_tax": {"amount": 2250000},
                 "local_corporate_tax": 225000,
                 "business_tax": 1275000,
                 "tax_year": 2025
@@ -466,7 +466,7 @@ class TestCorporateTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
             # 年度別の期待結果
             expected_result = {
                 "total_tax": 5000000,  # 基本的には同じ税率
-                "corporate_tax": 3000000,  # 20,000,000 * 0.15
+                "corporate_tax": {"amount": 3000000},  # 20,000,000 * 0.15
                 "tax_year": year,
                 "company_type": "small",
                 "calculation_details": {
@@ -479,7 +479,7 @@ class TestCorporateTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
             results.append(expected_result)
             
             # アサーション
-            TaxAssertions.assert_corporate_tax_result(expected_result)
+            TaxAssertions.assert_corporate_tax_calculation(expected_result, expected_result["corporate_tax"]["amount"]) 
             
             print(f"✓ {year}年度計算テスト成功")
         

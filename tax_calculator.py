@@ -1,7 +1,7 @@
 """Japanese tax calculation logic for the MCP server."""
 
 from datetime import datetime, date
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
 from enum import Enum
 import math
@@ -104,6 +104,16 @@ class JapaneseTaxCalculator:
             "2014-04-01": {"standard": 0.08, "reduced": 0.08},
             "1997-04-01": {"standard": 0.05, "reduced": 0.05},
         }
+
+    def _get_consumption_tax_rates_for_date(self, target_date: date) -> Dict[str, float]:
+        """Get consumption tax rates applicable for a given date.
+        """
+        sorted_dates = sorted([date.fromisoformat(d) for d in self._consumption_tax_rates.keys()], reverse=True)
+        for effective_date in sorted_dates:
+            if target_date >= effective_date:
+                return self._consumption_tax_rates[effective_date.isoformat()]
+        # Fallback to the oldest rate if no applicable rate is found (should not happen with proper data)
+        return self._consumption_tax_rates[sorted_dates[-1].isoformat()]
     
     def _get_resident_tax_rates(self) -> Dict[str, Dict[str, float]]:
         """Get resident tax rates by prefecture."""
@@ -198,6 +208,140 @@ class JapaneseTaxCalculator:
             return int(annual_income * 0.1 + 1100000)
         else:
             return 1950000
+
+    def calculate_consumption_tax(
+        self,
+
+        tax_year: int = datetime.now().year,
+        business_type: str = "general",
+        items: Optional[List[Dict[str, Any]]] = None,
+        purchases: Optional[List[Dict[str, Any]]] = None,
+        international_sales: Optional[float] = 0.0,
+        international_purchases: Optional[float] = 0.0,
+    ) -> Dict[str, Any]:
+        """Calculate Japanese consumption tax.
+
+        Args:
+
+            tax_year: 課税年度
+            business_type: 事業種別 ("general", "small", "simplified")
+            items: 売上明細（軽減税率など）
+            purchases: 仕入明細（軽減税率など）
+
+        Returns:
+            消費税計算結果
+        """
+        current_date = date(tax_year, 1, 1)
+        applicable_rates = self._get_consumption_tax_rates_for_date(current_date)
+        standard_rate = applicable_rates["standard"]
+        reduced_rate = applicable_rates["reduced"]
+
+        total_sales_tax = 0
+        total_purchase_tax = 0
+        net_tax = 0
+        tax_exemption_applied = False
+        exemption_reason = None
+        taxable_business = True
+        mixed_rate_applied = False
+
+        standard_rate_sales = 0
+        reduced_rate_sales = 0
+        standard_rate_purchases = 0
+        reduced_rate_purchases = 0
+        standard_rate_tax = 0
+        reduced_rate_tax = 0
+
+        if business_type == "small":
+            current_sales_amount = sum(item["amount"] for item in items) if items else 0
+            if current_sales_amount <= 10000000: # Small business exemption
+                total_sales_tax = 0
+                total_purchase_tax = 0
+                net_tax = 0
+                tax_exemption_applied = True
+                exemption_reason = "売上1000万円以下"
+                taxable_business = False
+        elif business_type == "simplified":
+            # Simplified taxation method (みなし仕入れ率を適用)
+            # This is a simplified example, actual rates vary by business type
+            deemed_purchase_rate = 0.8  # Example: 80% for retail
+            current_sales_amount = sum(item["amount"] for item in items) if items else 0
+            total_sales_tax = current_sales_amount * standard_rate
+            total_purchase_tax = total_sales_tax * deemed_purchase_rate
+            net_tax = total_sales_tax - total_purchase_tax
+        else:
+            # 国際取引の考慮
+            if items:
+                domestic_sales_amount = sum(item["amount"] for item in items) - international_sales
+            else:
+                domestic_sales_amount = 0 - international_sales
+
+            if purchases:
+                domestic_purchase_amount = sum(purchase["amount"] for purchase in purchases)
+            else:
+                domestic_purchase_amount = 0
+
+            # Sales calculation
+            if items:
+                mixed_rate_applied = True
+                for item in items:
+                    if item["tax_rate"] == standard_rate:
+                        standard_rate_sales += item["amount"]
+                        total_sales_tax += item["amount"] * standard_rate
+                    elif item["tax_rate"] == reduced_rate:
+                        reduced_rate_sales += item["amount"]
+                        total_sales_tax += item["amount"] * reduced_rate
+            else:
+                standard_rate_sales = domestic_sales_amount
+                total_sales_tax = domestic_sales_amount * standard_rate
+
+            # Purchases calculation
+            if purchases:
+                mixed_rate_applied = True
+                for purchase in purchases:
+                    if purchase["tax_rate"] == standard_rate:
+                        standard_rate_purchases += purchase["amount"]
+                        total_purchase_tax += purchase["amount"] * standard_rate
+                    elif purchase["tax_rate"] == reduced_rate:
+                        reduced_rate_purchases += purchase["amount"]
+                        total_purchase_tax += purchase["amount"] * reduced_rate
+            else:
+                standard_rate_purchases = domestic_purchase_amount
+                total_purchase_tax = domestic_purchase_amount * standard_rate
+
+            net_tax = total_sales_tax - total_purchase_tax
+
+            standard_rate_tax = standard_rate_sales * standard_rate
+            reduced_rate_tax = reduced_rate_sales * reduced_rate
+
+        return {
+            "total_tax": round(net_tax),
+            "sales_tax": round(total_sales_tax),
+            "purchase_tax": round(total_purchase_tax),
+            "net_tax": round(net_tax),
+            "tax_year": tax_year,
+            "tax_rate": standard_rate, # Default to standard rate for overall result
+            "tax_exemption_applied": tax_exemption_applied,
+            "calculation_details": {
+                "sales_amount": domestic_sales_amount if 'domestic_sales_amount' in locals() else 0,
+                "purchase_amount": domestic_purchase_amount if 'domestic_purchase_amount' in locals() else 0,
+                "taxable_sales": domestic_sales_amount if 'domestic_sales_amount' in locals() else 0, # For general calculation
+                "taxable_purchases": domestic_purchase_amount if 'domestic_purchase_amount' in locals() else 0, # For general calculation
+                "tax_rate_applied": "standard",
+                "domestic_sales": domestic_sales_amount if 'domestic_sales_amount' in locals() else 0,
+                "export_sales": international_sales if 'international_sales' in locals() else 0,
+                "export_exemption_applied": True if 'international_sales' in locals() and international_sales > 0 else False,
+                "import_tax_included": True if 'international_purchases' in locals() and international_purchases > 0 else False,
+                "standard_rate_sales": standard_rate_sales,
+                "reduced_rate_sales": reduced_rate_sales,
+                "standard_rate_purchases": standard_rate_purchases,
+                "reduced_rate_purchases": reduced_rate_purchases,
+                "standard_rate_tax": standard_rate_tax,
+                "reduced_rate_tax": reduced_rate_tax,
+                "mixed_rate_applied": mixed_rate_applied,
+                "exemption_reason": exemption_reason,
+                "taxable_business": taxable_business,
+            }
+        }
     
     def _calculate_progressive_tax(self, taxable_income: int, tax_year: int) -> int:
         """Calculate progressive income tax."""

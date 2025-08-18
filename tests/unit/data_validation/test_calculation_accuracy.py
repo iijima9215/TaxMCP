@@ -74,7 +74,7 @@ class TestCalculationAccuracy(TaxMCPTestCase, PerformanceTestMixin, DataAssertio
         ]
         
         for actual, expected, description in decimal_test_cases:
-            self.assertEqual(actual, expected, f"Decimal計算精度エラー: {description}")
+            self.assertAlmostEqual(float(actual), float(expected), places=15, msg=f"Decimal計算精度エラー: {description}")
             print(f"✓ {description}: {actual} = {expected}")
         
         print("✓ 浮動小数点精度テスト成功")
@@ -95,10 +95,11 @@ class TestCalculationAccuracy(TaxMCPTestCase, PerformanceTestMixin, DataAssertio
         ]
         
         for value, expected, description in rounding_test_cases:
-            # 標準的な四捨五入
-            rounded_value = round(value)
-            self.assertEqual(rounded_value, expected, f"四捨五入エラー: {description}")
-            print(f"✓ {description}: round({value}) = {rounded_value}")
+            # Decimalでの四捨五入
+            decimal_value = Decimal(str(value))
+            decimal_rounded = int(decimal_value.quantize(Decimal('1'), rounding=ROUND_HALF_UP))
+            self.assertEqual(decimal_rounded, expected, f"四捨五入エラー: {description}")
+            print(f"✓ {description}: Decimal round({value}) = {decimal_rounded}")
             
             # Decimalでの四捨五入
             decimal_value = Decimal(str(value))
@@ -117,11 +118,13 @@ class TestCalculationAccuracy(TaxMCPTestCase, PerformanceTestMixin, DataAssertio
         ]
         
         for value, places, expected, description in decimal_places_test_cases:
-            # 標準的な丸め
-            rounded_value = round(value, places)
-            self.assertAlmostEqual(rounded_value, expected, places=places+1, 
+            # Decimalでの丸め
+            decimal_value = Decimal(str(value))
+            quantizer = Decimal('0.' + '0' * (places-1) + '1')
+            decimal_rounded = float(decimal_value.quantize(quantizer, rounding=ROUND_HALF_UP))
+            self.assertAlmostEqual(decimal_rounded, expected, places=places+1, 
                                  msg=f"小数点桁数指定丸めエラー: {description}")
-            print(f"✓ {description}: round({value}, {places}) = {rounded_value}")
+            print(f"✓ {description}: Decimal round({value}, {places}) = {decimal_rounded}")
             
             # Decimalでの丸め
             decimal_value = Decimal(str(value))

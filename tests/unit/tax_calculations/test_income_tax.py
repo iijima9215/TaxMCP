@@ -51,7 +51,7 @@ class TestIncomeTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         # モック計算結果
         expected_result = {
             "total_tax": 572500,
-            "income_tax": 372500,
+            "income_tax": {"amount": 372500},
             "resident_tax": 200000,
             "tax_year": 2025,
             "calculation_details": {
@@ -71,7 +71,7 @@ class TestIncomeTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         print(f"期待される結果: {expected_result}")
         
         # アサーション
-        TaxAssertions.assert_income_tax_result(expected_result)
+        TaxAssertions.assert_income_tax_calculation(expected_result, expected_result["income_tax"]["amount"]) 
         TaxAssertions.assert_tax_amount_accuracy(
             expected_result["total_tax"], 572500, tolerance=1.0
         )
@@ -93,7 +93,7 @@ class TestIncomeTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         # 期待される結果（低所得のため税額が少ない）
         expected_result = {
             "total_tax": 51000,
-            "income_tax": 51000,
+            "income_tax": {"amount": 51000},
             "resident_tax": 0,  # 住民税非課税
             "tax_year": 2025,
             "calculation_details": {
@@ -108,7 +108,7 @@ class TestIncomeTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         print(f"期待される結果: {expected_result}")
         
         # アサーション
-        TaxAssertions.assert_income_tax_result(expected_result)
+        TaxAssertions.assert_income_tax_calculation(expected_result, expected_result["income_tax"]["amount"]) 
         self.assertLessEqual(expected_result["total_tax"], 100000, "低所得者の税額は適切")
         
         print("✓ 低所得者の所得税計算テスト成功")
@@ -128,7 +128,7 @@ class TestIncomeTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         # 期待される結果（高所得のため高税率適用）
         expected_result = {
             "total_tax": 4764000,
-            "income_tax": 3764000,
+            "income_tax": {"amount": 3764000},
             "resident_tax": 1000000,
             "tax_year": 2025,
             "calculation_details": {
@@ -148,7 +148,7 @@ class TestIncomeTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         print(f"期待される結果: {expected_result}")
         
         # アサーション
-        TaxAssertions.assert_income_tax_result(expected_result)
+        TaxAssertions.assert_income_tax_calculation(expected_result, expected_result["income_tax"]["amount"]) 
         self.assertGreater(expected_result["total_tax"], 1000000, "高所得者の税額は適切")
         TaxAssertions.assert_tax_rate_validity(
             expected_result["calculation_details"]["income_tax_rate"], 0.0, 0.45
@@ -187,7 +187,7 @@ class TestIncomeTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         
         expected_result = {
             "total_tax": 1230000,
-            "income_tax": 1030000,
+            "income_tax": {"amount": 1030000},
             "resident_tax": 200000,
             "tax_year": 2025,
             "calculation_details": {
@@ -203,7 +203,7 @@ class TestIncomeTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         print(f"期待される結果: {expected_result}")
         
         # アサーション
-        TaxAssertions.assert_income_tax_result(expected_result)
+        TaxAssertions.assert_income_tax_calculation(expected_result, expected_result["income_tax"]["amount"]) 
         self.assertEqual(
             expected_result["calculation_details"]["total_deductions"],
             2610000,
@@ -231,7 +231,7 @@ class TestIncomeTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
             time.sleep(0.1)  # 100ms の処理時間をシミュレート
             return {
                 "total_tax": 572500,
-                "income_tax": 372500,
+                "income_tax": {"amount": 372500},
                 "resident_tax": 200000,
                 "tax_year": 2025
             }

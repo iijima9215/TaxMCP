@@ -14,16 +14,18 @@ sys.path.insert(0, str(project_root))
 from tests.utils.test_config import TaxMCPTestCase, PerformanceTestMixin
 from tests.utils.assertion_helpers import TaxAssertions
 from tests.utils.test_data_generator import TestDataGenerator
+from tax_calculator import JapaneseTaxCalculator
 
 
 class TestConsumptionTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
     """消費税計算テストクラス"""
-    
+
     def setUp(self):
         """テストセットアップ"""
         super().setUp()
-        self.setup_mocks()
+        self.calculator = JapaneseTaxCalculator()
         self.data_generator = TestDataGenerator()
+        self.setup_mocks()
     
     def test_standard_consumption_tax_calculation(self):
         """標準税率（10%）の消費税計算テスト"""
@@ -33,21 +35,27 @@ class TestConsumptionTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         test_data = self.data_generator.generate_consumption_tax_data(
             sales_amount=10000000,
             purchase_amount=6000000,
-            tax_year=2025
+            tax_year=2025,
+            international_sales=500000,
+            international_purchases=200000
         )
         
         print(f"入力データ: {test_data}")
+         
+
         
-        # MCPリクエスト作成
-        request = self.create_test_request(
-            method="tools/call",
-            params={
-                "name": "calculate_consumption_tax",
-                "arguments": test_data
-            }
+        # 消費税計算を直接呼び出し
+        result = self.calculator.calculate_consumption_tax(
+
+            tax_year=test_data["tax_year"],
+            items=test_data.get("items"),
+            purchases=test_data.get("purchases")
         )
         
-        print(f"MCPリクエスト: {request}")
+        print(f"計算結果: {result}")
+
+        # 結果の検証
+
         
         # 期待される結果（標準税率10%）
         expected_result = {
@@ -111,11 +119,26 @@ class TestConsumptionTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
                     "amount": 1200000,
                     "tax_rate": 0.10
                 }
-            ]
+            ],
+
         }
         
         print(f"入力データ: {test_data}")
         
+        # 消費税計算を直接呼び出し
+        result = self.calculator.calculate_consumption_tax(
+
+            tax_year=test_data["tax_year"],
+            business_type=test_data.get("business_type"),
+            items=test_data.get("items"),
+            purchases=test_data.get("purchases")
+        )
+        print(f"計算結果: {result}")
+
+        # 結果の検証
+        self.assertIsInstance(result, dict)
+        self.assertIn("total_tax", result)
+        self.assertIn("calculation_details", result)
         # 期待される結果
         # 売上税: (3,000,000 * 0.08) + (2,000,000 * 0.10) = 240,000 + 200,000 = 440,000
         # 仕入税: (1,800,000 * 0.08) + (1,200,000 * 0.10) = 144,000 + 120,000 = 264,000
@@ -139,6 +162,7 @@ class TestConsumptionTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
                 "mixed_rate_applied": True
             }
         }
+        TaxAssertions.assert_consumption_tax_calculation_result(self, result, expected_result)
         
         print(f"期待される結果: {expected_result}")
         
@@ -447,8 +471,14 @@ class TestConsumptionTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
                 "total_tax": net_tax,
                 "sales_tax": sales_tax,
                 "purchase_tax": purchase_tax,
+                "net_tax": net_tax,
                 "tax_rate": scenario["rate"],
-                "tax_year": scenario["year"]
+                "tax_year": scenario["year"],
+                "calculation_details": {
+                    "sales_amount": base_data["sales_amount"],
+                    "purchase_amount": base_data["purchase_amount"],
+                    "tax_rate_applied": scenario["rate"]
+                }
             }
             
             print(f"期待される結果: {expected_result}")
@@ -487,11 +517,34 @@ class TestConsumptionTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
             "export_sales": 2000000,  # 輸出（免税）
             "domestic_purchases": 5000000,
             "import_purchases": 1000000,  # 輸入
-            "tax_year": 2025
+            "tax_year": 2025,
+            "items": [
+                {"amount": 8000000, "tax_rate": 0.10}, # 国内売上
+                {"amount": 2000000, "tax_rate": 0.00}  # 輸出売上 (免税)
+            ],
+            "purchases": [
+                {"amount": 5000000, "tax_rate": 0.10}, # 国内仕入れ
+                {"amount": 1000000, "tax_rate": 0.10}  # 輸入仕入れ
+            ]
         }
         
         print(f"入力データ: {test_data}")
         
+        # 消費税計算を直接呼び出し
+        result = self.calculator.calculate_consumption_tax(
+
+            tax_year=test_data["tax_year"],
+            international_sales=test_data["export_sales"],
+            international_purchases=test_data["import_purchases"],
+            items=test_data["items"],
+            purchases=test_data["purchases"]
+        )
+        print(f"計算結果: {result}")
+
+        # 結果の検証
+        self.assertIsInstance(result, dict)
+        self.assertIn("total_tax", result)
+        self.assertIn("calculation_details", result)
         # 期待される結果
         # 国内売上税: 8,000,000 * 0.10 = 800,000
         # 輸出売上税: 0（免税）
@@ -501,6 +554,8 @@ class TestConsumptionTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
         
         expected_result = {
             "total_tax": 200000,
+            "sales_tax": 800000,  # domestic_sales_tax
+            "purchase_tax": 600000,  # domestic_purchase_tax + import_purchase_tax
             "domestic_sales_tax": 800000,
             "export_sales_tax": 0,
             "domestic_purchase_tax": 500000,
@@ -508,12 +563,16 @@ class TestConsumptionTaxCalculation(TaxMCPTestCase, PerformanceTestMixin):
             "net_tax": 200000,
             "tax_year": 2025,
             "calculation_details": {
+                "sales_amount": 10000000,  # domestic_sales + export_sales
+                "purchase_amount": 6000000,  # domestic_purchases + import_purchases
                 "domestic_sales": 8000000,
                 "export_sales": 2000000,
                 "export_exemption_applied": True,
-                "import_tax_included": True
+                "import_tax_included": True,
+                "tax_rate_applied": "standard"
             }
         }
+        TaxAssertions.assert_consumption_tax_calculation_result(self, result, expected_result)
         
         print(f"期待される結果: {expected_result}")
         

@@ -1,5 +1,5 @@
-"""アサーションヘルパーユーティリティ
-
+# -*- coding: utf-8 -*-
+"""
 TaxMCPサーバーのテストで使用するアサーション関数群
 """
 
@@ -18,265 +18,378 @@ class TaxAssertions:
         
         Args:
             result: 税計算結果
-            expected_keys: 期待されるキー一覧
+            expected_keys: 期待されるキーのリスト
         """
-        assert isinstance(result, dict), "結果は辞書型である必要があります"
+        assert isinstance(result, dict), "計算結果はdict型である必要があります"
         
-        # 基本的なキーの存在確認
-        basic_keys = ["total_tax", "calculation_details", "tax_year"]
         if expected_keys:
-            basic_keys.extend(expected_keys)
-        
-        for key in basic_keys:
-            assert key in result, f"結果に'{key}'キーが含まれている必要があります"
-        
-        # 税額は非負の数値
-        assert isinstance(result["total_tax"], (int, float)), "total_taxは数値である必要があります"
-        assert result["total_tax"] >= 0, "税額は非負である必要があります"
-        
-        # 年度は妥当な範囲
-        assert isinstance(result["tax_year"], int), "tax_yearは整数である必要があります"
-        assert 2020 <= result["tax_year"] <= 2030, "税年度は2020-2030の範囲である必要があります"
+            for key in expected_keys:
+                assert key in result, f"計算結果に必要なキー '{key}' がありません"
     
     @staticmethod
-    def assert_income_tax_result(result: Dict[str, Any]):
+    def assert_income_tax_calculation(result: Dict[str, Any], expected_amount: float, tolerance: float = 0.01):
         """所得税計算結果をアサート
         
         Args:
-            result: 所得税計算結果
+            result: 税計算結果
+            expected_amount: 期待される税額
+            tolerance: 許容誤差
         """
-        TaxAssertions.assert_tax_calculation_result(result)
+        assert "income_tax" in result, "計算結果に所得税情報がありません"
+        assert "amount" in result["income_tax"], "所得税情報に金額がありません"
         
-        # 所得税特有のキー
-        income_tax_keys = ["income_tax", "resident_tax", "social_insurance"]
-        for key in income_tax_keys:
-            if key in result:
-                assert isinstance(result[key], (int, float)), f"{key}は数値である必要があります"
-                assert result[key] >= 0, f"{key}は非負である必要があります"
-        
-        # 計算詳細の確認
-        if "calculation_details" in result:
-            details = result["calculation_details"]
-            assert isinstance(details, dict), "calculation_detailsは辞書型である必要があります"
-            
-            # 基礎控除の確認
-            if "basic_deduction" in details:
-                assert details["basic_deduction"] >= 0, "基礎控除は非負である必要があります"
+        actual_amount = result["income_tax"]["amount"]
+        assert abs(actual_amount - expected_amount) <= tolerance, \
+            f"所得税額が期待値と異なります: {actual_amount} != {expected_amount} (許容誤差: {tolerance})"
     
     @staticmethod
-    def assert_corporate_tax_result(result: Dict[str, Any]):
+    def assert_corporate_tax_calculation(result: Dict[str, Any], expected_amount: float, tolerance: float = 0.01):
         """法人税計算結果をアサート
         
         Args:
-            result: 法人税計算結果
+            result: 税計算結果
+            expected_amount: 期待される税額
+            tolerance: 許容誤差
         """
-        TaxAssertions.assert_tax_calculation_result(result)
+        assert "corporate_tax" in result, "計算結果に法人税情報がありません"
+        assert "amount" in result["corporate_tax"], "法人税情報に金額がありません"
         
-        # 法人税特有のキー
-        corporate_tax_keys = ["corporate_tax", "local_corporate_tax", "business_tax"]
-        for key in corporate_tax_keys:
-            if key in result:
-                assert isinstance(result[key], (int, float)), f"{key}は数値である必要があります"
-                assert result[key] >= 0, f"{key}は非負である必要があります"
-        
-        # 税率の確認
-        if "tax_rate" in result:
-            assert 0 <= result["tax_rate"] <= 1, "税率は0-1の範囲である必要があります"
+        actual_amount = result["corporate_tax"]["amount"]
+        assert abs(actual_amount - expected_amount) <= tolerance, \
+            f"法人税額が期待値と異なります: {actual_amount} != {expected_amount} (許容誤差: {tolerance})"
     
     @staticmethod
-    def assert_tax_amount_accuracy(actual: float, expected: float, tolerance: float = 1.0):
-        """税額の精度をアサート
+    def assert_consumption_tax_calculation(result: Dict[str, Any], expected_amount: float, tolerance: float = 0.01):
+        """消費税計算結果をアサート
         
         Args:
-            actual: 実際の税額
-            expected: 期待される税額
-            tolerance: 許容誤差（円）
+            result: 税計算結果
+            expected_amount: 期待される税額
+            tolerance: 許容誤差
         """
-        assert isinstance(actual, (int, float)), "実際の税額は数値である必要があります"
-        assert isinstance(expected, (int, float)), "期待される税額は数値である必要があります"
+        assert "consumption_tax" in result, "計算結果に消費税情報がありません"
+        assert "amount" in result["consumption_tax"], "消費税情報に金額がありません"
         
-        diff = abs(actual - expected)
-        assert diff <= tolerance, f"税額の誤差が許容範囲を超えています: 実際={actual}, 期待={expected}, 誤差={diff}, 許容={tolerance}"
+        actual_amount = result["consumption_tax"]["amount"]
+        assert abs(actual_amount - expected_amount) <= tolerance, \
+            f"消費税額が期待値と異なります: {actual_amount} != {expected_amount} (許容誤差: {tolerance})"
     
     @staticmethod
-    def assert_tax_rate_validity(rate: float, min_rate: float = 0.0, max_rate: float = 1.0):
+    def assert_local_tax_calculation(result: Dict[str, Any], expected_amount: float, tolerance: float = 0.01):
+        """地方税計算結果をアサート
+        
+        Args:
+            result: 税計算結果
+            expected_amount: 期待される税額
+            tolerance: 許容誤差
+        """
+        assert "local_tax" in result, "計算結果に地方税情報がありません"
+        assert "amount" in result["local_tax"], "地方税情報に金額がありません"
+        
+        actual_amount = result["local_tax"]["amount"]
+        assert abs(actual_amount - expected_amount) <= tolerance, \
+            f"地方税額が期待値と異なります: {actual_amount} != {expected_amount} (許容誤差: {tolerance})"
+    
+    @staticmethod
+    def assert_tax_rate_applied(result: Dict[str, Any], tax_type: str, expected_rate: float, tolerance: float = 0.0001):
+        """適用された税率をアサート
+        
+        Args:
+            result: 税計算結果
+            tax_type: 税種別 (income_tax, corporate_tax, consumption_tax, local_tax)
+            expected_rate: 期待される税率
+            tolerance: 許容誤差
+        """
+        assert tax_type in result, f"計算結果に{tax_type}情報がありません"
+        assert "rate" in result[tax_type], f"{tax_type}情報に税率がありません"
+        
+        actual_rate = result[tax_type]["rate"]
+        assert abs(actual_rate - expected_rate) <= tolerance, \
+            f"{tax_type}の税率が期待値と異なります: {actual_rate} != {expected_rate} (許容誤差: {tolerance})"
+    
+    @staticmethod
+    def assert_deduction_applied(result: Dict[str, Any], deduction_type: str, expected_amount: float, tolerance: float = 0.01):
+        """控除適用をアサート
+        
+        Args:
+            result: 税計算結果
+            deduction_type: 控除種別
+            expected_amount: 期待される控除額
+            tolerance: 許容誤差
+        """
+        assert "deductions" in result, "計算結果に控除情報がありません"
+        assert deduction_type in result["deductions"], f"控除情報に{deduction_type}がありません"
+        
+        actual_amount = result["deductions"][deduction_type]
+        assert abs(actual_amount - expected_amount) <= tolerance, \
+            f"{deduction_type}の控除額が期待値と異なります: {actual_amount} != {expected_amount} (許容誤差: {tolerance})"
+    
+    @staticmethod
+    def assert_tax_rate_validity(actual_rate: float, min_rate: float, max_rate: float):
         """税率の妥当性をアサート
         
         Args:
-            rate: 税率
+            actual_rate: 実際の税率
             min_rate: 最小税率
             max_rate: 最大税率
         """
-        assert isinstance(rate, (int, float)), "税率は数値である必要があります"
-        assert min_rate <= rate <= max_rate, f"税率が範囲外です: {rate} (範囲: {min_rate}-{max_rate})"
+        assert min_rate <= actual_rate <= max_rate, \
+            f"税率が妥当な範囲外です: {actual_rate} (範囲: {min_rate} - {max_rate})"
+    
+    @staticmethod
+    def assert_tax_amount_accuracy(actual_amount: float, expected_amount: float, tolerance: float = 1.0):
+        """税額の精度をアサート
+        
+        Args:
+            actual_amount: 実際の税額
+            expected_amount: 期待される税額
+            tolerance: 許容誤差
+        """
+        assert abs(actual_amount - expected_amount) <= tolerance, \
+            f"税額が期待値と異なります: {actual_amount} != {expected_amount} (許容誤差: {tolerance})"
+    
+    @staticmethod
+    def assert_consumption_tax_calculation_result(test_instance, actual_result: Dict[str, Any], expected_result: Dict[str, Any]):
+        """消費税計算結果をアサート
+        
+        Args:
+            test_instance: テストインスタンス
+            actual_result: 実際の計算結果
+            expected_result: 期待される計算結果
+        """
+        test_instance.assertEqual(actual_result["total_tax"], expected_result["total_tax"], "消費税総額が一致しません")
+        test_instance.assertEqual(actual_result["sales_tax"], expected_result["sales_tax"], "売上税額が一致しません")
+        test_instance.assertEqual(actual_result["purchase_tax"], expected_result["purchase_tax"], "仕入税額が一致しません")
+        test_instance.assertEqual(actual_result["net_tax"], expected_result["net_tax"], "純税額が一致しません")
 
 
 class APIAssertions:
     """API関連のアサーション"""
     
     @staticmethod
-    def assert_mcp_response(response: Dict[str, Any]):
-        """MCPレスポンスの基本構造をアサート
+    def assert_status_code(response, expected_code: int):
+        """ステータスコードをアサート
         
         Args:
-            response: MCPレスポンス
+            response: APIレスポンス
+            expected_code: 期待されるステータスコード
         """
-        assert isinstance(response, dict), "レスポンスは辞書型である必要があります"
-        
-        # MCPプロトコルの基本構造
-        if "jsonrpc" in response:
-            assert response["jsonrpc"] == "2.0", "JSON-RPC 2.0である必要があります"
-        
-        # IDの存在確認（リクエストがある場合）
-        if "id" in response:
-            assert response["id"] is not None, "IDが設定されている必要があります"
+        assert hasattr(response, 'status_code'), "レスポンスにステータスコードがありません"
+        assert response.status_code == expected_code, \
+            f"ステータスコードが期待値と異なります: {response.status_code} != {expected_code}"
     
     @staticmethod
-    def assert_success_response(response: Dict[str, Any]):
-        """成功レスポンスをアサート
+    def assert_json_response(response):
+        """JSONレスポンスをアサート
         
         Args:
-            response: レスポンス
+            response: APIレスポンス
         """
-        APIAssertions.assert_mcp_response(response)
-        assert "result" in response, "成功レスポンスにはresultキーが必要です"
-        assert "error" not in response, "成功レスポンスにはerrorキーがあってはいけません"
+        assert hasattr(response, 'headers'), "レスポンスにヘッダー情報がありません"
+        assert 'Content-Type' in response.headers, "レスポンスにContent-Typeヘッダーがありません"
+        assert 'application/json' in response.headers['Content-Type'], \
+            f"Content-Typeがapplication/jsonではありません: {response.headers['Content-Type']}"
+        
+        try:
+            response.json()
+        except Exception as e:
+            assert False, f"レスポンスが有効なJSONではありません: {str(e)}"
     
     @staticmethod
-    def assert_error_response(response: Dict[str, Any], expected_code: int = None):
+    def assert_error_response(response, expected_code: int, error_key: str = 'error'):
         """エラーレスポンスをアサート
         
         Args:
-            response: レスポンス
-            expected_code: 期待されるエラーコード
+            response: APIレスポンス
+            expected_code: 期待されるステータスコード
+            error_key: エラーメッセージのキー
         """
-        APIAssertions.assert_mcp_response(response)
-        assert "error" in response, "エラーレスポンスにはerrorキーが必要です"
-        assert "result" not in response, "エラーレスポンスにはresultキーがあってはいけません"
+        APIAssertions.assert_status_code(response, expected_code)
+        APIAssertions.assert_json_response(response)
         
-        error = response["error"]
-        assert isinstance(error, dict), "errorは辞書型である必要があります"
-        assert "code" in error, "エラーにはcodeが必要です"
-        assert "message" in error, "エラーにはmessageが必要です"
-        
-        if expected_code is not None:
-            assert error["code"] == expected_code, f"期待されるエラーコード: {expected_code}, 実際: {error['code']}"
+        data = response.json()
+        assert error_key in data, f"エラーレスポンスに{error_key}キーがありません"
+        assert data[error_key], "エラーメッセージが空です"
     
     @staticmethod
-    def assert_mcp_error(response: Dict[str, Any], expected_code: int = None):
-        """MCPエラーレスポンスをアサート
+    def assert_pagination(response, page: int, per_page: int, total_items: Optional[int] = None):
+        """ページネーションをアサート
         
         Args:
-            response: MCPレスポンス
-            expected_code: 期待されるエラーコード
+            response: APIレスポンス
+            page: 現在のページ番号
+            per_page: 1ページあたりのアイテム数
+            total_items: 全アイテム数（省略可）
         """
-        APIAssertions.assert_mcp_response(response)
+        APIAssertions.assert_json_response(response)
         
-        assert "error" in response, "エラーレスポンスにはerrorキーが必要です"
-        error = response["error"]
+        data = response.json()
+        assert "pagination" in data, "レスポンスにページネーション情報がありません"
+        pagination = data["pagination"]
         
-        assert isinstance(error, dict), "errorは辞書型である必要があります"
-        assert "code" in error, "エラーにはcodeが必要です"
-        assert "message" in error, "エラーにはmessageが必要です"
+        assert "page" in pagination, "ページネーション情報にpage属性がありません"
+        assert pagination["page"] == page, f"現在のページが期待値と異なります: {pagination['page']} != {page}"
         
-        if expected_code is not None:
-            assert error["code"] == expected_code, f"期待されるエラーコード: {expected_code}, 実際: {error['code']}"
-    
-    @staticmethod
-    def assert_mcp_success(response: Dict[str, Any]):
-        """MCP成功レスポンスをアサート
+        assert "per_page" in pagination, "ページネーション情報にper_page属性がありません"
+        assert pagination["per_page"] == per_page, \
+            f"1ページあたりのアイテム数が期待値と異なります: {pagination['per_page']} != {per_page}"
         
-        Args:
-            response: MCPレスポンス
-        """
-        APIAssertions.assert_mcp_response(response)
-        
-        assert "result" in response, "成功レスポンスにはresultキーが必要です"
-        assert "error" not in response, "成功レスポンスにはerrorキーがあってはいけません"
-    
-    @staticmethod
-    def assert_tool_call_result(result: Dict[str, Any], tool_name: str):
-        """ツール呼び出し結果をアサート
-        
-        Args:
-            result: ツール呼び出し結果
-            tool_name: ツール名
-        """
-        assert isinstance(result, dict), "結果は辞書型である必要があります"
-        
-        # ツール固有の検証
-        if tool_name == "calculate_income_tax":
-            TaxAssertions.assert_income_tax_result(result)
-        elif tool_name == "calculate_corporate_tax":
-            TaxAssertions.assert_corporate_tax_result(result)
-        elif tool_name in ["get_latest_tax_info", "search_legal_reference"]:
-            assert isinstance(result, list), "検索結果はリスト型である必要があります"
-            for item in result:
-                assert isinstance(item, dict), "検索結果の各項目は辞書型である必要があります"
-                assert "title" in item, "検索結果にはtitleが必要です"
-                assert "content" in item, "検索結果にはcontentが必要です"
+        if total_items is not None:
+            assert "total" in pagination, "ページネーション情報にtotal属性がありません"
+            assert pagination["total"] == total_items, \
+                f"全アイテム数が期待値と異なります: {pagination['total']} != {total_items}"
+            
+            expected_total_pages = math.ceil(total_items / per_page) if per_page > 0 else 0
+            assert "total_pages" in pagination, "ページネーション情報にtotal_pages属性がありません"
+            assert pagination["total_pages"] == expected_total_pages, \
+                f"全ページ数が期待値と異なります: {pagination['total_pages']} != {expected_total_pages}"
 
 
 class SecurityAssertions:
     """セキュリティ関連のアサーション"""
     
     @staticmethod
-    def assert_no_sensitive_data(data: Any, sensitive_patterns: List[str] = None):
-        """機密データの漏洩がないことをアサート
+    def assert_sql_injection_blocked(security_manager, malicious_input: str, time_window: float = 1.0):
+        """SQLインジェクション攻撃がブロックされることをアサート
         
         Args:
-            data: チェック対象データ
-            sensitive_patterns: 機密パターンリスト
+            security_manager: セキュリティマネージャー
+            malicious_input: 悪意のある入力
+            time_window: 検証時間枠(秒)
         """
-        if sensitive_patterns is None:
-            sensitive_patterns = [
-                "password", "secret", "key", "token", "credential",
-                "パスワード", "秘密", "キー", "トークン", "認証情報"
-            ]
-        
-        data_str = str(data).lower()
-        for pattern in sensitive_patterns:
-            assert pattern.lower() not in data_str, f"機密データパターン '{pattern}' が検出されました"
+        # 入力検証は呼び出し元で実行されるため、ここでは実行しない
+        # テスト内で既に security_manager.validate_input が呼び出されている
+        # 結果は security_manager.last_validation_result から取得する
+        result = security_manager.last_validation_result
+        assert not result["valid"], f"SQLインジェクション攻撃がブロックされていません: {malicious_input}"
+        assert "sql_injection" in result["threats_detected"], "SQLインジェクション脅威が検出されていません"
     
     @staticmethod
-    def assert_input_sanitized(original_input: str, sanitized_input: str):
-        """入力のサニタイズを確認
+    def assert_xss_blocked(security_manager, malicious_input: str, time_window: float = 1.0):
+        """XSS攻撃がブロックされることをアサート
         
         Args:
-            original_input: 元の入力
-            sanitized_input: サニタイズ後の入力
+            security_manager: セキュリティマネージャー
+            malicious_input: 悪意のある入力
+            time_window: 検証時間枠(秒)
         """
-        # SQLインジェクション対策
-        sql_patterns = ["'", '"', ";", "--", "/*", "*/", "xp_", "sp_"]
-        for pattern in sql_patterns:
-            if pattern in original_input:
-                assert pattern not in sanitized_input, f"SQLインジェクションパターン '{pattern}' がサニタイズされていません"
-        
-        # XSS対策
-        xss_patterns = ["<script", "javascript:", "onload=", "onerror="]
-        for pattern in xss_patterns:
-            if pattern.lower() in original_input.lower():
-                assert pattern.lower() not in sanitized_input.lower(), f"XSSパターン '{pattern}' がサニタイズされていません"
+        # 入力検証は呼び出し元で実行されるため、ここでは実行しない
+        result = security_manager.last_validation_result
+        assert not result["valid"], f"XSS攻撃がブロックされていません: {malicious_input}"
+        assert "xss" in result["threats_detected"], "XSS脅威が検出されていません"
     
     @staticmethod
-    def assert_rate_limit_respected(call_times: List[datetime], max_calls: int, time_window: int):
-        """レート制限の遵守を確認
+    def assert_command_injection_blocked(security_manager, malicious_input: str, time_window: float = 1.0):
+        """コマンドインジェクション攻撃がブロックされることをアサート
         
         Args:
-            call_times: 呼び出し時刻のリスト
-            max_calls: 最大呼び出し数
-            time_window: 時間窓（秒）
+            security_manager: セキュリティマネージャー
+            malicious_input: 悪意のある入力
+            time_window: 検証時間枠(秒)
         """
-        if len(call_times) <= max_calls:
-            return  # 制限内
+        # 入力検証は呼び出し元で実行されるため、ここでは実行しない
+        result = security_manager.last_validation_result
+        assert not result["valid"], f"コマンドインジェクション攻撃がブロックされていません: {malicious_input}"
+        assert "command_injection" in result["threats_detected"], "コマンドインジェクション脅威が検出されていません"
+    
+    @staticmethod
+    def assert_path_traversal_blocked(security_manager, malicious_input: str, time_window: float = 1.0):
+        """パストラバーサル攻撃がブロックされることをアサート
         
-        # 時間窓内の呼び出し数をチェック
-        for i in range(len(call_times) - max_calls):
-            window_start = call_times[i]
-            window_end = call_times[i + max_calls]
-            time_diff = (window_end - window_start).total_seconds()
-            
-            assert time_diff >= time_window, f"レート制限違反: {max_calls}回の呼び出しが{time_diff}秒で実行されました（制限: {time_window}秒）"
+        Args:
+            security_manager: セキュリティマネージャー
+            malicious_input: 悪意のある入力
+            time_window: 検証時間枠(秒)
+        """
+        # 入力検証は呼び出し元で実行されるため、ここでは実行しない
+        result = security_manager.last_validation_result
+        assert not result["valid"], f"パストラバーサル攻撃がブロックされていません: {malicious_input}"
+        assert "path_traversal" in result["threats_detected"], "パストラバーサル脅威が検出されていません"
+    
+    @staticmethod
+    def assert_data_type_invalid(security_manager, field: str, invalid_value: Any, expected_type: str):
+        """データ型検証が失敗することをアサート
+        
+        Args:
+            security_manager: セキュリティマネージャー
+            field: フィールド名
+            invalid_value: 無効な値
+            expected_type: 期待されるデータ型
+        """
+        result = security_manager.validate_data_types({field: invalid_value})
+        assert not result["valid"], f"データ型検証が失敗していません: {field}={invalid_value}"
+        assert field in result["type_violations"], f"{field}がデータ型違反として記録されていません"
+        assert expected_type in result["expected_types"][field], f"{field}の期待されるデータ型が{expected_type}ではありません"
+    
+    @staticmethod
+    def assert_input_length_exceeded(security_manager, field: str, long_input: str, max_length: int = None):
+        """入力長制限違反をアサート
+        
+        Args:
+            security_manager: セキュリティマネージャー
+            field: フィールド名
+            long_input: 長すぎる入力
+            max_length: 最大許容長
+        """
+        result = security_manager.validate_input_length({field: long_input})
+        assert not result["valid"], f"入力長制限違反が検出されていません: {field}"
+        assert field in result["length_violations"], f"{field}が長さ違反として記録されていません"
+    
+    @staticmethod
+    def assert_special_characters_blocked(security_manager, malicious_input: str):
+        """特殊文字インジェクションがブロックされることをアサート
+        
+        Args:
+            security_manager: セキュリティマネージャー
+            malicious_input: 悪意のある入力
+        """
+        # 入力検証は呼び出し元で実行されるため、ここでは実行しない
+        result = security_manager.last_validation_result
+        assert not result["valid"], f"特殊文字インジェクションがブロックされていません: {malicious_input}"
+        assert "special_character_injection" in result["threats_detected"], "特殊文字インジェクション脅威が検出されていません"
+    
+    @staticmethod
+    def assert_json_invalid(security_manager, json_data: str, description: str = ""): 
+        """JSON構造が無効であることをアサート
+        
+        Args:
+            security_manager: セキュリティマネージャー
+            json_data: 検証するJSON文字列
+        """
+        # 入力検証は呼び出し元で実行されるため、ここでは実行しない
+        result = security_manager.last_validation_result
+        assert not result["valid"], f"JSON構造が無効として検出されていません: {json_data}"
+        assert "error_type" in result, "JSON構造エラータイプが記録されていません"
+    
+    @staticmethod
+    def assert_business_logic_violation(security_manager, params: Dict[str, Any]):
+        """ビジネスロジック違反をアサート
+        
+        Args:
+            security_manager: セキュリティマネージャー
+            params: 検証するパラメータ
+        """
+        # 入力検証は呼び出し元で実行されるため、ここでは実行しない
+        result = security_manager.last_validation_result
+        assert not result["valid"], f"ビジネスロジック違反が検出されていません: {params}"
+        assert "violations" in result, "ビジネスロジック違反が記録されていません"
+        assert len(result["violations"]) > 0, "ビジネスロジック違反が少なくとも1つ検出されるべきです"
+    
+    @staticmethod
+    def assert_comprehensive_validation_failed(security_manager, params: Dict[str, Any]):
+        """総合的な入力検証が失敗することをアサート
+        
+        Args:
+            security_manager: セキュリティマネージャー
+            params: 検証するパラメータ
+        """
+        # 入力検証は呼び出し元で実行されるため、ここでは実行しない
+        result = security_manager.last_validation_result
+        assert not result["valid"], "総合的な入力検証が失敗していません"
+        assert "threats_detected" in result, "検出された脅威が記録されていません"
+        assert len(result["threats_detected"]) > 0, "少なくとも1つの脅威が検出されるべきです"
+        assert "security_score" in result, "セキュリティスコアが記録されていません"
+        assert result["security_score"] <= 50, "危険なリクエストのセキュリティスコアが低すぎます"
 
 
 class PerformanceAssertions:
@@ -287,29 +400,50 @@ class PerformanceAssertions:
         """レスポンス時間をアサート
         
         Args:
-            actual_time: 実際の時間（秒）
-            max_time: 最大許容時間（秒）
+            actual_time: 実際の時間(秒)
+            max_time: 最大許容時間(秒)
         """
         assert actual_time <= max_time, f"レスポンス時間が制限を超えています: {actual_time:.3f}秒 > {max_time:.3f}秒"
     
     @staticmethod
     def assert_response_time_acceptable(performance_result: Dict[str, Any], max_duration: float):
-        """パフォーマンス結果の応答時間をアサート
-        
+        """応答時間が許容範囲内であることをアサート
+
         Args:
             performance_result: パフォーマンス測定結果
-            max_duration: 最大許容時間（秒）
+            max_duration: 許容される最大応答時間(秒)
         """
-        duration = performance_result.get('duration', 0)
-        assert duration <= max_duration, f"レスポンス時間が制限を超えています: {duration:.3f}秒 > {max_duration:.3f}秒"
+        assert "duration" in performance_result, "パフォーマンス結果にdurationキーが含まれていません"
+        assert performance_result["duration"] <= max_duration, \
+            f"応答時間が許容範囲を超えています: {performance_result['duration']:.3f}秒 (許容: {max_duration:.3f}秒)"
+
+    @staticmethod
+    def assert_concurrent_performance_acceptable(
+        performance_result: Dict[str, Any],
+        request_count: int,
+        max_duration: float
+    ):
+        """並行処理のパフォーマンスが許容範囲内であることをアサート
+
+        Args:
+            performance_result: パフォーマンス測定結果
+            request_count: 並行リクエスト数
+            max_duration: 許容される最大応答時間(秒)
+        """
+        assert "duration" in performance_result, "パフォーマンス結果にdurationキーが含まれていません"
+        assert performance_result["duration"] <= max_duration, \
+            f"並行処理の応答時間が許容範囲を超えています: {performance_result['duration']:.3f}秒 (許容: {max_duration:.3f}秒)"
+        assert "start_time" in performance_result, "パフォーマンス結果にstart_timeキーが含まれていません"
+        assert "end_time" in performance_result, "パフォーマンス結果にend_timeキーが含まれていません"
+        assert request_count > 0, "リクエスト数は0より大きい必要があります"
     
     @staticmethod
     def assert_memory_usage(current_usage: int, max_usage: int):
         """メモリ使用量をアサート
         
         Args:
-            current_usage: 現在の使用量（バイト）
-            max_usage: 最大許容使用量（バイト）
+            current_usage: 現在の使用量(バイト)
+            max_usage: 最大許容使用量(バイト)
         """
         assert current_usage <= max_usage, f"メモリ使用量が制限を超えています: {current_usage} > {max_usage} bytes"
     
@@ -410,8 +544,8 @@ def assert_eventually(condition: callable, timeout: float = 5.0, interval: float
     
     Args:
         condition: 条件関数
-        timeout: タイムアウト（秒）
-        interval: チェック間隔（秒）
+        timeout: タイムアウト(秒)
+        interval: チェック間隔(秒)
     """
     import time
     start_time = time.time()

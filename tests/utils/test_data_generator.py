@@ -13,11 +13,12 @@ class TestDataGenerator:
     """テストデータ生成クラス"""
     
     @staticmethod
-    def generate_income_tax_data(scenario: str = "normal") -> Dict[str, Any]:
+    def generate_income_tax_data(scenario: str = "normal", **kwargs) -> Dict[str, Any]:
         """所得税計算用テストデータ生成
         
         Args:
             scenario: テストシナリオ (normal, low_income, high_income, complex)
+            **kwargs: 追加パラメータ（annual_income, tax_year, prefecture, city等）
             
         Returns:
             所得税計算用のテストデータ
@@ -53,14 +54,17 @@ class TestDataGenerator:
                 "donation_deduction": random.randint(0, 200000)
             })
         
+        # kwargsで指定された値で上書き
+        base_data.update(kwargs)
         return base_data
     
     @staticmethod
-    def generate_corporate_tax_data(scenario: str = "normal") -> Dict[str, Any]:
+    def generate_corporate_tax_data(scenario: str = "normal", **kwargs) -> Dict[str, Any]:
         """法人税計算用テストデータ生成
         
         Args:
             scenario: テストシナリオ (normal, small_company, large_company)
+            **kwargs: 追加パラメータ（annual_income, revenue, expenses, company_type, tax_year等）
             
         Returns:
             法人税計算用のテストデータ
@@ -84,27 +88,39 @@ class TestDataGenerator:
                 "company_type": "large_company"
             })
         
+        # kwargsで指定された値で上書き
+        base_data.update(kwargs)
         return base_data
     
     @staticmethod
-    def generate_consumption_tax_data() -> Dict[str, Any]:
+    def generate_consumption_tax_data(**kwargs) -> Dict[str, Any]:
         """消費税計算用テストデータ生成
         
+        Args:
+            **kwargs: 追加パラメータ（sales_amount, purchase_amount, tax_year等）
+            
         Returns:
             消費税計算用のテストデータ
         """
         categories = ["food", "beverage", "general", "newspaper", "medicine"]
         
-        return {
+        base_data = {
             "date": date.today().isoformat(),
             "category": random.choice(categories),
             "amount": random.randint(100, 100000)
         }
+        
+        # kwargsで指定された値で上書き
+        base_data.update(kwargs)
+        return base_data
     
     @staticmethod
-    def generate_resident_tax_data() -> Dict[str, Any]:
+    def generate_resident_tax_data(**kwargs) -> Dict[str, Any]:
         """住民税計算用テストデータ生成
         
+        Args:
+            **kwargs: 追加パラメータ（income, annual_income, prefecture, municipality, city, tax_year等）
+            
         Returns:
             住民税計算用のテストデータ
         """
@@ -120,12 +136,25 @@ class TestDataGenerator:
         prefecture = random.choice(prefectures)
         city = random.choice(cities[prefecture])
         
-        return {
+        base_data = {
             "annual_income": random.randint(2000000, 10000000),
             "prefecture": prefecture,
             "city": city,
             "tax_year": 2025
         }
+        
+        # kwargsで指定された値で上書き
+        base_data.update(kwargs)
+        
+        # incomeパラメータがある場合はannual_incomeにマッピング
+        if "income" in kwargs:
+            base_data["annual_income"] = kwargs["income"]
+        
+        # municipalityパラメータがある場合はcityにマッピング
+        if "municipality" in kwargs:
+            base_data["city"] = kwargs["municipality"]
+            
+        return base_data
     
     @staticmethod
     def generate_multi_year_data(years: int = 5) -> List[Dict[str, Any]]:

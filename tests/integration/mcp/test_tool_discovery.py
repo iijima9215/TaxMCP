@@ -33,7 +33,7 @@ class TestToolDiscovery(TaxMCPTestCase, PerformanceTestMixin):
         self.expected_tools = {
             "calculate_income_tax": {
                 "name": "calculate_income_tax",
-                "description": "個人の所得税を計算する",
+                "description": "個人の年間所得に対する所得税額を計算し、各種控除を適用した詳細な税額を算出する",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -46,7 +46,7 @@ class TestToolDiscovery(TaxMCPTestCase, PerformanceTestMixin):
             },
             "calculate_corporate_tax": {
                 "name": "calculate_corporate_tax",
-                "description": "法人税を計算する",
+                "description": "法人の所得に対する法人税額を計算し、税務申告に必要な詳細情報を提供する",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -60,7 +60,7 @@ class TestToolDiscovery(TaxMCPTestCase, PerformanceTestMixin):
             },
             "calculate_consumption_tax": {
                 "name": "calculate_consumption_tax",
-                "description": "消費税を計算する",
+                "description": "商品やサービスの売上に対する消費税額を計算し、適用税率に基づいた正確な税額を算出する",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -73,7 +73,7 @@ class TestToolDiscovery(TaxMCPTestCase, PerformanceTestMixin):
             },
             "search_tax_law": {
                 "name": "search_tax_law",
-                "description": "税法を検索する",
+                "description": "税法条文や関連法令を検索し、指定されたキーワードに関連する法的根拠を提供する",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -86,7 +86,7 @@ class TestToolDiscovery(TaxMCPTestCase, PerformanceTestMixin):
             },
             "get_tax_forms": {
                 "name": "get_tax_forms",
-                "description": "税務申告書を取得する",
+                "description": "指定された税目と年度に対応する税務申告書フォームを取得し、必要な書類情報を提供する",
                 "inputSchema": {
                     "type": "object",
                     "properties": {

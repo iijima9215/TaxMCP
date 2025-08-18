@@ -6,6 +6,7 @@ from typing import Optional, Dict, Any
 from functools import wraps
 from config import settings
 import logging
+import jwt
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +108,71 @@ class SecurityManager:
                 sanitized[key] = value
         
         return sanitized
+
+    def validate_data_types(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """入力データのデータ型を検証"""
+        validation_result = {"valid": True, "type_violations": {}, "expected_types": {}}
+        
+        type_mappings = {
+            "income": float,
+            "tax_year": int,
+            "deductions": float,
+            "married": bool,
+            "birth_date": date  # datetime.date型を期待
+        }
+
+        for field, expected_type in type_mappings.items():
+            if field in data:
+                value = data[field]
+                is_valid = True
+                
+                if expected_type == float:
+                    try:
+                        float(value)
+                    except (ValueError, TypeError):
+                        is_valid = False
+                elif expected_type == int:
+                    try:
+                        int(value)
+                    except (ValueError, TypeError):
+                        is_valid = False
+                elif expected_type == bool:
+                    if not isinstance(value, bool):
+                        is_valid = False
+                elif expected_type == date:
+                    if not isinstance(value, str):
+                        is_valid = False
+                    else:
+                        try:
+                            datetime.strptime(value, "%Y-%m-%d").date()
+                        except ValueError:
+                            is_valid = False
+
+                if not is_valid:
+                    validation_result["valid"] = False
+                    validation_result["type_violations"][field] = f"Expected {expected_type.__name__}, got {type(value).__name__}"
+                    validation_result["expected_types"][field] = expected_type.__name__
+
+        return validation_result
+
+    def validate_input_length(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """入力データの長さを検証"""
+        validation_result = {"valid": True, "length_violations": {}}
+        
+        length_constraints = {
+            "user_name": 1000,
+            "description": 5000,
+            "api_key": 256,
+            "query": 2000
+        }
+
+        for field, max_length in length_constraints.items():
+            if field in data and isinstance(data[field], str):
+                if len(data[field]) > max_length:
+                    validation_result["valid"] = False
+                    validation_result["length_violations"][field] = f"Exceeded max length of {max_length}"
+
+        return validation_result
 
 class AuditLogger:
     """監査ログクラス"""
