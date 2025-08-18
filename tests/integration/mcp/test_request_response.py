@@ -99,7 +99,13 @@ class TestRequestResponse(TaxMCPTestCase, PerformanceTestMixin):
             print(f"レスポンス時間: {performance_result['duration']:.3f}秒")
             
             # レスポンス構造のアサーション
-            APIAssertions.assert_success_response(response)
+            # MCPレスポンスは通常JSONオブジェクトなのでHTTPステータスコードはない
+            if hasattr(response, 'status_code'):
+                APIAssertions.assert_success_response(response)
+            else:
+                # JSONRPCレスポンスの場合は直接検証
+                self.assertIn("result", response, "成功レスポンスにresultキーがありません")
+                self.assertEqual(response.get("jsonrpc"), "2.0", "JSONRPCバージョンが正しくありません")
             
             # リクエストIDの一致確認
             self.assertEqual(
@@ -224,7 +230,12 @@ class TestRequestResponse(TaxMCPTestCase, PerformanceTestMixin):
             print(f"エラーレスポンス: {error_response}")
             
             # エラーレスポンス構造のアサーション
-            APIAssertions.assert_error_response(error_response)
+            # MCPエラーレスポンスは通常200ステータスでJSONRPCエラーを返す
+            if hasattr(error_response, 'status_code'):
+                APIAssertions.assert_error_response(error_response, 200)
+            else:
+                # JSONRPCエラーレスポンスの場合は直接検証
+                self.assertIn("error", error_response, "エラーレスポンスにerrorキーがありません")
             
             # リクエストIDの確認（存在する場合）
             if "id" in test_case["request"]:
@@ -306,7 +317,13 @@ class TestRequestResponse(TaxMCPTestCase, PerformanceTestMixin):
         # 各レスポンスの確認
         for i, response in enumerate(responses):
             # レスポンス構造のアサーション
-            APIAssertions.assert_success_response(response)
+            # MCPレスポンスは通常JSONオブジェクトなのでHTTPステータスコードはない
+            if hasattr(response, 'status_code'):
+                APIAssertions.assert_success_response(response)
+            else:
+                # JSONRPCレスポンスの場合は直接検証
+                self.assertIn("result", response, "成功レスポンスにresultキーがありません")
+                self.assertEqual(response.get("jsonrpc"), "2.0", "JSONRPCバージョンが正しくありません")
             
             # リクエストIDの一致確認
             self.assertEqual(
@@ -380,7 +397,13 @@ class TestRequestResponse(TaxMCPTestCase, PerformanceTestMixin):
         print(f"レスポンスサイズ: {len(json.dumps(response))} bytes")
         
         # レスポンス構造のアサーション
-        APIAssertions.assert_success_response(response)
+        # MCPレスポンスは通常JSONオブジェクトなのでHTTPステータスコードはない
+        if hasattr(response, 'status_code'):
+            APIAssertions.assert_success_response(response)
+        else:
+            # JSONRPCレスポンスの場合は直接検証
+            self.assertIn("result", response, "成功レスポンスにresultキーがありません")
+            self.assertEqual(response.get("jsonrpc"), "2.0", "JSONRPCバージョンが正しくありません")
         
         # 結果の確認
         result = response["result"]
@@ -429,7 +452,12 @@ class TestRequestResponse(TaxMCPTestCase, PerformanceTestMixin):
         print(f"タイムアウトレスポンス: {timeout_response}")
         
         # タイムアウトエラーレスポンスの確認
-        APIAssertions.assert_error_response(timeout_response)
+        # MCPエラーレスポンスは通常200ステータスでJSONRPCエラーを返す
+        if hasattr(timeout_response, 'status_code'):
+            APIAssertions.assert_error_response(timeout_response, 200)
+        else:
+            # JSONRPCエラーレスポンスの場合は直接検証
+            self.assertIn("error", timeout_response, "エラーレスポンスにerrorキーがありません")
         
         # エラー情報の確認
         error = timeout_response["error"]
@@ -529,12 +557,22 @@ class TestRequestResponse(TaxMCPTestCase, PerformanceTestMixin):
             
             if case["should_pass"]:
                 # 成功すべきケース
-                APIAssertions.assert_success_response(validation_response)
-                self.assertIn("result", validation_response, "結果が含まれている")
+                # MCPレスポンスは通常JSONオブジェクトなのでHTTPステータスコードはない
+                if hasattr(validation_response, 'status_code'):
+                    APIAssertions.assert_success_response(validation_response)
+                else:
+                    # JSONRPCレスポンスの場合は直接検証
+                    self.assertIn("result", validation_response, "成功レスポンスにresultキーがありません")
+                    self.assertEqual(validation_response.get("jsonrpc"), "2.0", "JSONRPCバージョンが正しくありません")
                 print(f"✓ 検証成功: {case['name']}")
             else:
                 # 失敗すべきケース
-                APIAssertions.assert_error_response(validation_response)
+                # MCPエラーレスポンスは通常200ステータスでJSONRPCエラーを返す
+                if hasattr(validation_response, 'status_code'):
+                    APIAssertions.assert_error_response(validation_response, 200)
+                else:
+                    # JSONRPCエラーレスポンスの場合は直接検証
+                    self.assertIn("error", validation_response, "エラーレスポンスにerrorキーがありません")
                 
                 error = validation_response["error"]
                 self.assertIn(

@@ -7,7 +7,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 from unittest.mock import Mock, AsyncMock, patch
 from .mock_response import MockResponse
-from .mock_rag_integration import MockRAGIntegration
+from .mock_rag_simple import MockRAGIntegration
 from .mock_security_manager import MockSecurityManager
 from .mock_sqlite_indexer import MockSQLiteIndexer
 

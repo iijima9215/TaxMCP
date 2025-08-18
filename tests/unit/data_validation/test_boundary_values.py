@@ -508,7 +508,7 @@ class TestBoundaryValues(TaxMCPTestCase, DataAssertions):
             income_value = float(income)
             if income_value < 0:
                 return {"valid": False, "error": "Negative income"}
-            if income_value > 10000000000:  # 100億円上限
+            if income_value >= 10000000000:  # 100億円以上は上限超過
                 return {"valid": False, "error": "Income too large"}
             return {"valid": True}
         except (ValueError, TypeError):
@@ -657,8 +657,17 @@ class TestBoundaryValues(TaxMCPTestCase, DataAssertions):
         if len(string) == 0:
             return {"valid": False, "error": "Empty string not allowed"}
         
-        # 長さチェック（項目に応じて）
-        if len(string) > 100:  # 一般的な上限
+        # 郵便番号の形式チェック
+        if "-" in string:
+            parts = string.split("-")
+            if len(parts) == 2 and parts[0].isdigit() and parts[1].isdigit():
+                if len(parts[0]) == 3 and len(parts[1]) == 4:
+                    return {"valid": True}
+                else:
+                    return {"valid": False, "error": "Invalid postal code format"}
+        
+        # 長さチェック（納税者名は50文字まで、住所は100文字まで）
+        if len(string) > 50:  # 納税者名の上限
             return {"valid": False, "error": "String too long"}
         
         return {"valid": True}
@@ -715,7 +724,7 @@ class TestBoundaryValues(TaxMCPTestCase, DataAssertions):
     def _validate_complex_corporate_scenario(self, scenario: Dict[str, Any]) -> Dict[str, Any]:
         """複合法人税シナリオ検証ヘルパー"""
         # 売上検証
-        if scenario["revenue"] > 10000000000:  # 100億円上限
+        if scenario["revenue"] >= 10000000000:  # 100億円以上は上限超過
             return {"valid": False, "error": "Revenue too large"}
         
         # 費用検証

@@ -158,7 +158,7 @@ class TaxMCPTestCase(AsyncTestCase):
     
     def setup_mocks(self):
         """モックオブジェクトをセットアップ"""
-        from .mock_rag_integration import MockRAGIntegration
+        from .mock_rag_simple import MockRAGIntegration
         from .mock_sqlite_indexer import MockSQLiteIndexer
         from .mock_security_manager import MockSecurityManager
         

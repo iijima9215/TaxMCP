@@ -7,7 +7,7 @@ from .test_data_generator import TestDataGenerator
 from .performance_helpers import PerformanceTestMixin
 from .mock_external_apis import MockExternalAPIs, MockContextManager, create_mock_response, create_mock_http_client
 from .mock_response import MockResponse
-from .mock_rag_integration import MockRAGIntegration
+from .mock_rag_simple import MockRAGIntegration
 from .mock_security_manager import MockSecurityManager
 from .mock_sqlite_indexer import MockSQLiteIndexer
 

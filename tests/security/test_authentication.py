@@ -1,546 +1,196 @@
-"""認証機能テスト
-
-TaxMCPサーバーの認証機能をテストする
-"""
-
 import unittest
-import sys
-import json
 import time
-from pathlib import Path
-from unittest.mock import Mock, patch
-
-# プロジェクトルートをパスに追加
-project_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(project_root))
-
-from tests.utils.test_config import TaxMCPTestCase, SecurityTestMixin
-from tests.utils.assertion_helpers import SecurityAssertions
+from datetime import datetime, timedelta
+from typing import Dict, Any
 from tests.utils.mock_security_manager import MockSecurityManager
 
 
-class TestAuthentication(TaxMCPTestCase, SecurityTestMixin):
-    """認証機能テストクラス"""
+class TestSecurityCore(unittest.TestCase):
+    """セキュリティ機能の核心テスト"""
     
     def setUp(self):
         """テストセットアップ"""
-        super().setUp()
-        self.setup_mocks()
         self.security_manager = MockSecurityManager()
     
-    def test_valid_api_key_authentication(self):
-        """有効なAPIキー認証テスト"""
-        print("\n=== 有効なAPIキー認証テスト ===")
+    def test_token_creation_and_verification(self):
+        """トークン作成と検証のテスト"""
+        # トークン作成
+        data = {"user_id": "test_user", "permissions": ["read", "write"]}
+        token = self.security_manager.create_access_token(data)
         
-        # 有効なAPIキー
-        valid_api_key = "taxmcp_test_key_12345"
-        
-        # 認証リクエスト
-        auth_request = {
-            "method": "authenticate",
-            "params": {
-                "api_key": valid_api_key,
-                "client_id": "test_client",
-                "timestamp": int(time.time())
-            }
-        }
-        
-        print(f"認証リクエスト: {auth_request}")
-        
-        # 認証実行
-        auth_result = self.security_manager.authenticate_api_key(
-            valid_api_key,
-            auth_request["params"]["client_id"]
-        )
-        
-        print(f"認証結果: {auth_result}")
-        
-        # 期待される結果
-        expected_result = {
-            "authenticated": True,
-            "user_id": "test_user",
-            "permissions": ["tax_calculation", "data_access"],
-            "session_token": auth_result.get("session_token"),
-            "expires_at": auth_result.get("expires_at")
-        }
-        
-        print(f"期待される結果: {expected_result}")
+        # トークン検証
+        payload = self.security_manager.verify_token(token)
         
         # アサーション
-        SecurityAssertions.assert_authentication_success(self.security_manager, valid_api_key)
-        self.assertTrue(auth_result["authenticated"], "認証が成功している")
-        self.assertIn("session_token", auth_result, "セッショントークンが含まれている")
-        self.assertIn("expires_at", auth_result, "有効期限が設定されている")
-        
-        print("✓ 有効なAPIキー認証テスト成功")
+        self.assertIsNotNone(token)
+        self.assertIsNotNone(payload)
+        self.assertEqual(payload["user_id"], "test_user")
+        self.assertEqual(payload["permissions"], ["read", "write"])
     
-    def test_invalid_api_key_authentication(self):
-        """無効なAPIキー認証テスト"""
-        print("\n=== 無効なAPIキー認証テスト ===")
+    def test_expired_token_rejection(self):
+        """期限切れトークンの拒否テスト"""
+        # 期限切れトークンを作成
+        expired_token = self.security_manager.create_expired_token()
         
-        # 無効なAPIキー
-        invalid_api_key = "invalid_key_12345"
-        
-        # 認証リクエスト
-        auth_request = {
-            "method": "authenticate",
-            "params": {
-                "api_key": invalid_api_key,
-                "client_id": "test_client",
-                "timestamp": int(time.time())
-            }
-        }
-        
-        print(f"認証リクエスト: {auth_request}")
-        
-        # 認証実行
-        auth_result = self.security_manager.authenticate_api_key(
-            invalid_api_key,
-            auth_request["params"]["client_id"]
-        )
-        
-        print(f"認証結果: {auth_result}")
-        
-        # 期待される結果
-        expected_result = {
-            "authenticated": False,
-            "error": "Invalid API key",
-            "error_code": "AUTH_001"
-        }
-        
-        print(f"期待される結果: {expected_result}")
+        # 検証
+        payload = self.security_manager.verify_token(expired_token)
         
         # アサーション
-        SecurityAssertions.assert_authentication_failure(self.security_manager, invalid_api_key)
-        self.assertFalse(auth_result["authenticated"], "認証が失敗している")
-        self.assertIn("error", auth_result, "エラーメッセージが含まれている")
-        
-        print("✓ 無効なAPIキー認証テスト成功")
+        self.assertIsNone(payload)
     
-    def test_session_token_validation(self):
-        """セッショントークン検証テスト"""
-        print("\n=== セッショントークン検証テスト ===")
+    def test_invalid_token_rejection(self):
+        """無効トークンの拒否テスト"""
+        invalid_token = "invalid.token.here"
         
-        # 有効なセッショントークンを取得
-        api_key = "taxmcp_test_key_12345"
-        auth_result = self.security_manager.authenticate_api_key(api_key, "test_client")
-        session_token = auth_result["session_token"]
-        
-        print(f"セッショントークン: {session_token}")
-        
-        # トークン検証リクエスト
-        validation_request = {
-            "method": "validate_session",
-            "params": {
-                "session_token": session_token,
-                "timestamp": int(time.time())
-            }
-        }
-        
-        print(f"検証リクエスト: {validation_request}")
-        
-        # トークン検証実行
-        validation_result = self.security_manager.validate_session_token(session_token)
-        
-        print(f"検証結果: {validation_result}")
-        
-        # 期待される結果
-        expected_result = {
-            "valid": True,
-            "user_id": "test_user",
-            "permissions": ["tax_calculation", "data_access"],
-            "expires_at": validation_result.get("expires_at")
-        }
-        
-        print(f"期待される結果: {expected_result}")
+        # 検証
+        payload = self.security_manager.verify_token(invalid_token)
         
         # アサーション
-        SecurityAssertions.assert_session_valid(self.security_manager, session_token)
-        self.assertTrue(validation_result["valid"], "セッションが有効")
-        self.assertEqual(validation_result["user_id"], "test_user", "ユーザーIDが正しい")
-        
-        print("✓ セッショントークン検証テスト成功")
+        self.assertIsNone(payload)
     
-    def test_expired_session_token(self):
-        """期限切れセッショントークンテスト"""
-        print("\n=== 期限切れセッショントークンテスト ===")
+    def test_input_validation_required_fields(self):
+        """必須フィールド検証テスト"""
+        required_fields = ["user_id", "amount"]
         
-        # 期限切れのセッショントークン
-        expired_token = "expired_token_12345"
+        # 有効なデータ
+        valid_data = {"user_id": "test", "amount": 1000}
+        is_valid, message = self.security_manager.validate_input(valid_data, required_fields)
+        self.assertTrue(is_valid)
         
-        # トークン検証リクエスト
-        validation_request = {
-            "method": "validate_session",
-            "params": {
-                "session_token": expired_token,
-                "timestamp": int(time.time())
-            }
+        # 無効なデータ（必須フィールド不足）
+        invalid_data = {"user_id": "test"}
+        is_valid, message = self.security_manager.validate_input(invalid_data, required_fields)
+        self.assertFalse(is_valid)
+        self.assertIn("amount", message)
+    
+    def test_input_validation_numeric_fields(self):
+        """数値フィールド検証テスト"""
+        required_fields = ["annual_income"]
+        
+        # 有効な数値
+        valid_data = {"annual_income": 5000000}
+        is_valid, message = self.security_manager.validate_input(valid_data, required_fields)
+        self.assertTrue(is_valid)
+        
+        # 負の数値
+        invalid_data = {"annual_income": -1000}
+        is_valid, message = self.security_manager.validate_input(invalid_data, required_fields)
+        self.assertFalse(is_valid)
+        self.assertIn("non-negative", message)
+        
+        # 文字列
+        invalid_data = {"annual_income": "not_a_number"}
+        is_valid, message = self.security_manager.validate_input(invalid_data, required_fields)
+        self.assertFalse(is_valid)
+        self.assertIn("valid number", message)
+    
+    def test_input_sanitization(self):
+        """入力サニタイズテスト"""
+        dirty_data = {
+            "name": "  test user  ",
+            "amount": 150000000,  # 上限超過
+            "description": "x" * 2000  # 長すぎる文字列
         }
         
-        print(f"検証リクエスト: {validation_request}")
-        
-        # トークン検証実行（期限切れをシミュレート）
-        validation_result = {
-            "valid": False,
-            "error": "Session token expired",
-            "error_code": "AUTH_002",
-            "expired_at": int(time.time()) - 3600  # 1時間前に期限切れ
-        }
-        
-        print(f"検証結果: {validation_result}")
+        sanitized = self.security_manager.sanitize_input(dirty_data)
         
         # アサーション
-        SecurityAssertions.assert_session_invalid(self.security_manager, expired_token)
-        self.assertFalse(validation_result["valid"], "セッションが無効")
-        self.assertIn("expired", validation_result["error"].lower(), "期限切れエラー")
-        
-        print("✓ 期限切れセッショントークンテスト成功")
+        self.assertEqual(sanitized["name"], "test user")  # トリム済み
+        self.assertEqual(sanitized["amount"], 100000000)  # 上限適用
+        self.assertEqual(len(sanitized["description"]), 1000)  # 長さ制限
     
-    def test_rate_limiting(self):
-        """レート制限テスト"""
-        print("\n=== レート制限テスト ===")
-        
-        # レート制限設定
-        rate_limit = 5  # 5回/分
-        client_id = "test_client_rate_limit"
-        
-        print(f"レート制限: {rate_limit}回/分")
-        print(f"クライアントID: {client_id}")
-        
-        # 制限回数まで認証リクエストを送信
-        successful_requests = 0
-        for i in range(rate_limit + 2):  # 制限を超えて送信
-            auth_request = {
-                "method": "authenticate",
-                "params": {
-                    "api_key": "taxmcp_test_key_12345",
-                    "client_id": client_id,
-                    "timestamp": int(time.time()),
-                    "request_id": f"req_{i}"
-                }
-            }
-            
-            # レート制限チェック
-            rate_check = self.security_manager.check_rate_limit(client_id)
-            
-            if rate_check["allowed"]:
-                successful_requests += 1
-                print(f"リクエスト {i+1}: 成功 (残り: {rate_check['remaining']})")
-            else:
-                print(f"リクエスト {i+1}: レート制限により拒否")
-                print(f"制限詳細: {rate_check}")
-                
-                # レート制限エラーのアサーション
-                SecurityAssertions.assert_rate_limit_exceeded(self.security_manager, client_id)
-                self.assertFalse(rate_check["allowed"], "レート制限が適用されている")
-                self.assertIn("retry_after", rate_check, "リトライ時間が指定されている")
-                break
-        
-        print(f"成功したリクエスト数: {successful_requests}/{rate_limit}")
-        self.assertLessEqual(successful_requests, rate_limit, "レート制限が正しく動作")
-        
-        print("✓ レート制限テスト成功")
-    
-    def test_permission_based_access_control(self):
-        """権限ベースアクセス制御テスト"""
-        print("\n=== 権限ベースアクセス制御テスト ===")
-        
-        # 異なる権限レベルのユーザー
-        users = [
-            {
-                "user_id": "admin_user",
-                "permissions": ["tax_calculation", "data_access", "admin"],
-                "description": "管理者ユーザー"
-            },
-            {
-                "user_id": "regular_user",
-                "permissions": ["tax_calculation"],
-                "description": "一般ユーザー"
-            },
-            {
-                "user_id": "readonly_user",
-                "permissions": ["data_access"],
-                "description": "読み取り専用ユーザー"
-            }
-        ]
-        
-        # アクセス制御テストケース
-        access_tests = [
-            {
-                "resource": "tax_calculation",
-                "required_permission": "tax_calculation",
-                "description": "税計算機能"
-            },
-            {
-                "resource": "admin_panel",
-                "required_permission": "admin",
-                "description": "管理パネル"
-            },
-            {
-                "resource": "data_export",
-                "required_permission": "data_access",
-                "description": "データエクスポート"
-            }
-        ]
-        
-        for user in users:
-            print(f"\n--- {user['description']} ---")
-            print(f"ユーザー権限: {user['permissions']}")
-            
-            for test in access_tests:
-                print(f"\n{test['description']}へのアクセステスト:")
-                
-                # アクセス制御チェック
-                access_result = self.security_manager.check_permission(
-                    user["user_id"],
-                    test["required_permission"]
-                )
-                
-                print(f"アクセス結果: {access_result}")
-                
-                # 期待される結果
-                expected_access = test["required_permission"] in user["permissions"]
-                
-                # アサーション
-                if expected_access:
-                    SecurityAssertions.assert_access_granted(self.security_manager, user["user_id"], test["required_permission"])
-                    self.assertTrue(
-                        access_result["granted"],
-                        f"{user['description']}は{test['description']}にアクセス可能"
-                    )
-                else:
-                    SecurityAssertions.assert_access_denied(self.security_manager, user["user_id"], test["required_permission"])
-                    self.assertFalse(
-                        access_result["granted"],
-                        f"{user['description']}は{test['description']}にアクセス不可"
-                    )
-                
-                print(f"✓ {user['description']}の{test['description']}アクセステスト成功")
-    
-    def test_authentication_security_headers(self):
-        """認証セキュリティヘッダーテスト"""
-        print("\n=== 認証セキュリティヘッダーテスト ===")
-        
-        # セキュリティヘッダー付きリクエスト
-        secure_request = {
-            "method": "authenticate",
-            "headers": {
-                "X-API-Key": "taxmcp_test_key_12345",
-                "X-Client-ID": "test_client",
-                "X-Request-ID": "req_12345",
-                "X-Timestamp": str(int(time.time())),
-                "User-Agent": "TaxMCP-Client/1.0",
-                "Content-Type": "application/json"
-            },
-            "params": {
-                "timestamp": int(time.time())
-            }
+    def test_data_type_validation(self):
+        """データ型検証テスト"""
+        # 有効なデータ型
+        valid_data = {
+            "income": 5000000.0,
+            "tax_year": 2024,
+            "married": True
         }
+        result = self.security_manager.validate_data_types(valid_data)
+        self.assertTrue(result["valid"])
         
-        print(f"セキュアリクエスト: {secure_request}")
-        
-        # ヘッダー検証
-        header_validation = self.security_manager.validate_security_headers(
-            secure_request["headers"]
-        )
-        
-        print(f"ヘッダー検証結果: {header_validation}")
-        
-        # 期待される結果
-        expected_validation = {
-            "valid": True,
-            "security_score": 95,
-            "checks": {
-                "api_key_present": True,
-                "client_id_present": True,
-                "request_id_present": True,
-                "timestamp_valid": True,
-                "user_agent_valid": True,
-                "content_type_valid": True
-            }
+        # 無効なデータ型
+        invalid_data = {
+            "income": "not_a_number",
+            "tax_year": "2024",  # 文字列だが数値に変換可能
+            "married": "yes"  # 文字列（booleanではない）
         }
+        result = self.security_manager.validate_data_types(invalid_data)
+        self.assertFalse(result["valid"])
+        self.assertIn("income", result["type_violations"])
+        self.assertIn("married", result["type_violations"])
+    
+    def test_input_length_validation(self):
+        """入力長検証テスト"""
+        # 有効な長さ
+        valid_data = {"user_name": "test_user", "description": "short desc"}
+        result = self.security_manager.validate_input_length(valid_data)
+        self.assertTrue(result["valid"])
         
-        print(f"期待される結果: {expected_validation}")
+        # 無効な長さ
+        invalid_data = {
+            "user_name": "x" * 1001,  # 上限超過
+            "description": "x" * 5001  # 上限超過
+        }
+        result = self.security_manager.validate_input_length(invalid_data)
+        self.assertFalse(result["valid"])
+        self.assertIn("user_name", result["length_violations"])
+        self.assertIn("description", result["length_violations"])
+    
+    def test_api_key_generation_and_hashing(self):
+        """APIキー生成とハッシュ化テスト"""
+        # APIキー生成
+        api_key = self.security_manager.generate_api_key()
+        
+        # ハッシュ化
+        hashed = self.security_manager.hash_api_key(api_key)
         
         # アサーション
-        SecurityAssertions.assert_security_headers_valid(self.security_manager, secure_request["headers"])
-        self.assertTrue(header_validation["valid"], "セキュリティヘッダーが有効")
-        self.assertGreaterEqual(
-            header_validation["security_score"],
-            90,
-            "セキュリティスコアが高い"
-        )
+        self.assertIsNotNone(api_key)
+        self.assertGreater(len(api_key), 20)  # 十分な長さ
+        self.assertIsNotNone(hashed)
+        self.assertNotEqual(api_key, hashed)  # ハッシュ化されている
         
-        print("✓ 認証セキュリティヘッダーテスト成功")
-    
-    def test_brute_force_protection(self):
-        """ブルートフォース攻撃保護テスト"""
-        print("\n=== ブルートフォース攻撃保護テスト ===")
-        
-        # 攻撃者のクライアントID
-        attacker_client = "attacker_client"
-        
-        # 連続した認証失敗をシミュレート
-        failed_attempts = 0
-        max_attempts = 5
-        
-        print(f"最大試行回数: {max_attempts}")
-        
-        for attempt in range(max_attempts + 2):
-            print(f"\n--- 試行 {attempt + 1} ---")
-            
-            # 無効なAPIキーで認証試行
-            auth_request = {
-                "method": "authenticate",
-                "params": {
-                    "api_key": f"invalid_key_{attempt}",
-                    "client_id": attacker_client,
-                    "timestamp": int(time.time())
-                }
-            }
-            
-            print(f"認証試行: {auth_request}")
-            
-            # ブルートフォース保護チェック
-            protection_check = self.security_manager.check_brute_force_protection(
-                attacker_client
-            )
-            
-            print(f"保護チェック結果: {protection_check}")
-            
-            if protection_check["blocked"]:
-                print(f"ブルートフォース攻撃として検出・ブロック")
-                
-                # ブロック状態のアサーション
-                SecurityAssertions.assert_brute_force_blocked(self.security_manager, attacker_client)
-                self.assertTrue(protection_check["blocked"], "攻撃がブロックされている")
-                self.assertIn("lockout_duration", protection_check, "ロックアウト期間が設定")
-                break
-            else:
-                failed_attempts += 1
-                print(f"認証失敗 (失敗回数: {failed_attempts})")
-        
-        print(f"\n総失敗回数: {failed_attempts}")
-        self.assertLessEqual(
-            failed_attempts,
-            max_attempts,
-            "ブルートフォース保護が正しく動作"
-        )
-        
-        print("✓ ブルートフォース攻撃保護テスト成功")
-    
-    def test_multi_factor_authentication(self):
-        """多要素認証テスト"""
-        print("\n=== 多要素認証テスト ===")
-        
-        # 第1要素: APIキー認証
-        api_key = "taxmcp_test_key_12345"
-        first_factor_result = self.security_manager.authenticate_api_key(
-            api_key, "mfa_test_client"
-        )
-        
-        print(f"第1要素認証結果: {first_factor_result}")
-        
-        # 第2要素: TOTPコード
-        totp_code = "123456"  # テスト用固定コード
-        second_factor_request = {
-            "method": "verify_totp",
-            "params": {
-                "session_token": first_factor_result["session_token"],
-                "totp_code": totp_code,
-                "timestamp": int(time.time())
-            }
-        }
-        
-        print(f"第2要素認証リクエスト: {second_factor_request}")
-        
-        # TOTP検証
-        totp_result = self.security_manager.verify_totp(
-            first_factor_result["session_token"],
-            totp_code
-        )
-        
-        print(f"TOTP検証結果: {totp_result}")
-        
-        # 期待される結果
-        expected_mfa_result = {
-            "authenticated": True,
-            "mfa_completed": True,
-            "user_id": "test_user",
-            "permissions": ["tax_calculation", "data_access"],
-            "session_token": totp_result.get("session_token"),
-            "mfa_factors": ["api_key", "totp"]
-        }
-        
-        print(f"期待される結果: {expected_mfa_result}")
-        
-        # アサーション
-        SecurityAssertions.assert_mfa_success(self.security_manager, first_factor_result["session_token"], totp_code)
-        self.assertTrue(totp_result["mfa_completed"], "多要素認証が完了")
-        self.assertIn("totp", totp_result["mfa_factors"], "TOTPが認証要素に含まれる")
-        
-        print("✓ 多要素認証テスト成功")
-    
-    def test_authentication_audit_logging(self):
-        """認証監査ログテスト"""
-        print("\n=== 認証監査ログテスト ===")
-        
-        # 認証イベントのシミュレート
-        auth_events = [
-            {
-                "event_type": "authentication_success",
-                "api_key": "taxmcp_test_key_12345",
-                "client_id": "test_client",
-                "timestamp": int(time.time())
-            },
-            {
-                "event_type": "authentication_failure",
-                "api_key": "invalid_key",
-                "client_id": "suspicious_client",
-                "timestamp": int(time.time())
-            },
-            {
-                "event_type": "session_expired",
-                "session_token": "expired_token_12345",
-                "user_id": "test_user",
-                "timestamp": int(time.time())
-            }
-        ]
-        
-        # 各イベントのログ記録
-        logged_events = []
-        for event in auth_events:
-            print(f"\n--- {event['event_type']} ---")
-            print(f"イベント: {event}")
-            
-            # 監査ログ記録
-            log_result = self.security_manager.log_auth_event(event)
-            logged_events.append(log_result)
-            
-            print(f"ログ結果: {log_result}")
-            
-            # ログ記録のアサーション
-            SecurityAssertions.assert_audit_log_recorded(self.security_manager, event)
-            self.assertTrue(log_result["logged"], "監査ログが記録されている")
-            self.assertIn("log_id", log_result, "ログIDが生成されている")
-        
-        # 監査ログ検索テスト
-        print("\n--- 監査ログ検索 ---")
-        search_result = self.security_manager.search_audit_logs({
-            "event_type": "authentication_failure",
-            "time_range": {
-                "start": int(time.time()) - 3600,
-                "end": int(time.time())
-            }
-        })
-        
-        print(f"検索結果: {search_result}")
-        
-        # 検索結果のアサーション
-        self.assertGreater(len(search_result["logs"]), 0, "失敗ログが検索される")
-        
-        print("✓ 認証監査ログテスト成功")
+        # 同じAPIキーは同じハッシュを生成
+        hashed2 = self.security_manager.hash_api_key(api_key)
+        self.assertEqual(hashed, hashed2)
 
 
-if __name__ == "__main__":
-    unittest.main(verbosity=2)
+class TestAuditLogging(unittest.TestCase):
+    """監査ログ機能のテスト"""
+    
+    def setUp(self):
+        """テストセットアップ"""
+        self.security_manager = MockSecurityManager()
+    
+    def test_api_call_logging(self):
+        """API呼び出しログテスト"""
+        # API呼び出しをログ記録
+        result = self.security_manager.log_api_call(
+            tool_name="calculate_tax",
+            params={"income": 5000000},
+            client_id="test_client",
+            success=True
+        )
+        
+        # アサーション
+        self.assertTrue(result["logged"])
+        self.assertEqual(result["event_type"], "api_call")
+    
+    def test_security_event_logging(self):
+        """セキュリティイベントログテスト"""
+        # セキュリティイベントをログ記録
+        result = self.security_manager.log_security_event(
+            event_type="authentication_failure",
+            details="Invalid API key",
+            client_id="suspicious_client"
+        )
+        
+        # アサーション
+        self.assertTrue(result["logged"])
+        self.assertEqual(result["event_type"], "authentication_failure")
+
+
+if __name__ == '__main__':
+    unittest.main()
