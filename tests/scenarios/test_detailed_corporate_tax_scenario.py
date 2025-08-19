@@ -10,6 +10,10 @@ TaxMCP 詳細法人税計算シナリオテスト
 研究開発税制控除：500,000円
 中間納付法人税額：1,200,000円
 仮払税金：300,000円
+
+呼び出し方
+> python tests/scenarios/test_detailed_corporate_tax_scenario.py --comprehensive --detailed
+
 """
 
 import unittest

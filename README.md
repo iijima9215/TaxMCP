@@ -76,17 +76,17 @@ python main.py
 
 1. **Docker Composeでの起動**
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 2. **ログの確認**
 ```bash
-docker-compose logs -f taxmcp
+docker compose logs -f taxmcp
 ```
 
 3. **停止**
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ## 使用方法
