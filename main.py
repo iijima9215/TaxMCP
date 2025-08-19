@@ -13,6 +13,10 @@ from pydantic import BaseModel, Field
 
 from config import settings
 from tax_calculator import tax_calculator, corporate_tax_calculator
+from enhanced_corporate_tax import enhanced_corporate_tax_calculator, AdditionItem, DeductionItem, TaxCreditItem, EnhancedCorporateTaxCalculator
+
+# 税金計算機のインスタンス作成
+enhanced_corporate_tax_calculator = EnhancedCorporateTaxCalculator()
 from security import security_manager, audit_logger, validate_and_sanitize
 from rag_integration import rag_integration
 
@@ -123,6 +127,25 @@ class EnhancedSearchRequest(BaseModel):
 class IndexStatsRequest(BaseModel):
     """インデックス統計情報リクエスト"""
     include_details: bool = Field(default=True, description="詳細統計を含むかどうか")
+
+
+class EnhancedCorporateTaxRequest(BaseModel):
+    """拡張法人税計算リクエスト"""
+    accounting_profit: int = Field(..., ge=0, description="当期純利益（会計利益）（円）")
+    tax_year: int = Field(default=2025, ge=2020, le=2030, description="課税年度")
+    prefecture: str = Field(default="東京都", description="都道府県")
+    capital: int = Field(default=50000000, ge=1000000, description="資本金（円）")
+    interim_payments: int = Field(default=0, ge=0, description="中間納付法人税額（円）")
+    prepaid_taxes: int = Field(default=0, ge=0, description="仮払税金（円）")
+    use_default_items: bool = Field(default=True, description="デフォルト項目を使用するかどうか")
+
+
+class CorporateTaxItemRequest(BaseModel):
+    """法人税項目リクエスト"""
+    name: str = Field(..., description="項目名")
+    amount: int = Field(..., ge=0, description="金額（円）")
+    description: str = Field(default="", description="説明")
+    related_form: str = Field(default="", description="関連別表")
 
 
 @app.tool(
@@ -777,6 +800,200 @@ async def get_index_statistics(request: IndexStatsRequest) -> dict:
         
     except Exception as e:
         logger.error("Failed to get index statistics", error=str(e))
+        raise
+
+
+@app.tool(
+    name="calculate_enhanced_corporate_tax",
+    description="CompanyTax.mdの要件に基づく拡張法人税計算。加算項目・減算項目・税額控除項目のデフォルト値を使用して詳細な法人税を計算します。"
+)
+@validate_and_sanitize(['accounting_profit', 'capital'])
+def calculate_enhanced_corporate_tax(
+    accounting_profit: int = Field(..., ge=0, description="当期純利益（会計利益）（円）"),
+    tax_year: int = Field(default=2025, ge=2020, le=2030, description="課税年度"),
+    prefecture: str = Field(default="東京都", description="都道府県"),
+    capital: int = Field(default=50000000, ge=1000000, description="資本金（円）"),
+    interim_payments: int = Field(default=0, ge=0, description="中間納付法人税額（円）"),
+    prepaid_taxes: int = Field(default=0, ge=0, description="仮払税金（円）"),
+    use_default_items: bool = Field(default=True, description="デフォルト項目を使用するかどうか")
+) -> Dict[str, Any]:
+    """CompanyTax.mdの要件に基づく拡張法人税計算"""
+    
+    logger.info(
+        "Enhanced corporate tax calculation requested",
+        accounting_profit=accounting_profit,
+        tax_year=tax_year,
+        prefecture=prefecture,
+        capital=capital
+    )
+    
+    try:
+        # 監査ログ記録
+        audit_logger.log_calculation_request(
+            calculation_type="enhanced_corporate_tax",
+            parameters={
+                "accounting_profit": accounting_profit,
+                "tax_year": tax_year,
+                "prefecture": prefecture,
+                "capital": capital,
+                "interim_payments": interim_payments,
+                "prepaid_taxes": prepaid_taxes,
+                "use_default_items": use_default_items
+            }
+        )
+        
+        # 拡張法人税計算実行
+        result = enhanced_corporate_tax_calculator.calculate_enhanced_corporate_tax(
+            accounting_profit=accounting_profit,
+            tax_year=tax_year,
+            prefecture=prefecture,
+            capital=capital,
+            interim_payments=interim_payments,
+            prepaid_taxes=prepaid_taxes
+        )
+        
+        # 結果を辞書形式に変換
+        response = {
+            "基本情報": {
+                "当期純利益": result.accounting_profit,
+                "課税所得金額": result.taxable_income,
+                "税年度": result.tax_year,
+                "都道府県": result.prefecture,
+                "資本金": result.capital,
+                "会社区分": result.company_type
+            },
+            "調整項目": {
+                "加算項目": [
+                    {
+                        "項目名": item.name,
+                        "金額": item.amount,
+                        "説明": item.description,
+                        "関連別表": item.related_form
+                    } for item in result.addition_items
+                ],
+                "減算項目": [
+                    {
+                        "項目名": item.name,
+                        "金額": item.amount,
+                        "説明": item.description,
+                        "関連別表": item.related_form
+                    } for item in result.deduction_items
+                ],
+                "加算合計": result.total_additions,
+                "減算合計": result.total_deductions
+            },
+            "税額計算": {
+                "法人税額（控除前）": result.corporate_tax_base,
+                "地方法人税": result.local_corporate_tax,
+                "国税ベース確定法人税額": result.national_tax_total
+            },
+            "税額控除": {
+                "税額控除項目": [
+                    {
+                        "項目名": item.name,
+                        "金額": item.amount,
+                        "説明": item.description,
+                        "関連別表": item.related_form
+                    } for item in result.tax_credit_items
+                ],
+                "税額控除合計": result.total_tax_credits,
+                "控除後法人税額": result.corporate_tax_after_credits
+            },
+            "中間納付・仮払税金": {
+                "中間納付法人税額": result.interim_payments,
+                "仮払税金": result.prepaid_taxes,
+                "最終法人税納付額": result.final_corporate_tax
+            },
+            "地方税": {
+                "住民税均等割": result.resident_tax_equal,
+                "住民税法人税割": result.resident_tax_income,
+                "法人事業税": result.business_tax,
+                "特別法人事業税": result.special_business_tax,
+                "地方税合計": result.local_tax_total
+            },
+            "最終結果": {
+                "総合納付税額": result.total_tax_payment,
+                "実効税率": result.effective_rate
+            }
+        }
+        
+        logger.info(
+            "Enhanced corporate tax calculation completed",
+            total_tax_payment=result.total_tax_payment,
+            effective_rate=result.effective_rate
+        )
+        
+        return response
+        
+    except Exception as e:
+        logger.error("Enhanced corporate tax calculation failed", error=str(e))
+        raise
+
+
+@app.tool(
+    name="get_corporate_tax_default_items",
+    description="法人税計算で使用されるデフォルトの加算項目・減算項目・税額控除項目を取得します。"
+)
+def get_corporate_tax_default_items(
+    accounting_profit: int = Field(default=10000000, ge=0, description="当期純利益（円）。デフォルト項目の金額計算に使用")
+) -> Dict[str, Any]:
+    """法人税計算のデフォルト項目を取得"""
+    
+    logger.info(
+        "Corporate tax default items requested",
+        accounting_profit=accounting_profit
+    )
+    
+    try:
+        # デフォルト項目を取得
+        addition_items = enhanced_corporate_tax_calculator._get_default_addition_items(accounting_profit)
+        deduction_items = enhanced_corporate_tax_calculator._get_default_deduction_items(accounting_profit)
+        tax_credit_items = enhanced_corporate_tax_calculator._get_default_tax_credit_items(int(accounting_profit * 0.232))  # 仮の法人税額
+        
+        response = {
+            "基準会計利益": accounting_profit,
+            "加算項目（損金不算入／益金算入）": [
+                {
+                    "項目名": item.name,
+                    "デフォルト金額": item.amount,
+                    "説明": item.description,
+                    "関連別表": item.related_form
+                } for item in addition_items
+            ],
+            "減算項目（益金不算入／損金算入）": [
+                {
+                    "項目名": item.name,
+                    "デフォルト金額": item.amount,
+                    "説明": item.description,
+                    "関連別表": item.related_form
+                } for item in deduction_items
+            ],
+            "税額控除項目": [
+                {
+                    "項目名": item.name,
+                    "デフォルト金額": item.amount,
+                    "説明": item.description,
+                    "関連別表": item.related_form
+                } for item in tax_credit_items
+            ],
+            "注意事項": [
+                "デフォルト金額は会計利益に基づく推定値です",
+                "実際の計算では個別の状況に応じて調整が必要です",
+                "CompanyTax.mdの要件に基づいて設定されています"
+            ]
+        }
+        
+        logger.info(
+            "Corporate tax default items retrieved",
+            addition_count=len(addition_items),
+            deduction_count=len(deduction_items),
+            tax_credit_count=len(tax_credit_items)
+        )
+        
+        return response
+        
+    except Exception as e:
+        logger.error("Failed to get corporate tax default items", error=str(e))
         raise
 
 
