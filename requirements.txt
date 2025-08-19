@@ -1,49 +1,49 @@
 # MCP Tax Calculator Server Dependencies
 
 # Core MCP and FastMCP
-fastmcp>=0.1.0
-mcp>=1.0.0
+fastmcp>=0.1.0,<1.0.0
+mcp>=1.0.0,<2.0.0
 
 # Web framework and HTTP handling
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
-pydantic>=2.5.0
+fastapi>=0.104.0,<0.110.0
+uvicorn[standard]>=0.24.0,<0.30.0
+pydantic>=2.5.0,<3.0.0
 
 # Data handling and validation
-pandas>=2.1.0
-numpy>=1.24.0
-python-dateutil>=2.8.2
+pandas>=2.1.0,<2.3.0
+numpy>=1.24.0,<2.0.0
+python-dateutil>=2.8.2,<3.0.0
 
 # Database and indexing
-sqlite3  # Built-in Python module
-whoosh>=2.7.4  # Full-text search engine
-jieba>=0.42.1  # Japanese text segmentation
+# sqlite3  # Built-in Python module - no need to specify
+whoosh>=2.7.4,<3.0.0  # Full-text search engine
+jieba>=0.42.1,<1.0.0  # Japanese text segmentation
 
 # Security and authentication
-pyjwt>=2.8.0
-passlib[bcrypt]>=1.7.4
-python-multipart>=0.0.6
+pyjwt>=2.8.0,<3.0.0
+passlib[bcrypt]>=1.7.4,<2.0.0
+python-multipart>=0.0.6,<1.0.0
 
 # Logging and monitoring
-structlog>=23.2.0
-rich>=13.7.0
+structlog>=23.2.0,<24.0.0
+rich>=13.7.0,<14.0.0
 
 # Configuration management
-python-dotenv>=1.0.0
-pydantic-settings>=2.1.0
+python-dotenv>=1.0.0,<2.0.0
+pydantic-settings>=2.1.0,<3.0.0
 
 # RAG Integration dependencies
-aiohttp>=3.9.0
-beautifulsoup4>=4.12.0
-lxml>=4.9.0
+aiohttp>=3.9.0,<4.0.0
+beautifulsoup4>=4.12.0,<5.0.0
+lxml>=4.9.0,<5.0.0
 
 # Testing (optional)
-pytest>=7.4.0
-pytest-asyncio>=0.21.0
-httpx>=0.25.0
+pytest>=7.4.0,<8.0.0
+pytest-asyncio>=0.21.0,<1.0.0
+httpx>=0.25.0,<1.0.0
 
 # Development tools (optional)
-black>=23.11.0
-isort>=5.12.0
-flake8>=6.1.0
-mypy>=1.7.0
+black>=23.11.0,<24.0.0
+isort>=5.12.0,<6.0.0
+flake8>=6.1.0,<7.0.0
+mypy>=1.7.0,<2.0.0
