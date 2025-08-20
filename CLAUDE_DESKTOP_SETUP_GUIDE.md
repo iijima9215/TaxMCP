@@ -64,7 +64,77 @@ print(f"SECRET_KEY={secret_key}")
 2. `%USERPROFILE%\AppData\Roaming\Claude` と入力してEnterを押す
 3. `claude_desktop_config.json`ファイルを探す（存在しない場合は新規作成）
 
-### 3.2 設定内容のコピー
+### 3.2 既存設定がある場合の対応
+
+**重要**: 既にClaude Desktopで他のMCPサーバー（filesystemなど）を使用している場合は、既存の設定を保持しながらTaxMCPサーバーを追加する必要があります。
+
+#### 既存設定の例
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/iijima/OneDrive",
+        "/Users/iijima/Downloads"
+      ]
+    }
+  }
+}
+```
+
+#### TaxMCPサーバーを追加する手順
+
+1. 既存の`claude_desktop_config.json`をバックアップ
+2. 既存の`mcpServers`セクション内にTaxMCPサーバーの設定を追加
+3. SECRET_KEYを実際の値に置き換え
+
+#### 統合設定例（filesystem + TaxMCP両環境）
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/iijima/OneDrive",
+        "/Users/iijima/Downloads"
+      ]
+    },
+    "taxmcp-local": {
+      "command": "python",
+      "args": ["C:\\Void\\TaxMCP\\main.py"],
+      "env": {
+        "SECRET_KEY": "your_secret_key_here",
+        "SERVER_HOST": "localhost",
+        "SERVER_PORT": "8000",
+        "DEBUG_MODE": "false",
+        "LOG_LEVEL": "info",
+        "ENABLE_AUDIT_LOG": "true"
+      }
+    },
+    "taxmcp-production": {
+      "command": "python",
+      "args": ["C:\\Void\\TaxMCP\\main.py"],
+      "env": {
+        "SECRET_KEY": "your_secret_key_here",
+        "TAXMCP_BASE_URL": "https://taxmcp.ami-j2.com",
+        "REQUEST_TIMEOUT": "30",
+        "SSL_VERIFY": "true",
+        "LOG_LEVEL": "info",
+        "ENABLE_AUDIT_LOG": "true"
+      }
+    }
+  }
+}
+```
+
+### 3.3 新規設定の場合
+
+既存の設定がない場合は、以下のオプションから選択してください。
 
 #### オプション1: ローカル環境のみ使用する場合
 
@@ -96,7 +166,7 @@ TaxMCPプロジェクトの`chatgpt_config\mcp_combined_config.json`の内容を
 3. `%USERPROFILE%\AppData\Roaming\Claude\claude_desktop_config.json`に貼り付け
 4. SECRET_KEYの値を実際の値に置き換える
 
-### 3.3 SECRET_KEYの設定
+### 3.4 SECRET_KEYの設定
 
 設定ファイル内の`"SECRET_KEY": "your_secret_key_here"`の部分を、実際のSECRET_KEYに置き換えます：
 
@@ -118,6 +188,8 @@ TaxMCPプロジェクトの`chatgpt_config\mcp_combined_config.json`の内容を
   }
 }
 ```
+
+**重要**: 既存のfilesystemサーバーなどがある場合は、上記の統合設定例を参考にして、既存の設定を保持しながらTaxMCPサーバーの設定を追加してください。
 
 ## 4. TaxMCPサーバーの起動（ローカル環境使用時）
 
