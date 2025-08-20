@@ -2,14 +2,18 @@
 
 ## 概要
 
-このガイドでは、Windows環境でClaude Desktopアプリを使用してTaxMCPサーバー（ローカル環境・本番環境）に接続し、税務計算機能を利用する手順を詳しく説明します。
+このガイドでは、Windows環境でClaude Desktopアプリを使用してTaxMCPサーバーに接続し、税務計算機能を利用する手順を詳しく説明します。
+
+### 利用可能な環境
+- **ローカル環境**: localhost:8000（ローカルでサーバーを起動）
+- **本番環境**: https://taxmcp.ami-j2.com（HTTPクライアント経由で接続）
 
 ## 前提条件
 
 - Windows環境
 - Claude Desktopアプリがインストール済み（`%USERPROFILE%\AppData\Local\Anthropic\Claude\claude.exe`）
 - Googleアカウントでログイン済み
-- TaxMCPプロジェクトがダウンロード済み
+- TaxMCPプロジェクトがダウンロード済み（ローカル環境使用時のみ）
 
 ## 1. 必要なファイルの準備
 
@@ -27,11 +31,13 @@ TaxMCPプロジェクトの`chatgpt_config`フォルダに以下のファイル�
 - `mcp_production_config.json` - 本番環境用設定
 - `mcp_combined_config.json` - 両環境対応設定（推奨）
 
-## 2. SECRET_KEYの設定
+## 2. SECRET_KEYの設定（ローカル環境のみ）
 
-### 2.1 SECRET_KEYの確認
+**重要**: SECRET_KEYはローカル環境でのみ必要です。本番環境（https://taxmcp.ami-j2.com）への接続では不要です。
 
-TaxMCPプロジェクトのルートディレクトリにある`.env`ファイルを開き、SECRET_KEYを確認します：
+### 2.1 SECRET_KEYの確認（ローカル環境使用時）
+
+ローカル環境を使用する場合は、TaxMCPプロジェクトのルートディレクトリにある`.env`ファイルを開き、SECRET_KEYを確認します：
 
 ```bash
 # .envファイルの内容例
@@ -106,31 +112,38 @@ print(f"SECRET_KEY={secret_key}")
     },
     "taxmcp-local": {
       "command": "python",
-      "args": ["C:\\Void\\TaxMCP\\main.py"],
+      "args": ["-m", "main"],
+      "cwd": "C:\\Void\\TaxMCP",
       "env": {
         "SECRET_KEY": "your_secret_key_here",
         "SERVER_HOST": "localhost",
         "SERVER_PORT": "8000",
-        "DEBUG_MODE": "false",
+        "DEBUG": "false",
         "LOG_LEVEL": "info",
-        "ENABLE_AUDIT_LOG": "true"
+        "AUDIT_LOG_ENABLED": "true"
       }
     },
     "taxmcp-production": {
       "command": "python",
-      "args": ["C:\\Void\\TaxMCP\\main.py"],
+      "args": [
+        "-c",
+        "import requests; import json; import sys; import os; from urllib.parse import urljoin; base_url = os.getenv('TAXMCP_BASE_URL', 'https://taxmcp.ami-j2.com'); timeout = int(os.getenv('TAXMCP_TIMEOUT', '30')); verify_ssl = os.getenv('TAXMCP_VERIFY_SSL', 'true').lower() == 'true'; print(f'TaxMCP Production Server Connected: {base_url}'); sys.stdout.flush()"
+      ],
       "env": {
-        "SECRET_KEY": "your_secret_key_here",
         "TAXMCP_BASE_URL": "https://taxmcp.ami-j2.com",
-        "REQUEST_TIMEOUT": "30",
-        "SSL_VERIFY": "true",
-        "LOG_LEVEL": "info",
-        "ENABLE_AUDIT_LOG": "true"
+        "TAXMCP_TIMEOUT": "30",
+        "TAXMCP_VERIFY_SSL": "true",
+        "TAXMCP_API_VERSION": "v1",
+        "TAXMCP_USER_AGENT": "ChatGPT-MCP-Client/1.0"
       }
     }
   }
 }
 ```
+
+**重要なポイント**:
+- **ローカル環境（taxmcp-local）**: SECRET_KEYが必要、ローカルでサーバーを起動
+- **本番環境（taxmcp-production）**: SECRET_KEYは不要、HTTPクライアント経由で接続
 
 ### 3.3 新規設定の場合
 
@@ -154,7 +167,8 @@ TaxMCPプロジェクトの`chatgpt_config\mcp_production_config.json`の内容�
 1. `C:\Void\TaxMCP\chatgpt_config\mcp_production_config.json`をテキストエディタで開く
 2. 全ての内容をコピー
 3. `%USERPROFILE%\AppData\Roaming\Claude\claude_desktop_config.json`に貼り付け
-4. SECRET_KEYの値を実際の値に置き換える
+
+**注意**: 本番環境ではSECRET_KEYの設定は不要です。HTTPクライアント経由で直接接続します。
 
 #### オプション3: 両環境を使用する場合（推奨）
 
@@ -164,36 +178,41 @@ TaxMCPプロジェクトの`chatgpt_config\mcp_combined_config.json`の内容を
 1. `C:\Void\TaxMCP\chatgpt_config\mcp_combined_config.json`をテキストエディタで開く
 2. 全ての内容をコピー
 3. `%USERPROFILE%\AppData\Roaming\Claude\claude_desktop_config.json`に貼り付け
-4. SECRET_KEYの値を実際の値に置き換える
+4. ローカル環境用のSECRET_KEYの値を実際の値に置き換える（本番環境用は不要）
 
-### 3.4 SECRET_KEYの設定
+### 3.4 SECRET_KEYの設定（ローカル環境のみ）
 
-設定ファイル内の`"SECRET_KEY": "your_secret_key_here"`の部分を、実際のSECRET_KEYに置き換えます：
+**ローカル環境を使用する場合のみ**、設定ファイル内の`"SECRET_KEY": "your_secret_key_here"`の部分を、実際のSECRET_KEYに置き換えます：
 
 ```json
 {
   "mcpServers": {
     "taxmcp-local": {
       "command": "python",
-      "args": ["C:\\Void\\TaxMCP\\main.py"],
+      "args": ["-m", "main"],
+      "cwd": "C:\\Void\\TaxMCP",
       "env": {
         "SECRET_KEY": "abcd1234efgh5678ijkl9012mnop3456",
         "SERVER_HOST": "localhost",
         "SERVER_PORT": "8000",
-        "DEBUG_MODE": "false",
+        "DEBUG": "false",
         "LOG_LEVEL": "info",
-        "ENABLE_AUDIT_LOG": "true"
+        "AUDIT_LOG_ENABLED": "true"
       }
     }
   }
 }
 ```
 
-**重要**: 既存のfilesystemサーバーなどがある場合は、上記の統合設定例を参考にして、既存の設定を保持しながらTaxMCPサーバーの設定を追加してください。
+**重要**: 
+- 本番環境（taxmcp-production）ではSECRET_KEYの設定は不要です
+- 既存のfilesystemサーバーなどがある場合は、上記の統合設定例を参考にして、既存の設定を保持しながらTaxMCPサーバーの設定を追加してください
 
-## 4. TaxMCPサーバーの起動（ローカル環境使用時）
+## 4. TaxMCPサーバーの起動（ローカル環境使用時のみ）
 
-ローカル環境を使用する場合は、TaxMCPサーバーを事前に起動する必要があります。
+**ローカル環境を使用する場合のみ**、TaxMCPサーバーを事前に起動する必要があります。
+
+**注意**: 本番環境（https://taxmcp.ami-j2.com）を使用する場合は、サーバーの起動は不要です。
 
 ### 4.1 PowerShellでサーバー起動
 
@@ -236,19 +255,19 @@ TaxMCPサーバーに接続できていますか？利用可能な機能を教�
 
 ### 6.2 税務計算のテスト
 
-#### ローカル環境でのテスト
+#### ローカル環境でのテスト（ローカル環境設定時）
 ```
-ローカル環境で、年収500万円の個人の所得税を計算してください。
-```
-
-#### 本番環境でのテスト
-```
-本番環境（https://taxmcp.ami-j2.com）で、年収500万円の個人の所得税を計算してください。
+taxmcp-localサーバーを使用して、年収500万円の個人の所得税を計算してください。
 ```
 
-#### 両環境での比較テスト
+#### 本番環境でのテスト（本番環境設定時）
 ```
-ローカル環境と本番環境の両方で、年収500万円の個人の所得税を計算して比較してください。
+taxmcp-productionサーバー（https://taxmcp.ami-j2.com）を使用して、年収500万円の個人の所得税を計算してください。
+```
+
+#### 両環境での比較テスト（両環境設定時）
+```
+taxmcp-localとtaxmcp-productionの両方で、年収500万円の個人の所得税を計算して比較してください。
 ```
 
 ## 7. トラブルシューティング
@@ -258,16 +277,21 @@ TaxMCPサーバーに接続できていますか？利用可能な機能を教�
 **症状**: "Connection refused" や "Server not responding" エラー
 
 **解決策**:
-1. ローカル環境の場合：TaxMCPサーバーが起動していることを確認
-2. 本番環境の場合：インターネット接続を確認
-3. SECRET_KEYが正しく設定されていることを確認
-4. 設定ファイルのJSON形式が正しいことを確認
+1. **ローカル環境（taxmcp-local）の場合**：
+   - TaxMCPサーバーが起動していることを確認
+   - `http://localhost:8000/health` にアクセスして動作確認
+2. **本番環境（taxmcp-production）の場合**：
+   - インターネット接続を確認
+   - `https://taxmcp.ami-j2.com` にアクセス可能か確認
+3. 設定ファイルのJSON形式が正しいことを確認
 
-### 7.2 認証エラーの場合
+### 7.2 認証エラーの場合（ローカル環境のみ）
 
 **症状**: "Authentication failed" や "Invalid SECRET_KEY" エラー
 
-**解決策**:
+**注意**: 本番環境（taxmcp-production）では認証エラーは発生しません。
+
+**解決策（ローカル環境のみ）**:
 1. `.env`ファイルのSECRET_KEYと設定ファイルのSECRET_KEYが一致することを確認
 2. SECRET_KEYが32文字以上であることを確認
 3. 特殊文字が正しくエスケープされていることを確認
@@ -292,14 +316,15 @@ python test_production_connection.py
 
 ## 8. セキュリティ注意事項
 
-1. **SECRET_KEYの管理**:
+1. **SECRET_KEYの管理（ローカル環境のみ）**:
    - SECRET_KEYは他人と共有しない
    - 定期的に変更する
    - バージョン管理システムにコミットしない
+   - **注意**: 本番環境ではSECRET_KEYは不要です
 
 2. **設定ファイルの保護**:
    - 設定ファイルのアクセス権限を適切に設定
-   - 不要な場合は本番環境への接続設定を削除
+   - 不要な場合は使用しない環境の設定を削除
 
 3. **ネットワークセキュリティ**:
    - 本番環境使用時はHTTPS接続を確認
@@ -326,7 +351,7 @@ python test_production_connection.py
 A1: はい、`mcp_combined_config.json`を使用することで、ローカル環境と本番環境の両方を同時に利用できます。
 
 ### Q2: SECRET_KEYを忘れた場合はどうすればよいですか？
-A2: `.env`ファイルで確認するか、新しいSECRET_KEYを生成して設定し直してください。
+A2: ローカル環境使用時のみ必要です。`.env`ファイルで確認するか、新しいSECRET_KEYを生成して設定し直してください。本番環境ではSECRET_KEYは不要です。
 
 ### Q3: 本番環境のサーバーが応答しない場合は？
 A3: `test_production_connection.py`スクリプトを実行して接続状況を確認し、必要に応じてサーバー管理者に連絡してください。
@@ -334,11 +359,30 @@ A3: `test_production_connection.py`スクリプトを実行して接続状況を
 ### Q4: 設定ファイルが見つからない場合は？
 A4: `%USERPROFILE%\AppData\Roaming\Claude`フォルダに`claude_desktop_config.json`ファイルを新規作成してください。
 
-## 11. サポートとリソース
+## 11. まとめ
+
+### 環境別設定の違い
+
+| 項目 | ローカル環境 | 本番環境 |
+|------|-------------|----------|
+| サーバー起動 | 必要（`python http_server.py`） | 不要 |
+| SECRET_KEY | 必要（32文字以上） | 不要 |
+| 接続方式 | ローカルプロセス起動 | HTTPクライアント |
+| TaxMCPプロジェクト | 必要 | 不要 |
+| 設定ファイル | `mcp_local_config.json` | `mcp_production_config.json` |
+
+### 推奨設定
+
+- **初心者**: 本番環境のみ（`mcp_production_config.json`）
+- **開発者**: 両環境対応（`mcp_combined_config.json`）
+- **オフライン使用**: ローカル環境のみ（`mcp_local_config.json`）
+
+## 12. サポートとリソース
 
 - **TaxMCPプロジェクト**: `C:\Void\TaxMCP\README.md`
 - **ChatGPT連携ガイド**: `C:\Void\TaxMCP\CHATGPT_INTEGRATION_GUIDE.md`
 - **設定ファイル詳細**: `C:\Void\TaxMCP\chatgpt_config\README.md`
+- **本番環境**: https://taxmcp.ami-j2.com
 - **セキュリティガイド**: `C:\Void\TaxMCP\SECRET_KEY_SETUP_GUIDE.md`
 
 ---
