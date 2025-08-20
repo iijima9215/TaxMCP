@@ -1,0 +1,103 @@
+{
+  "timestamp": "2025-08-20T17:10:18.092879",
+  "base_url": "http://192.168.0.128:8000",
+  "diagnostics": {
+    "dns": {
+      "status": "success",
+      "hostname": "192.168.0.128",
+      "ip_addresses": [
+        "192.168.0.128"
+      ],
+      "message": "DNS解決成功: 192.168.0.128 -> ['192.168.0.128']"
+    },
+    "tcp": {
+      "status": "success",
+      "hostname": "192.168.0.128",
+      "port": 8000,
+      "message": "TCP接続成功: 192.168.0.128:8000"
+    },
+    "ssl": {
+      "status": "failed",
+      "hostname": "192.168.0.128",
+      "error": "[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1000)",
+      "message": "SSL証明書検証失敗"
+    },
+    "https_endpoints": {
+      "/health": {
+        "status_code": 200,
+        "headers": {
+          "date": "Wed, 20 Aug 2025 08:10:17 GMT",
+          "server": "uvicorn",
+          "content-length": "79",
+          "content-type": "application/json"
+        },
+        "response_time": 0.01185,
+        "content_length": 79,
+        "message": "HTTP 200"
+      },
+      "/api/health": {
+        "status_code": 200,
+        "headers": {
+          "date": "Wed, 20 Aug 2025 08:10:17 GMT",
+          "server": "uvicorn",
+          "content-length": "119",
+          "content-type": "application/json"
+        },
+        "response_time": 0.014284,
+        "content_length": 119,
+        "message": "HTTP 200"
+      },
+      "/api/v1/health": {
+        "status_code": 404,
+        "headers": {
+          "date": "Wed, 20 Aug 2025 08:10:17 GMT",
+          "server": "uvicorn",
+          "content-length": "22",
+          "content-type": "application/json"
+        },
+        "response_time": 0.014553,
+        "content_length": 22,
+        "message": "HTTP 404"
+      },
+      "/status": {
+        "status_code": 404,
+        "headers": {
+          "date": "Wed, 20 Aug 2025 08:10:17 GMT",
+          "server": "uvicorn",
+          "content-length": "22",
+          "content-type": "application/json"
+        },
+        "response_time": 0.015172,
+        "content_length": 22,
+        "message": "HTTP 404"
+      },
+      "/ping": {
+        "status_code": 404,
+        "headers": {
+          "date": "Wed, 20 Aug 2025 08:10:17 GMT",
+          "server": "uvicorn",
+          "content-length": "22",
+          "content-type": "application/json"
+        },
+        "response_time": 0.014848,
+        "content_length": 22,
+        "message": "HTTP 404"
+      }
+    },
+    "reverse_proxy": {
+      "status": "success",
+      "status_code": 405,
+      "proxy_headers": {
+        "server": "uvicorn"
+      },
+      "all_headers": {
+        "date": "Wed, 20 Aug 2025 08:10:17 GMT",
+        "server": "uvicorn",
+        "allow": "GET",
+        "content-length": "31",
+        "content-type": "application/json"
+      },
+      "message": "リバースプロキシ検出: {'server': 'uvicorn'}"
+    }
+  }
+}

@@ -68,9 +68,25 @@ SECRET_KEY=your-secret-key-here-change-in-production
 📖 **詳細情報**: SECRET_KEYの適切な設定方法については、[SECRET_KEYセットアップガイド](./SECRET_KEY_SETUP_GUIDE.md)を参照してください。
 
 5. **サーバーの起動**
+
+#### MCPサーバー（stdio経由）
 ```bash
 python main.py
 ```
+
+#### HTTPサーバー（Web API）
+```bash
+python http_server.py
+```
+
+または、uvicornを直接使用：
+```bash
+uvicorn http_server:app --host 0.0.0.0 --port 8000 --reload
+```
+
+**注意**: 
+- `main.py`: MCPクライアント用のstdio通信サーバー
+- `http_server.py`: HTTP API用のWebサーバー（ヘルスチェック、外部テスト用）
 
 ### Dockerを使用した実行
 

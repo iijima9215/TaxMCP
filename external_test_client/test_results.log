@@ -1,0 +1,348 @@
+2025-08-20 10:21:52,108 - INFO - === TaxMCP外部テスト開始 ===
+2025-08-20 10:21:52,109 - INFO - テスト対象: https://taxmcp.ami-j2.com
+2025-08-20 10:21:52,109 - INFO - テスト回数: 5
+2025-08-20 10:21:52,109 - INFO - 
+--- テスト反復 1/5 ---
+2025-08-20 10:21:52,109 - INFO - 実行中: health_check
+2025-08-20 10:21:52,110 - INFO - ヘルスチェック: https://taxmcp.ami-j2.com/health
+2025-08-20 10:21:52,565 - ERROR - ヘルスチェック失敗: 502
+2025-08-20 10:21:53,617 - INFO - 実行中: individual_tax
+2025-08-20 10:21:53,617 - INFO - 個人所得税計算テスト: https://taxmcp.ami-j2.com/api/v1/calculate/individual
+2025-08-20 10:21:53,627 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 10:21:53,738 - ERROR - 個人所得税計算失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:21:54,750 - INFO - 実行中: corporate_tax
+2025-08-20 10:21:54,750 - INFO - 法人税計算テスト: https://taxmcp.ami-j2.com/api/v1/calculate/corporate
+2025-08-20 10:21:54,750 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 10:21:54,864 - ERROR - 法人税計算失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:21:55,875 - INFO - 実行中: tax_answer_search
+2025-08-20 10:21:55,875 - INFO - タックスアンサー検索テスト: https://taxmcp.ami-j2.com/api/v1/search/tax-answer
+2025-08-20 10:21:55,875 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 10:21:55,995 - ERROR - タックスアンサー検索失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:21:57,003 - INFO - 実行中: law_search
+2025-08-20 10:21:57,003 - INFO - 法令検索テスト: https://taxmcp.ami-j2.com/api/v1/search/law
+2025-08-20 10:21:57,003 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 10:21:57,094 - ERROR - 法令検索失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:21:58,105 - INFO - 
+--- テスト反復 2/5 ---
+2025-08-20 10:21:58,105 - INFO - 実行中: health_check
+2025-08-20 10:21:58,105 - INFO - ヘルスチェック: https://taxmcp.ami-j2.com/health
+2025-08-20 10:21:58,217 - ERROR - ヘルスチェック失敗: 502
+2025-08-20 10:21:59,233 - INFO - 実行中: individual_tax
+2025-08-20 10:21:59,233 - INFO - 個人所得税計算テスト: https://taxmcp.ami-j2.com/api/v1/calculate/individual
+2025-08-20 10:21:59,233 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 10:21:59,351 - ERROR - 個人所得税計算失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:00,357 - INFO - 実行中: corporate_tax
+2025-08-20 10:22:00,357 - INFO - 法人税計算テスト: https://taxmcp.ami-j2.com/api/v1/calculate/corporate
+2025-08-20 10:22:00,357 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 10:22:00,474 - ERROR - 法人税計算失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:01,483 - INFO - 実行中: tax_answer_search
+2025-08-20 10:22:01,483 - INFO - タックスアンサー検索テスト: https://taxmcp.ami-j2.com/api/v1/search/tax-answer
+2025-08-20 10:22:01,484 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 10:22:01,596 - ERROR - タックスアンサー検索失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:02,614 - INFO - 実行中: law_search
+2025-08-20 10:22:02,614 - INFO - 法令検索テスト: https://taxmcp.ami-j2.com/api/v1/search/law
+2025-08-20 10:22:02,614 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 10:22:02,728 - ERROR - 法令検索失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:03,734 - INFO - 
+--- テスト反復 3/5 ---
+2025-08-20 10:22:03,734 - INFO - 実行中: health_check
+2025-08-20 10:22:03,734 - INFO - ヘルスチェック: https://taxmcp.ami-j2.com/health
+2025-08-20 10:22:03,827 - ERROR - ヘルスチェック失敗: 502
+2025-08-20 10:22:04,839 - INFO - 実行中: individual_tax
+2025-08-20 10:22:04,839 - INFO - 個人所得税計算テスト: https://taxmcp.ami-j2.com/api/v1/calculate/individual
+2025-08-20 10:22:04,839 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 10:22:04,937 - ERROR - 個人所得税計算失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:05,943 - INFO - 実行中: corporate_tax
+2025-08-20 10:22:05,943 - INFO - 法人税計算テスト: https://taxmcp.ami-j2.com/api/v1/calculate/corporate
+2025-08-20 10:22:05,943 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 10:22:06,064 - ERROR - 法人税計算失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:07,077 - INFO - 実行中: tax_answer_search
+2025-08-20 10:22:07,077 - INFO - タックスアンサー検索テスト: https://taxmcp.ami-j2.com/api/v1/search/tax-answer
+2025-08-20 10:22:07,078 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 10:22:07,186 - ERROR - タックスアンサー検索失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:08,194 - INFO - 実行中: law_search
+2025-08-20 10:22:08,194 - INFO - 法令検索テスト: https://taxmcp.ami-j2.com/api/v1/search/law
+2025-08-20 10:22:08,194 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 10:22:08,308 - ERROR - 法令検索失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:09,320 - INFO - 
+--- テスト反復 4/5 ---
+2025-08-20 10:22:09,320 - INFO - 実行中: health_check
+2025-08-20 10:22:09,320 - INFO - ヘルスチェック: https://taxmcp.ami-j2.com/health
+2025-08-20 10:22:09,758 - ERROR - ヘルスチェック失敗: 502
+2025-08-20 10:22:10,765 - INFO - 実行中: individual_tax
+2025-08-20 10:22:10,765 - INFO - 個人所得税計算テスト: https://taxmcp.ami-j2.com/api/v1/calculate/individual
+2025-08-20 10:22:10,767 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 10:22:10,881 - ERROR - 個人所得税計算失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:11,892 - INFO - 実行中: corporate_tax
+2025-08-20 10:22:11,892 - INFO - 法人税計算テスト: https://taxmcp.ami-j2.com/api/v1/calculate/corporate
+2025-08-20 10:22:11,892 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 10:22:11,976 - ERROR - 法人税計算失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:12,981 - INFO - 実行中: tax_answer_search
+2025-08-20 10:22:12,981 - INFO - タックスアンサー検索テスト: https://taxmcp.ami-j2.com/api/v1/search/tax-answer
+2025-08-20 10:22:12,982 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 10:22:13,103 - ERROR - タックスアンサー検索失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:14,105 - INFO - 実行中: law_search
+2025-08-20 10:22:14,105 - INFO - 法令検索テスト: https://taxmcp.ami-j2.com/api/v1/search/law
+2025-08-20 10:22:14,105 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 10:22:14,219 - ERROR - 法令検索失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:15,230 - INFO - 
+--- テスト反復 5/5 ---
+2025-08-20 10:22:15,230 - INFO - 実行中: health_check
+2025-08-20 10:22:15,230 - INFO - ヘルスチェック: https://taxmcp.ami-j2.com/health
+2025-08-20 10:22:15,336 - ERROR - ヘルスチェック失敗: 502
+2025-08-20 10:22:16,346 - INFO - 実行中: individual_tax
+2025-08-20 10:22:16,346 - INFO - 個人所得税計算テスト: https://taxmcp.ami-j2.com/api/v1/calculate/individual
+2025-08-20 10:22:16,347 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 10:22:16,764 - ERROR - 個人所得税計算失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:17,771 - INFO - 実行中: corporate_tax
+2025-08-20 10:22:17,771 - INFO - 法人税計算テスト: https://taxmcp.ami-j2.com/api/v1/calculate/corporate
+2025-08-20 10:22:17,771 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 10:22:18,918 - ERROR - 法人税計算失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:19,934 - INFO - 実行中: tax_answer_search
+2025-08-20 10:22:19,934 - INFO - タックスアンサー検索テスト: https://taxmcp.ami-j2.com/api/v1/search/tax-answer
+2025-08-20 10:22:19,934 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 10:22:20,052 - ERROR - タックスアンサー検索失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:21,063 - INFO - 実行中: law_search
+2025-08-20 10:22:21,063 - INFO - 法令検索テスト: https://taxmcp.ami-j2.com/api/v1/search/law
+2025-08-20 10:22:21,063 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 10:22:21,182 - ERROR - 法令検索失敗: 502 - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.22.1</center>
+</body>
+</html>
+
+2025-08-20 10:22:22,199 - INFO - 
+=== テスト結果サマリー ===
+2025-08-20 10:22:22,199 - INFO - health_check: 0/5 成功 (0.0%) 平均時間: 0.241秒
+2025-08-20 10:22:22,199 - INFO - corporate_tax: 0/5 成功 (0.0%) 平均時間: 0.317秒
+2025-08-20 10:22:22,199 - INFO - tax_answer_search: 0/5 成功 (0.0%) 平均時間: 0.117秒
+2025-08-20 10:22:22,199 - INFO - individual_tax: 0/5 成功 (0.0%) 平均時間: 0.174秒
+2025-08-20 10:22:22,199 - INFO - law_search: 0/5 成功 (0.0%) 平均時間: 0.111秒
+2025-08-20 10:22:22,199 - INFO - 
+全体成功率: 0/25 (0.0%)
+2025-08-20 10:22:22,201 - INFO - 詳細結果を保存: test_results_20250820_102222.json

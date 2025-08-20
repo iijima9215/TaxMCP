@@ -1,0 +1,107 @@
+{
+  "timestamp": "2025-08-20T17:04:15.377352",
+  "base_url": "http://192.168.0.222:8000",
+  "diagnostics": {
+    "dns": {
+      "status": "success",
+      "hostname": "192.168.0.222",
+      "ip_addresses": [
+        "192.168.0.222"
+      ],
+      "message": "DNS解決成功: 192.168.0.222 -> ['192.168.0.222']"
+    },
+    "tcp": {
+      "status": "success",
+      "hostname": "192.168.0.222",
+      "port": 8000,
+      "message": "TCP接続成功: 192.168.0.222:8000"
+    },
+    "ssl": {
+      "status": "failed",
+      "hostname": "192.168.0.222",
+      "error": "[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1000)",
+      "message": "SSL証明書検証失敗"
+    },
+    "https_endpoints": {
+      "/health": {
+        "status_code": 500,
+        "headers": {
+          "date": "Wed, 20 Aug 2025 08:04:15 GMT",
+          "server": "uvicorn",
+          "content-type": "text/plain; charset=utf-8",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        },
+        "response_time": 0.005819,
+        "content_length": 21,
+        "message": "HTTP 500"
+      },
+      "/api/health": {
+        "status_code": 500,
+        "headers": {
+          "date": "Wed, 20 Aug 2025 08:04:15 GMT",
+          "server": "uvicorn",
+          "content-type": "text/plain; charset=utf-8",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        },
+        "response_time": 0.02437,
+        "content_length": 21,
+        "message": "HTTP 500"
+      },
+      "/api/v1/health": {
+        "status_code": 500,
+        "headers": {
+          "date": "Wed, 20 Aug 2025 08:04:15 GMT",
+          "server": "uvicorn",
+          "content-type": "text/plain; charset=utf-8",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        },
+        "response_time": 0.007048,
+        "content_length": 21,
+        "message": "HTTP 500"
+      },
+      "/status": {
+        "status_code": 500,
+        "headers": {
+          "date": "Wed, 20 Aug 2025 08:04:15 GMT",
+          "server": "uvicorn",
+          "content-type": "text/plain; charset=utf-8",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        },
+        "response_time": 0.022238,
+        "content_length": 21,
+        "message": "HTTP 500"
+      },
+      "/ping": {
+        "status_code": 500,
+        "headers": {
+          "date": "Wed, 20 Aug 2025 08:04:15 GMT",
+          "server": "uvicorn",
+          "content-type": "text/plain; charset=utf-8",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        },
+        "response_time": 0.004571,
+        "content_length": 21,
+        "message": "HTTP 500"
+      }
+    },
+    "reverse_proxy": {
+      "status": "success",
+      "status_code": 500,
+      "proxy_headers": {
+        "server": "uvicorn"
+      },
+      "all_headers": {
+        "date": "Wed, 20 Aug 2025 08:04:15 GMT",
+        "server": "uvicorn",
+        "content-type": "text/plain; charset=utf-8",
+        "connection": "close"
+      },
+      "message": "リバースプロキシ検出: {'server': 'uvicorn'}"
+    }
+  }
+}

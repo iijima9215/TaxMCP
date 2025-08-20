@@ -1,0 +1,158 @@
+{
+  "start_time": "2025-08-20T10:21:52.109057",
+  "base_url": "https://taxmcp.ami-j2.com",
+  "test_iterations": 5,
+  "results": [
+    {
+      "iteration": 1,
+      "tests": {
+        "health_check": {
+          "success": false,
+          "duration": 0.455,
+          "timestamp": "2025-08-20T10:21:52.566262"
+        },
+        "individual_tax": {
+          "success": false,
+          "duration": 0.121,
+          "timestamp": "2025-08-20T10:21:53.738379"
+        },
+        "corporate_tax": {
+          "success": false,
+          "duration": 0.115,
+          "timestamp": "2025-08-20T10:21:54.865024"
+        },
+        "tax_answer_search": {
+          "success": false,
+          "duration": 0.121,
+          "timestamp": "2025-08-20T10:21:55.996972"
+        },
+        "law_search": {
+          "success": false,
+          "duration": 0.091,
+          "timestamp": "2025-08-20T10:21:57.094378"
+        }
+      }
+    },
+    {
+      "iteration": 2,
+      "tests": {
+        "health_check": {
+          "success": false,
+          "duration": 0.112,
+          "timestamp": "2025-08-20T10:21:58.217685"
+        },
+        "individual_tax": {
+          "success": false,
+          "duration": 0.118,
+          "timestamp": "2025-08-20T10:21:59.351410"
+        },
+        "corporate_tax": {
+          "success": false,
+          "duration": 0.116,
+          "timestamp": "2025-08-20T10:22:00.474156"
+        },
+        "tax_answer_search": {
+          "success": false,
+          "duration": 0.113,
+          "timestamp": "2025-08-20T10:22:01.596130"
+        },
+        "law_search": {
+          "success": false,
+          "duration": 0.115,
+          "timestamp": "2025-08-20T10:22:02.728943"
+        }
+      }
+    },
+    {
+      "iteration": 3,
+      "tests": {
+        "health_check": {
+          "success": false,
+          "duration": 0.093,
+          "timestamp": "2025-08-20T10:22:03.827677"
+        },
+        "individual_tax": {
+          "success": false,
+          "duration": 0.098,
+          "timestamp": "2025-08-20T10:22:04.937974"
+        },
+        "corporate_tax": {
+          "success": false,
+          "duration": 0.121,
+          "timestamp": "2025-08-20T10:22:06.064796"
+        },
+        "tax_answer_search": {
+          "success": false,
+          "duration": 0.109,
+          "timestamp": "2025-08-20T10:22:07.186495"
+        },
+        "law_search": {
+          "success": false,
+          "duration": 0.114,
+          "timestamp": "2025-08-20T10:22:08.308161"
+        }
+      }
+    },
+    {
+      "iteration": 4,
+      "tests": {
+        "health_check": {
+          "success": false,
+          "duration": 0.439,
+          "timestamp": "2025-08-20T10:22:09.758910"
+        },
+        "individual_tax": {
+          "success": false,
+          "duration": 0.116,
+          "timestamp": "2025-08-20T10:22:10.881710"
+        },
+        "corporate_tax": {
+          "success": false,
+          "duration": 0.085,
+          "timestamp": "2025-08-20T10:22:11.978162"
+        },
+        "tax_answer_search": {
+          "success": false,
+          "duration": 0.121,
+          "timestamp": "2025-08-20T10:22:13.103224"
+        },
+        "law_search": {
+          "success": false,
+          "duration": 0.116,
+          "timestamp": "2025-08-20T10:22:14.220925"
+        }
+      }
+    },
+    {
+      "iteration": 5,
+      "tests": {
+        "health_check": {
+          "success": false,
+          "duration": 0.107,
+          "timestamp": "2025-08-20T10:22:15.337222"
+        },
+        "individual_tax": {
+          "success": false,
+          "duration": 0.419,
+          "timestamp": "2025-08-20T10:22:16.765955"
+        },
+        "corporate_tax": {
+          "success": false,
+          "duration": 1.148,
+          "timestamp": "2025-08-20T10:22:18.919577"
+        },
+        "tax_answer_search": {
+          "success": false,
+          "duration": 0.119,
+          "timestamp": "2025-08-20T10:22:20.053477"
+        },
+        "law_search": {
+          "success": false,
+          "duration": 0.119,
+          "timestamp": "2025-08-20T10:22:21.182167"
+        }
+      }
+    }
+  ],
+  "end_time": "2025-08-20T10:22:22.199555"
+}
