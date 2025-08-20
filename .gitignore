@@ -140,6 +140,9 @@ cython_debug/
 # Test results
 test_results_*.json
 
+# Diagnostic results
+diagnostic_results_*.json
+
 # Cache files
 cache/
 
