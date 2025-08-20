@@ -17,6 +17,7 @@ from tax_calculator import tax_calculator, corporate_tax_calculator
 from enhanced_corporate_tax import enhanced_corporate_tax_calculator, AdditionItem, DeductionItem, TaxCreditItem, EnhancedCorporateTaxCalculator
 from security import security_manager, audit_logger, validate_and_sanitize
 from rag_integration import rag_integration
+from mcp_handler import mcp_handler, JsonRpcRequest, JsonRpcResponse
 
 # 税金計算機のインスタンス作成
 enhanced_corporate_tax_calculator = EnhancedCorporateTaxCalculator()
@@ -236,6 +237,47 @@ async def search_law(request: Dict[str, Any]):
     except Exception as e:
         logger.error("Failed to search law documents", error=str(e))
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/mcp")
+async def mcp_endpoint(request: JsonRpcRequest):
+    """MCP (Model Context Protocol) endpoint for Claude Desktop integration."""
+    try:
+        logger.info("MCP request received", method=request.method, id=request.id)
+        
+        # Handle MCP request
+        response = await mcp_handler.handle_request(request)
+        
+        logger.info("MCP request completed", method=request.method, id=request.id)
+        return response.dict(exclude_none=True)
+        
+    except Exception as e:
+        logger.error("MCP request failed", error=str(e), method=request.method)
+        return JsonRpcResponse(
+            error={
+                "code": -32603,
+                "message": f"Internal error: {str(e)}"
+            },
+            id=request.id
+        ).dict(exclude_none=True)
+
+@app.get("/mcp/info")
+async def mcp_info():
+    """MCP server information endpoint."""
+    return {
+        "name": "Japanese Tax Calculator MCP",
+        "version": "1.0.0",
+        "protocol_version": "2024-11-05",
+        "description": "MCP server for Japanese tax calculations",
+        "capabilities": {
+            "tools": {
+                "listChanged": False
+            }
+        },
+        "endpoints": {
+            "mcp": "/mcp",
+            "info": "/mcp/info"
+        }
+    }
 
 if __name__ == "__main__":
     logger.info(
