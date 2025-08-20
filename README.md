@@ -1,38 +1,87 @@
 # Japanese Tax Calculator MCP Server
 
-日本の税制に特化したModel Context Protocol (MCP) サーバーです。所得税、消費税、住民税の計算機能を提供します。
+日本の税制に特化した**Model Context Protocol (MCP)** サーバーです。MCPプロトコルに完全対応し、ChatGPTやClaude DesktopなどのLLMクライアントから税務計算機能を安全に利用できます。
+
+## MCPプロトコルとは
+
+**Model Context Protocol (MCP)** は、OpenAIが提唱したLLM（ChatGPTなど）から外部システムに安全にアクセスするための統一仕様です。
+
+### MCPプロトコルの特徴
+
+- **JSON-RPC 2.0ベース**: 標準化されたリクエスト/レスポンス形式
+- **初期化ハンドシェイク**: クライアントとサーバー間の能力交換
+- **認証・認可**: トークンやスコープ管理による安全なアクセス
+- **機能登録**: tools、resources、eventsの標準化された公開方法
+- **ストリーミング対応**: リアルタイムデータ交換
+- **エラーハンドリング**: 統一されたエラー処理機構
+
+### REST APIとの違い
+
+| 項目 | REST API | MCPプロトコル |
+|------|----------|---------------|
+| **目的** | 一般的なHTTPデータ交換 | LLM専用の安全な統合 |
+| **プロトコル** | HTTP/HTTPS | JSON-RPC 2.0 over HTTP/WebSocket/stdio |
+| **初期化** | なし | ハンドシェイク必須 |
+| **機能発見** | 手動実装 | 標準化された機能公開 |
+| **認証** | 各実装で異なる | 統一された認証機構 |
+| **LLM統合** | 手動実装 | ネイティブサポート |
+
+### 本プロジェクトのMCP対応
+
+✅ **完全なMCPプロトコル実装**:
+- JSON-RPC 2.0準拠のリクエスト/レスポンス処理
+- MCPハンドシェイクとcapability交換
+- 標準化されたtools定義と公開
+- エラーハンドリングとログ機能
+- 複数の通信方式サポート（HTTP、WebSocket、stdio）
+
+✅ **LLMクライアント対応**:
+- ChatGPT（将来対応予定）
+- Claude Desktop（ネイティブサポート）
+- その他MCPクライアント
+
+## アーキテクチャ
+
+```
+LLMクライアント → (MCPプロトコル) → 本MCPサーバー → 税務計算エンジン
+     ↓                                        ↓
+ChatGPT/Claude                           内部REST API（オプション）
+```
+
+**重要**: 本プロジェクトは単なるREST APIサーバーではなく、MCPプロトコルに完全対応したMCPサーバーです。
 
 ## 機能
 
-### 主要機能
-- **所得税計算**: 年収、各種控除に基づく所得税の計算
-- **法人税計算**: 法人税率、事業税、地方法人税の計算
-- **消費税率取得**: 日付と商品カテゴリーに基づく消費税率の取得
-- **住民税計算**: 都道府県別の住民税計算
-- **複数年シミュレーション**: 複数年にわたる税額シミュレーション
-- **都道府県情報**: サポートされている都道府県の一覧取得
-- **税年度情報**: サポートされている税年度とその特徴の取得
+### MCPツール（税務計算）
+
+本MCPサーバーは以下のツールをMCPプロトコル経由で提供します：
+
+#### 1. 所得税計算 (`calculate_income_tax`)
+年収、各種控除に基づく所得税の精密計算
+
+#### 2. 法人税計算 (`calculate_corporate_tax`)
+法人税率、事業税、地方法人税の総合計算
+
+#### 3. 住民税計算 (`calculate_resident_tax`)
+都道府県別の住民税計算（所得割・均等割）
+
+#### 4. 法的参照検索 (`search_legal_reference`)
+税法条文、タックスアンサー、判例の検索
 
 ### 高度な機能
-- **法令参照機能**: 法人税法条文検索、タックスアンサー番号検索、e-Gov法令検索API統合
+
 - **RAG統合**: 国税庁タックスアンサー、財務省税制改正資料との連携
 - **SQLiteインデックス**: 財務省資料の自動インデックス化と全文検索
-- **拡張税務情報検索**: 高度な検索機能とメタデータ管理
-- **外部データソース統合**: Web API、スクレイピング、キャッシュ機能
-
-### セキュリティ機能
-- 入力データの検証とサニタイズ
-- 監査ログ記録
-- JWT認証サポート
-- セキュリティイベントログ
+- **セキュリティ**: 入力検証、監査ログ、JWT認証
+- **キャッシュ機能**: 外部API呼び出しの効率化
 
 ## セットアップ
 
 ### 前提条件
-- Python 3.11以上
-- Docker（オプション）
+- Python 3.8以上
+- MCPクライアント（Claude Desktop推奨）
 
-### ローカル環境での実行
+### インストール
 
 1. **リポジトリのクローン**
 ```bash
@@ -40,7 +89,7 @@ git clone <repository-url>
 cd TaxMCP
 ```
 
-2. **仮想環境の作成と有効化**
+2. **仮想環境の作成**
 ```bash
 python -m venv venv
 # Windows
@@ -55,235 +104,189 @@ pip install -r requirements.txt
 ```
 
 4. **環境変数の設定**
-`.env`ファイルを編集して必要な設定を行います：
 ```env
 SERVER_HOST=localhost
 SERVER_PORT=8000
 DEBUG=true
-SECRET_KEY=your-secret-key-here-change-in-production
+SECRET_KEY=your-secret-key-here
 ```
 
-⚠️ **重要**: `SECRET_KEY`は本番環境では必ず変更してください。この値はセッション管理、データ暗号化、セキュリティ機能の基盤となる重要な暗号化キーです。
+### MCPサーバーの起動
 
-📖 **詳細情報**: SECRET_KEYの適切な設定方法については、[SECRET_KEYセットアップガイド](./SECRET_KEY_SETUP_GUIDE.md)を参照してください。
-
-5. **サーバーの起動**
-
-#### MCPサーバー（stdio経由）
+#### 方法1: stdio通信（Claude Desktop推奨）
 ```bash
 python main.py
 ```
 
-#### HTTPサーバー（Web API）
+#### 方法2: HTTP通信
 ```bash
 python http_server.py
 ```
 
-または、uvicornを直接使用：
-```bash
-uvicorn http_server:app --host 0.0.0.0 --port 8000 --reload
-```
-
-**注意**: 
-- `main.py`: MCPクライアント用のstdio通信サーバー
-- `http_server.py`: HTTP API用のWebサーバー（ヘルスチェック、外部テスト用）
-
-### Dockerを使用した実行
-
-1. **Docker Composeでの起動**
+#### 方法3: Docker
 ```bash
 docker compose up -d
 ```
 
-2. **ログの確認**
-```bash
-docker compose logs -f taxmcp
-```
+## MCPクライアント接続
 
-3. **停止**
-```bash
-docker compose down
-```
+### Claude Desktop接続
 
-## 使用方法
+詳細な設定方法は [Claude Desktop設定ガイド](./CLAUDE_DESKTOP_SETUP_GUIDE.md) を参照してください。
 
-### MCPクライアントからの接続
-
-サーバーが起動したら、MCPクライアントから以下のエンドポイントに接続できます：
-- HTTP: `http://localhost:8000`
-- WebSocket: `ws://localhost:8000/ws`
-
-### 利用可能なツール
-
-#### 1. 所得税計算 (`calculate_income_tax`)
+**設定例** (`claude_desktop_config.json`):
 ```json
 {
-  "annual_income": 5000000,
-  "tax_year": 2024,
-  "basic_deduction": 480000,
-  "dependents_count": 2
+  "mcpServers": {
+    "tax-calculator": {
+      "command": "python",
+      "args": ["C:\\path\\to\\TaxMCP\\main.py"],
+      "env": {
+        "PYTHONPATH": "C:\\path\\to\\TaxMCP"
+      }
+    }
+  }
 }
 ```
 
-#### 2. 消費税率取得 (`get_consumption_tax_rate`)
-```json
-{
-  "date": "2024-01-01",
-  "category": "standard"
-}
+### ChatGPT接続
+
+現在のChatGPT UIでは外部MCPサーバーの直接追加はサポートされていません。詳細は [ChatGPT統合ガイド](./CHATGPT_INTEGRATION_GUIDE.md) を参照してください。
+
+## 使用例
+
+### Claude Desktopでの使用
+
+```
+ユーザー: 年収500万円の所得税を計算してください
+
+Claude: 年収500万円の所得税を計算いたします。
+[calculate_income_tax ツールを使用]
+
+計算結果：
+- 年収: 5,000,000円
+- 給与所得控除: 1,440,000円
+- 基礎控除: 480,000円
+- 課税所得: 3,080,000円
+- 所得税額: 205,500円
 ```
 
-#### 3. 住民税計算 (`calculate_resident_tax`)
-```json
-{
-  "taxable_income": 3000000,
-  "prefecture_code": 13
-}
-```
-
-#### 4. 法人税計算 (`calculate_corporate_tax`)
-```json
-{
-  "taxable_income": 10000000,
-  "tax_year": 2024,
-  "company_size": "small",
-  "prefecture_code": 13
-}
-```
-
-#### 5. 複数年シミュレーション (`simulate_multi_year_taxes`)
-```json
-{
-  "annual_incomes": [4000000, 4200000, 4400000],
-  "start_year": 2024,
-  "prefecture_code": 13
-}
-```
-
-#### 6. 法令参照検索 (`search_legal_reference`)
-```json
-{
-  "query": "法人税法第22条",
-  "search_type": "law_article",
-  "limit": 10
-}
-```
-
-#### 7. 拡張税務情報検索 (`search_enhanced_tax_info`)
-```json
-{
-  "query": "消費税 軽減税率",
-  "limit": 5,
-  "include_metadata": true
-}
-```
-
-#### 8. インデックス統計情報 (`get_index_statistics`)
-```json
-{}
-```
-
-### テストクライアントの実行
+### MCPプロトコル直接呼び出し
 
 ```bash
-python test_client.py
+# tools/list - 利用可能なツール一覧
+curl -X POST http://localhost:8000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": "1",
+    "method": "tools/list",
+    "params": {}
+  }'
+
+# calculate_income_tax - 所得税計算
+curl -X POST http://localhost:8000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": "2",
+    "method": "tools/call",
+    "params": {
+      "name": "calculate_income_tax",
+      "arguments": {
+        "annual_income": 5000000
+      }
+    }
+  }'
 ```
 
-## 設定
+## 技術仕様
 
-### 環境変数
+### MCPプロトコル実装
 
-| 変数名 | デフォルト値 | 説明 |
-|--------|-------------|------|
-| `SERVER_HOST` | localhost | サーバーのホスト |
-| `SERVER_PORT` | 8000 | サーバーのポート |
-| `DEBUG` | false | デバッグモード |
-| `SECRET_KEY` | - | JWT署名用の秘密鍵 |
-| `LOG_LEVEL` | info | ログレベル |
-| `AUDIT_LOG_ENABLED` | true | 監査ログの有効化 |
+- **プロトコルバージョン**: MCP 2024-11-05
+- **通信方式**: HTTP、WebSocket、stdio
+- **メッセージ形式**: JSON-RPC 2.0
+- **認証**: JWT、APIキー
+- **エラーハンドリング**: 標準MCPエラーコード
 
-### 税制更新について
+### 依存関係
 
-TaxMCPサーバーには税制改正に対応するための自動更新機能が実装されています：
-
-- **自動税制情報取得**: 財務省、国税庁等の公式データソースから最新情報を自動取得
-- **税率更新機能**: 所得税、法人税、消費税の税率変更を自動検出
-- **RAG統合**: 外部データソースとの連携による情報の自動更新
-
-税制改正時の詳細な対応手順については [SYSTEM_MAINTENANCE_GUIDE.md](SYSTEM_MAINTENANCE_GUIDE.md) を参照してください。
-
-### ログ設定
-
-ログは以下の場所に出力されます：
-- アプリケーションログ: `logs/app.log`
-- 監査ログ: `logs/audit.log`
-
-## 開発
+- **FastMCP**: MCPプロトコル実装フレームワーク
+- **FastAPI**: HTTP API実装
+- **SQLite**: データインデックス
+- **Whoosh**: 全文検索エンジン
+- **aiohttp**: 非同期HTTP通信
+- **PyJWT**: JWT認証
 
 ### プロジェクト構造
 
 ```
 TaxMCP/
-├── main.py                    # MCPサーバーのメインファイル
-├── tax_calculator.py          # 税計算ロジック
+├── main.py                    # MCPサーバー（stdio）
+├── http_server.py             # MCPサーバー（HTTP）
+├── mcp_handler.py             # MCPプロトコル処理
+├── tax_calculator.py          # 税計算エンジン
 ├── security.py                # セキュリティ機能
 ├── config.py                 # 設定管理
-├── rag_integration.py        # RAG統合機能
-├── sqlite_indexer.py         # SQLiteインデックス機能
-├── test_client.py            # テストクライアント
-├── requirements.txt          # Python依存関係
-├── Dockerfile               # Dockerイメージ定義
-├── docker-compose.yml       # Docker Compose設定
-├── .env                     # 環境変数
-├── SECRET_KEY_SETUP_GUIDE.md # SECRET_KEY設定ガイド
-├── architecture.md          # アーキテクチャドキュメント
-├── rag_integration_guide.md # RAG統合ガイド
-├── test_client_guide.md     # テストクライアントガイド
-├── mcp_tax.md              # MCP税務サーバードキュメント
-├── cache/                   # キャッシュディレクトリ
-└── README.md               # このファイル
+├── rag_integration.py        # RAG統合
+├── sqlite_indexer.py         # インデックス機能
+├── requirements.txt          # 依存関係
+├── CLAUDE_DESKTOP_SETUP_GUIDE.md  # Claude Desktop設定
+├── CHATGPT_INTEGRATION_GUIDE.md   # ChatGPT統合ガイド
+└── README.md                 # このファイル
 ```
 
-### 技術仕様
+## 開発
 
-#### 依存関係
-- **FastMCP**: Model Context Protocol サーバーフレームワーク
-- **FastAPI**: 高性能なWebフレームワーク
-- **SQLite**: 軽量データベース（インデックス機能用）
-- **Whoosh**: 全文検索エンジン
-- **Jieba**: 日本語テキスト処理
-- **BeautifulSoup4**: HTMLパースィング
-- **aiohttp**: 非同期HTTP クライアント
-- **PyJWT**: JWT認証
-- **Passlib**: パスワードハッシュ化
+### 新しいMCPツールの追加
 
-#### アーキテクチャ
-- **MCP準拠**: Model Context Protocol v1.0に完全対応
-- **非同期処理**: asyncio を使用した高性能な非同期処理
-- **モジュラー設計**: 機能別に分離されたモジュール構造
-- **キャッシュ機能**: 外部API呼び出しの効率化
-- **セキュリティ**: 入力検証、監査ログ、JWT認証
+1. `tax_calculator.py`に計算ロジックを実装
+2. `mcp_handler.py`にMCPツール定義を追加
+3. セキュリティ検証を実装
+4. テストケースを作成
 
-#### パフォーマンス
-- **インデックス検索**: SQLite + Whoosh による高速全文検索
-- **キャッシュ**: 外部データソースのレスポンス時間短縮
-- **非同期処理**: 複数リクエストの並行処理
+### MCPプロトコルテスト
 
-### 新しい税計算機能の追加
+```bash
+# MCPサーバー情報取得
+curl http://localhost:8000/mcp/info
 
-1. `tax_calculator.py`に計算ロジックを追加
-2. `main.py`に新しいツールを定義
-3. セキュリティ検証を追加
-4. テストケースを`test_client.py`に追加
+# ツール一覧取得
+python -c "
+import requests
+response = requests.post('http://localhost:8000/mcp', json={
+    'jsonrpc': '2.0',
+    'id': '1',
+    'method': 'tools/list',
+    'params': {}
+})
+print(response.json())
+"
+```
 
-### 関連ドキュメント
+## セキュリティ
 
-- [アーキテクチャドキュメント](./architecture.md) - システム設計の詳細
-- [RAG統合ガイド](./rag_integration_guide.md) - RAG機能の実装詳細
-- [テストクライアントガイド](./test_client_guide.md) - テスト方法の詳細
-- [SECRET_KEYセットアップガイド](./SECRET_KEY_SETUP_GUIDE.md) - セキュリティ設定の詳細
-- [システムメンテナンスガイド](./SYSTEM_MAINTENANCE_GUIDE.md) - 税制更新・運用手順
-- [MCP税務サーバードキュメント](./mcp_tax.md) - MCP仕様の詳細
+- **入力検証**: 全パラメータの型・範囲チェック
+- **認証**: JWT、APIキーによる認証
+- **監査ログ**: 全操作の記録
+- **レート制限**: DoS攻撃対策
+- **暗号化**: 機密データの暗号化
+
+## パフォーマンス
+
+- **非同期処理**: asyncioによる高速処理
+- **キャッシュ**: 外部API呼び出し最適化
+- **インデックス**: SQLite + Whoosh高速検索
+- **接続プール**: データベース接続最適化
+
+## 関連ドキュメント
+
+- [Claude Desktop設定ガイド](./CLAUDE_DESKTOP_SETUP_GUIDE.md) - Claude Desktopとの連携
+- [ChatGPT統合ガイド](./CHATGPT_INTEGRATION_GUIDE.md) - ChatGPT統合の制限と代替策
+- [アーキテクチャドキュメント](./architecture.md) - システム設計詳細
+- [セキュリティガイド](./SECRET_KEY_SETUP_GUIDE.md) - セキュリティ設定
+- [システムメンテナンス](./SYSTEM_MAINTENANCE_GUIDE.md) - 運用・保守手順
 
 ## ライセンス
 
@@ -291,8 +294,8 @@ MIT License
 
 ## 貢献
 
-プルリクエストやイシューの報告を歓迎します。
+プルリクエストやイシューの報告を歓迎します。MCPプロトコルの仕様に準拠した実装を心がけてください。
 
 ## サポート
 
-質問や問題がある場合は、GitHubのIssuesページでお知らせください。
+技術的な質問や問題については、GitHubのIssuesページでお知らせください。MCPプロトコル関連の質問も歓迎します。
