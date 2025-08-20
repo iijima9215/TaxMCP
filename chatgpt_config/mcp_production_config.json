@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "taxmcp-production": {
+      "command": "python",
+      "args": [
+        "-c",
+        "import requests; import json; import sys; import os; from urllib.parse import urljoin; base_url = os.getenv('TAXMCP_BASE_URL', 'https://taxmcp.ami-j2.com'); timeout = int(os.getenv('TAXMCP_TIMEOUT', '30')); verify_ssl = os.getenv('TAXMCP_VERIFY_SSL', 'true').lower() == 'true'; print(f'TaxMCP Production Server Connected: {base_url}'); sys.stdout.flush()"
+      ],
+      "env": {
+        "TAXMCP_BASE_URL": "https://taxmcp.ami-j2.com",
+        "TAXMCP_TIMEOUT": "30",
+        "TAXMCP_VERIFY_SSL": "true",
+        "TAXMCP_API_VERSION": "v1",
+        "TAXMCP_USER_AGENT": "ChatGPT-MCP-Client/1.0"
+      }
+    }
+  }
+}

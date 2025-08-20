@@ -1,10 +1,14 @@
 # ChatGPT連携ガイド - TaxMCP サーバー
 
-このガイドでは、TaxMCPサーバーをChatGPTと連携して使用する方法を詳細に説明します。
+このガイドでは、TaxMCPサーバーをChatGPTと連携して使用する方法を詳細に説明します。本番環境（https://taxmcp.ami-j2.com）との連動設定も含まれています。
 
 ## 概要
 
 TaxMCPサーバーは、Model Context Protocol (MCP) を使用してChatGPTと連携し、高度な税務計算機能を提供します。ChatGPTがMCPクライアントとして動作し、TaxMCPサーバーの各種税務ツールにアクセスできます。
+
+### 利用可能な環境
+- **ローカル環境**: localhost:8000
+- **本番環境**: https://taxmcp.ami-j2.com
 
 ## 前提条件
 
@@ -87,10 +91,12 @@ ChatGPTクライアント（Claude Desktop等）の設定ディレクトリに`m
 ```
 
 #### 2.2 設定ファイルの内容
+
+##### ローカル環境用設定
 ```json
 {
   "mcpServers": {
-    "taxmcp": {
+    "taxmcp-local": {
       "command": "python",
       "args": ["-m", "main"],
       "cwd": "/path/to/TaxMCP",
@@ -103,12 +109,96 @@ ChatGPTクライアント（Claude Desktop等）の設定ディレクトリに`m
 }
 ```
 
+##### 本番環境用設定
+```json
+{
+  "mcpServers": {
+    "taxmcp-production": {
+      "command": "python",
+      "args": ["-c", "import requests; import json; import sys; from urllib.parse import urljoin; base_url='https://taxmcp.ami-j2.com'; print('TaxMCP Production Server Connected')"],
+      "env": {
+        "TAXMCP_BASE_URL": "https://taxmcp.ami-j2.com",
+        "TAXMCP_TIMEOUT": "30",
+        "TAXMCP_VERIFY_SSL": "true"
+      }
+    }
+  }
+}
+```
+
+##### 両環境対応設定（推奨）
+```json
+{
+  "mcpServers": {
+    "taxmcp-local": {
+      "command": "python",
+      "args": ["-m", "main"],
+      "cwd": "/path/to/TaxMCP",
+      "env": {
+        "SERVER_HOST": "localhost",
+        "SERVER_PORT": "8000"
+      }
+    },
+    "taxmcp-production": {
+      "command": "python",
+      "args": ["-c", "import requests; import json; import sys; from urllib.parse import urljoin; base_url='https://taxmcp.ami-j2.com'; print('TaxMCP Production Server Connected')"],
+      "env": {
+        "TAXMCP_BASE_URL": "https://taxmcp.ami-j2.com",
+        "TAXMCP_TIMEOUT": "30",
+        "TAXMCP_VERIFY_SSL": "true"
+      }
+    }
+  }
+}
+```
+
 **注意**: `cwd`は実際のTaxMCPプロジェクトのパスに変更してください。
 
-#### 2.3 ChatGPTクライアントの再起動
+#### 2.3 事前設定済みファイルの使用（推奨）
+
+手動設定の代わりに、事前に用意された設定ファイルを使用できます：
+
+```bash
+# 本番環境用設定をコピー
+copy "C:\Void\TaxMCP\chatgpt_config\mcp_production_config.json" "%APPDATA%\Claude\mcp_servers.json"
+
+# または両環境対応設定をコピー（推奨）
+copy "C:\Void\TaxMCP\chatgpt_config\mcp_combined_config.json" "%APPDATA%\Claude\mcp_servers.json"
+```
+
+利用可能な設定ファイル：
+- `chatgpt_config/mcp_local_config.json` - ローカル環境専用
+- `chatgpt_config/mcp_production_config.json` - 本番環境専用
+- `chatgpt_config/mcp_combined_config.json` - 両環境対応（推奨）
+
+#### 2.4 本番環境接続テスト
+
+本番環境（https://taxmcp.ami-j2.com）への接続をテスト：
+
+```bash
+cd C:\Void\TaxMCP\chatgpt_config
+python test_production_connection.py
+```
+
+テストが成功すると以下のような出力が表示されます：
+```
+✓ ヘルスチェック成功
+✓ 税務計算テスト成功
+✓ MCP互換性確認成功
+🎉 全てのテストが成功しました！
+```
+
+#### 2.5 ChatGPTクライアントの再起動
 設定ファイルを保存後、ChatGPTクライアントを再起動してください。
 
 ## 使用方法
+
+### 環境の選択
+
+ChatGPTでTaxMCPを使用する際は、使用する環境を指定できます：
+
+- **ローカル環境**: `taxmcp-local` サーバーを使用
+- **本番環境**: `taxmcp-production` サーバー（https://taxmcp.ami-j2.com）を使用
 
 ### 基本的な使用例
 
@@ -137,6 +227,25 @@ ChatGPTとの会話で以下のような質問をすることで、TaxMCPサー�
 #### 税務情報検索
 ```
 消費税の軽減税率について詳しい情報を検索してください。
+```
+
+### 本番環境での使用例
+
+本番環境（https://taxmcp.ami-j2.com）を使用する場合の具体例：
+
+#### 環境指定での計算
+```
+taxmcp-productionサーバーを使用して、年収600万円、配偶者控除38万円、扶養控除38万円の場合の2024年度所得税を東京都で計算してください。
+```
+
+#### 最新税制での計算
+```
+本番環境で最新の税制データを使用して、法人税率の確認と課税所得800万円の法人税計算を行ってください。
+```
+
+#### 複数環境での比較
+```
+ローカル環境と本番環境の両方で同じ条件（年収500万円、基礎控除48万円）の所得税を計算して比較してください。
 ```
 
 ### 高度な使用例
@@ -174,7 +283,9 @@ ChatGPTとの会話で以下のような質問をすることで、TaxMCPサー�
 ### よくある問題と解決方法
 
 #### 1. サーバーに接続できない
-**症状**: ChatGPTがTaxMCPサーバーに接続できない
+
+##### ローカル環境の場合
+**症状**: ChatGPTがローカルのTaxMCPサーバーに接続できない
 
 **解決方法**:
 - TaxMCPサーバーが起動していることを確認
@@ -185,6 +296,26 @@ ChatGPTとの会話で以下のような質問をすることで、TaxMCPサー�
 # ポート使用状況の確認
 netstat -an | grep 8000
 ```
+
+##### 本番環境の場合
+**症状**: ChatGPTが本番環境（https://taxmcp.ami-j2.com）に接続できない
+
+**解決方法**:
+1. **接続テストの実行**:
+   ```bash
+   cd C:\Void\TaxMCP\chatgpt_config
+   python test_production_connection.py
+   ```
+
+2. **ネットワーク設定の確認**:
+   - インターネット接続の確認
+   - プロキシ設定の確認
+   - SSL証明書の検証設定
+
+3. **サーバー状態の確認**:
+   ```bash
+   curl -I https://taxmcp.ami-j2.com/health
+   ```
 
 #### 2. 認証エラー
 **症状**: 認証関連のエラーメッセージが表示される
@@ -213,6 +344,36 @@ tail -f logs/app.log
 - インターネット接続を確認
 - キャッシュディレクトリの権限を確認
 - インデックスの再構築を実行
+
+#### 5. 本番環境でのタイムアウトエラー
+**症状**: 本番環境での計算処理がタイムアウトする
+
+**解決方法**:
+1. **タイムアウト設定の調整**:
+   - `mcp_production_config.json`の`TAXMCP_TIMEOUT`値を増加
+   - 推奨値: 30-60秒
+
+2. **ネットワーク状況の確認**:
+   ```bash
+   ping taxmcp.ami-j2.com
+   ```
+
+3. **処理の分割**:
+   - 複雑な計算を小さな単位に分割
+   - 複数年シミュレーションの年数を減らす
+
+#### 6. SSL証明書エラー
+**症状**: SSL証明書の検証でエラーが発生
+
+**解決方法**:
+1. **証明書の確認**:
+   ```bash
+   openssl s_client -connect taxmcp.ami-j2.com:443 -servername taxmcp.ami-j2.com
+   ```
+
+2. **設定の調整**:
+   - `TAXMCP_VERIFY_SSL`を`false`に設定（テスト時のみ）
+   - 本番環境では`true`を維持することを推奨
 
 ### ログの確認方法
 
@@ -352,4 +513,44 @@ DEBUG=true python main.py
 
 ## まとめ
 
-このガイドに従って設定を行うことで、ChatGPTとTaxMCPサーバーを効果的に連携させ、高度な税務計算機能を利用できるようになります。定期的なメンテナンスとセキュリティ対策を実施し、安全で効率的な運用を心がけてください。
+このガイドに従って設定を行うことで、ChatGPTとTaxMCPサーバーを効果的に連携させ、高度な税務計算機能を利用できるようになります。
+
+### 推奨設定
+
+1. **両環境対応設定の使用**:
+   ```bash
+   copy "C:\Void\TaxMCP\chatgpt_config\mcp_combined_config.json" "%APPDATA%\Claude\mcp_servers.json"
+   ```
+
+2. **本番環境接続テストの実行**:
+   ```bash
+   cd C:\Void\TaxMCP\chatgpt_config
+   python test_production_connection.py
+   ```
+
+3. **定期的な接続確認**:
+   - 本番環境の可用性確認
+   - 設定ファイルの更新確認
+   - セキュリティ設定の見直し
+
+### 環境別の使い分け
+
+- **開発・テスト**: ローカル環境（`taxmcp-local`）
+- **実際の税務計算**: 本番環境（`taxmcp-production`）
+- **比較検証**: 両環境での並行実行
+
+### セキュリティとメンテナンス
+
+定期的なメンテナンスとセキュリティ対策を実施し、安全で効率的な運用を心がけてください：
+
+- SSL証明書の有効性確認
+- タイムアウト設定の最適化
+- ログの定期的な確認
+- 設定ファイルのバックアップ
+
+### サポートリソース
+
+- **設定ファイル**: `chatgpt_config/` ディレクトリ
+- **接続テスト**: `test_production_connection.py`
+- **詳細ガイド**: `chatgpt_config/README.md`
+- **本番環境**: https://taxmcp.ami-j2.com

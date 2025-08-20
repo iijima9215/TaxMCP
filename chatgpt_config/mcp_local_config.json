@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "taxmcp-local": {
+      "command": "python",
+      "args": ["-m", "main"],
+      "cwd": "C:\\Void\\TaxMCP",
+      "env": {
+        "SERVER_HOST": "localhost",
+        "SERVER_PORT": "8000",
+        "DEBUG": "false",
+        "LOG_LEVEL": "info",
+        "AUDIT_LOG_ENABLED": "true"
+      }
+    }
+  }
+}
