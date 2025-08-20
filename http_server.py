@@ -239,25 +239,40 @@ async def search_law(request: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/mcp")
-async def mcp_endpoint(request: JsonRpcRequest):
+async def mcp_endpoint(request: Dict[str, Any]):
     """MCP (Model Context Protocol) endpoint for Claude Desktop integration."""
     try:
-        logger.info("MCP request received", method=request.method, id=request.id)
+        logger.info("Raw MCP request received", request=request)
+        
+        # Parse request manually to handle validation errors
+        try:
+            json_rpc_request = JsonRpcRequest(**request)
+        except Exception as validation_error:
+            logger.error("Request validation failed", error=str(validation_error), request=request)
+            return JsonRpcResponse(
+                error={
+                    "code": -32602,
+                    "message": f"Invalid request: {str(validation_error)}"
+                },
+                id=request.get('id')
+            ).dict(exclude_none=True)
+        
+        logger.info("MCP request received", method=json_rpc_request.method, id=json_rpc_request.id, params=json_rpc_request.params)
         
         # Handle MCP request
-        response = await mcp_handler.handle_request(request)
+        response = await mcp_handler.handle_request(json_rpc_request)
         
-        logger.info("MCP request completed", method=request.method, id=request.id)
+        logger.info("MCP request completed", method=json_rpc_request.method, id=json_rpc_request.id)
         return response.dict(exclude_none=True)
         
     except Exception as e:
-        logger.error("MCP request failed", error=str(e), method=request.method)
+        logger.error("MCP request failed", error=str(e), request=request)
         return JsonRpcResponse(
             error={
                 "code": -32603,
                 "message": f"Internal error: {str(e)}"
             },
-            id=request.id
+            id=request.get('id') if isinstance(request, dict) else None
         ).dict(exclude_none=True)
 
 @app.get("/mcp/info")
