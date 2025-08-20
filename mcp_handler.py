@@ -187,6 +187,96 @@ class MCPHandler:
                     "required": ["annual_income"]
                 }
             },
+            "calculate_enhanced_corporate_tax": {
+                "name": "calculate_enhanced_corporate_tax",
+                "description": "詳細な別表対応の法人税計算を行います。加算項目、減算項目、税額控除を個別に指定可能です。",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "accounting_profit": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "description": "当期純利益（会計利益）（円）"
+                        },
+                        "tax_year": {
+                            "type": "integer",
+                            "minimum": 2020,
+                            "maximum": 2025,
+                            "default": 2025,
+                            "description": "課税年度"
+                        },
+                        "prefecture": {
+                            "type": "string",
+                            "default": "東京都",
+                            "description": "都道府県"
+                        },
+                        "capital": {
+                            "type": "integer",
+                            "minimum": 1000000,
+                            "default": 100000000,
+                            "description": "資本金（円）"
+                        },
+                        "addition_items": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string", "description": "項目名"},
+                                    "amount": {"type": "integer", "minimum": 0, "description": "金額（円）"},
+                                    "description": {"type": "string", "description": "説明"},
+                                    "related_form": {"type": "string", "description": "関連別表"}
+                                },
+                                "required": ["name", "amount"]
+                            },
+                            "default": [],
+                            "description": "加算項目（損金不算入）のリスト"
+                        },
+                        "deduction_items": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string", "description": "項目名"},
+                                    "amount": {"type": "integer", "minimum": 0, "description": "金額（円）"},
+                                    "description": {"type": "string", "description": "説明"},
+                                    "related_form": {"type": "string", "description": "関連別表"}
+                                },
+                                "required": ["name", "amount"]
+                            },
+                            "default": [],
+                            "description": "減算項目（益金不算入）のリスト"
+                        },
+                        "tax_credit_items": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string", "description": "項目名"},
+                                    "amount": {"type": "integer", "minimum": 0, "description": "金額（円）"},
+                                    "description": {"type": "string", "description": "説明"},
+                                    "related_form": {"type": "string", "description": "関連別表"}
+                                },
+                                "required": ["name", "amount"]
+                            },
+                            "default": [],
+                            "description": "税額控除項目のリスト"
+                        },
+                        "interim_payments": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 0,
+                            "description": "中間納付額（円）"
+                        },
+                        "prepaid_taxes": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 0,
+                            "description": "仮払税金（円）"
+                        }
+                    },
+                    "required": ["accounting_profit"]
+                }
+            },
             "search_legal_reference": {
                 "name": "search_legal_reference",
                 "description": "税法や関連法令の情報を検索します。",
@@ -343,6 +433,113 @@ class MCPHandler:
                 )
                 
                 return result
+            
+            elif tool_name == "calculate_enhanced_corporate_tax":
+                accounting_profit = arguments.get('accounting_profit')
+                if accounting_profit is None:
+                    raise ValueError("accounting_profit is required")
+                
+                # Convert addition items
+                addition_items = []
+                for item in arguments.get('addition_items', []):
+                    from enhanced_corporate_tax import AdditionItem
+                    addition_items.append(AdditionItem(
+                        name=item['name'],
+                        amount=item['amount'],
+                        description=item.get('description', ''),
+                        related_form=item.get('related_form', '')
+                    ))
+                
+                # Convert deduction items
+                deduction_items = []
+                for item in arguments.get('deduction_items', []):
+                    from enhanced_corporate_tax import DeductionItem
+                    deduction_items.append(DeductionItem(
+                        name=item['name'],
+                        amount=item['amount'],
+                        description=item.get('description', ''),
+                        related_form=item.get('related_form', '')
+                    ))
+                
+                # Convert tax credit items
+                tax_credit_items = []
+                for item in arguments.get('tax_credit_items', []):
+                    from enhanced_corporate_tax import TaxCreditItem
+                    tax_credit_items.append(TaxCreditItem(
+                        name=item['name'],
+                        amount=item['amount'],
+                        description=item.get('description', ''),
+                        related_form=item.get('related_form', '')
+                    ))
+                
+                result = enhanced_corporate_tax_calculator.calculate_enhanced_corporate_tax(
+                    accounting_profit=accounting_profit,
+                    tax_year=arguments.get('tax_year', 2025),
+                    prefecture=arguments.get('prefecture', '東京都'),
+                    capital=arguments.get('capital', 100000000),
+                    addition_items=addition_items,
+                    deduction_items=deduction_items,
+                    tax_credit_items=tax_credit_items,
+                    interim_payments=arguments.get('interim_payments', 0),
+                    prepaid_taxes=arguments.get('prepaid_taxes', 0)
+                )
+                
+                # Log audit
+                audit_logger.log_api_call('calculate_enhanced_corporate_tax', arguments, success=True)
+                
+                # Convert result to JSON serializable format
+                return {
+                    "accounting_profit": result.accounting_profit,
+                    "taxable_income": result.taxable_income,
+                    "addition_items": [
+                        {
+                            "name": item.name,
+                            "amount": item.amount,
+                            "description": item.description,
+                            "related_form": item.related_form
+                        }
+                        for item in result.addition_items
+                    ],
+                    "deduction_items": [
+                        {
+                            "name": item.name,
+                            "amount": item.amount,
+                            "description": item.description,
+                            "related_form": item.related_form
+                        }
+                        for item in result.deduction_items
+                    ],
+                    "tax_credit_items": [
+                        {
+                            "name": item.name,
+                            "amount": item.amount,
+                            "description": item.description,
+                            "related_form": item.related_form
+                        }
+                        for item in result.tax_credit_items
+                    ],
+                    "total_additions": result.total_additions,
+                    "total_deductions": result.total_deductions,
+                    "corporate_tax_base": result.corporate_tax_base,
+                    "local_corporate_tax": result.local_corporate_tax,
+                    "national_tax_total": result.national_tax_total,
+                    "total_tax_credits": result.total_tax_credits,
+                    "corporate_tax_after_credits": result.corporate_tax_after_credits,
+                    "final_corporate_tax": result.final_corporate_tax,
+                    "resident_tax_equal": result.resident_tax_equal,
+                    "resident_tax_income": result.resident_tax_income,
+                    "business_tax": result.business_tax,
+                    "special_business_tax": result.special_business_tax,
+                    "local_tax_total": result.local_tax_total,
+                    "total_tax_payment": result.total_tax_payment,
+                    "effective_rate": result.effective_rate,
+                    "interim_payments": result.interim_payments,
+                    "prepaid_taxes": result.prepaid_taxes,
+                    "tax_year": result.tax_year,
+                    "prefecture": result.prefecture,
+                    "capital": result.capital,
+                    "company_type": result.company_type
+                }
             
             elif tool_name == "search_legal_reference":
                 query = arguments.get('query')
