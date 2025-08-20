@@ -166,7 +166,21 @@ class TaxDataFetcher:
                     logger.error(f"財務省サイトへのアクセスエラー: {response.status}")
                     return []
                 
-                html = await response.text()
+                # エンコーディングを明示的に指定
+                html = None
+                for encoding in ['utf-8', 'shift_jis', 'euc-jp', 'cp932']:
+                    try:
+                        html = await response.text(encoding=encoding)
+                        logger.debug(f"財務省サイト: {encoding} エンコーディングで成功")
+                        break
+                    except UnicodeDecodeError as e:
+                        logger.debug(f"財務省サイト: {encoding} エンコーディング失敗 - {e}")
+                        continue
+                
+                if html is None:
+                    logger.error("財務省サイト: 全てのエンコーディングで失敗")
+                    return []
+                
                 soup = BeautifulSoup(html, 'html.parser')
                 
                 tax_info_list = []
@@ -234,7 +248,21 @@ class TaxDataFetcher:
                     url = f"{base_url}/{category_path}/index.htm"
                     async with self.session.get(url) as response:
                         if response.status == 200:
-                            html = await response.text()
+                            # エンコーディングを明示的に指定
+                            html = None
+                            for encoding in ['utf-8', 'shift_jis', 'euc-jp', 'cp932']:
+                                try:
+                                    html = await response.text(encoding=encoding)
+                                    logger.debug(f"カテゴリ {category_name}: {encoding} エンコーディングで成功")
+                                    break
+                                except UnicodeDecodeError as e:
+                                    logger.debug(f"カテゴリ {category_name}: {encoding} エンコーディング失敗 - {e}")
+                                    continue
+                            
+                            if html is None:
+                                logger.error(f"カテゴリ {category_name}: 全てのエンコーディングで失敗")
+                                continue
+                                
                             soup = BeautifulSoup(html, 'html.parser')
                             
                             # FAQ項目を抽出

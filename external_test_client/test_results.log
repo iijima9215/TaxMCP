@@ -2277,3 +2277,601 @@
 2025-08-20 19:05:15,451 - INFO - 
 全体成功率: 25/25 (100.0%)
 2025-08-20 19:05:15,453 - INFO - 詳細結果を保存: test_results_20250820_190515.json
+2025-08-20 19:32:18,598 - INFO - === TaxMCP外部テスト開始 ===
+2025-08-20 19:32:18,598 - INFO - テスト対象: http://192.168.0.222:8000
+2025-08-20 19:32:18,598 - INFO - テスト回数: 5
+2025-08-20 19:32:18,598 - INFO - 
+--- テスト反復 1/5 ---
+2025-08-20 19:32:18,598 - INFO - 実行中: health_check
+2025-08-20 19:32:18,599 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 19:32:18,712 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:32:18.783548', 'version': '1.0.0'}
+2025-08-20 19:32:19,727 - INFO - 実行中: individual_tax
+2025-08-20 19:32:19,727 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 19:32:19,728 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:32:19,734 - INFO - 個人所得税計算成功
+2025-08-20 19:32:19,734 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:32:20,748 - INFO - 実行中: corporate_tax
+2025-08-20 19:32:20,748 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 19:32:20,748 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:32:20,755 - INFO - 法人税計算成功
+2025-08-20 19:32:20,756 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:32:21,765 - INFO - 実行中: tax_answer_search
+2025-08-20 19:32:21,765 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 19:32:21,765 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:32:22,100 - INFO - タックスアンサー検索成功
+2025-08-20 19:32:22,100 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:32:23,106 - INFO - 実行中: law_search
+2025-08-20 19:32:23,106 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 19:32:23,106 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:32:23,787 - INFO - 法令検索成功
+2025-08-20 19:32:23,787 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:32:24,793 - INFO - 
+--- テスト反復 2/5 ---
+2025-08-20 19:32:24,793 - INFO - 実行中: health_check
+2025-08-20 19:32:24,793 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 19:32:24,799 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:32:24.871330', 'version': '1.0.0'}
+2025-08-20 19:32:25,813 - INFO - 実行中: individual_tax
+2025-08-20 19:32:25,814 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 19:32:25,814 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:32:25,821 - INFO - 個人所得税計算成功
+2025-08-20 19:32:25,821 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:32:26,825 - INFO - 実行中: corporate_tax
+2025-08-20 19:32:26,825 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 19:32:26,826 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:32:26,829 - INFO - 法人税計算成功
+2025-08-20 19:32:26,829 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:32:27,847 - INFO - 実行中: tax_answer_search
+2025-08-20 19:32:27,847 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 19:32:27,847 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:32:28,203 - INFO - タックスアンサー検索成功
+2025-08-20 19:32:28,204 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:32:29,209 - INFO - 実行中: law_search
+2025-08-20 19:32:29,209 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 19:32:29,209 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:32:29,552 - INFO - 法令検索成功
+2025-08-20 19:32:29,552 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:32:30,563 - INFO - 
+--- テスト反復 3/5 ---
+2025-08-20 19:32:30,563 - INFO - 実行中: health_check
+2025-08-20 19:32:30,564 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 19:32:30,570 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:32:30.641675', 'version': '1.0.0'}
+2025-08-20 19:32:31,582 - INFO - 実行中: individual_tax
+2025-08-20 19:32:31,583 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 19:32:31,583 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:32:31,591 - INFO - 個人所得税計算成功
+2025-08-20 19:32:31,591 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:32:32,606 - INFO - 実行中: corporate_tax
+2025-08-20 19:32:32,607 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 19:32:32,607 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:32:32,614 - INFO - 法人税計算成功
+2025-08-20 19:32:32,614 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:32:33,630 - INFO - 実行中: tax_answer_search
+2025-08-20 19:32:33,630 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 19:32:33,630 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:32:34,269 - INFO - タックスアンサー検索成功
+2025-08-20 19:32:34,269 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:32:35,274 - INFO - 実行中: law_search
+2025-08-20 19:32:35,274 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 19:32:35,275 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:32:35,668 - INFO - 法令検索成功
+2025-08-20 19:32:35,669 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:32:36,674 - INFO - 
+--- テスト反復 4/5 ---
+2025-08-20 19:32:36,674 - INFO - 実行中: health_check
+2025-08-20 19:32:36,675 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 19:32:36,681 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:32:36.752920', 'version': '1.0.0'}
+2025-08-20 19:32:37,685 - INFO - 実行中: individual_tax
+2025-08-20 19:32:37,685 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 19:32:37,685 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:32:37,692 - INFO - 個人所得税計算成功
+2025-08-20 19:32:37,692 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:32:38,706 - INFO - 実行中: corporate_tax
+2025-08-20 19:32:38,706 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 19:32:38,706 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:32:38,714 - INFO - 法人税計算成功
+2025-08-20 19:32:38,714 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:32:39,724 - INFO - 実行中: tax_answer_search
+2025-08-20 19:32:39,724 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 19:32:39,725 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:32:40,098 - INFO - タックスアンサー検索成功
+2025-08-20 19:32:40,098 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:32:41,106 - INFO - 実行中: law_search
+2025-08-20 19:32:41,106 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 19:32:41,106 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:32:41,445 - INFO - 法令検索成功
+2025-08-20 19:32:41,445 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:32:42,456 - INFO - 
+--- テスト反復 5/5 ---
+2025-08-20 19:32:42,457 - INFO - 実行中: health_check
+2025-08-20 19:32:42,457 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 19:32:42,464 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:32:42.535102', 'version': '1.0.0'}
+2025-08-20 19:32:43,478 - INFO - 実行中: individual_tax
+2025-08-20 19:32:43,478 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 19:32:43,478 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:32:43,485 - INFO - 個人所得税計算成功
+2025-08-20 19:32:43,485 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:32:44,498 - INFO - 実行中: corporate_tax
+2025-08-20 19:32:44,498 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 19:32:44,498 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:32:44,504 - INFO - 法人税計算成功
+2025-08-20 19:32:44,504 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:32:45,519 - INFO - 実行中: tax_answer_search
+2025-08-20 19:32:45,519 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 19:32:45,520 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:32:45,943 - INFO - タックスアンサー検索成功
+2025-08-20 19:32:45,944 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:32:46,957 - INFO - 実行中: law_search
+2025-08-20 19:32:46,957 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 19:32:46,958 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:32:47,266 - INFO - 法令検索成功
+2025-08-20 19:32:47,266 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:32:48,276 - INFO - 
+=== テスト結果サマリー ===
+2025-08-20 19:32:48,276 - INFO - law_search: 5/5 成功 (100.0%) 平均時間: 0.414秒
+2025-08-20 19:32:48,277 - INFO - health_check: 5/5 成功 (100.0%) 平均時間: 0.028秒
+2025-08-20 19:32:48,277 - INFO - tax_answer_search: 5/5 成功 (100.0%) 平均時間: 0.427秒
+2025-08-20 19:32:48,277 - INFO - individual_tax: 5/5 成功 (100.0%) 平均時間: 0.008秒
+2025-08-20 19:32:48,277 - INFO - corporate_tax: 5/5 成功 (100.0%) 平均時間: 0.007秒
+2025-08-20 19:32:48,278 - INFO - 
+全体成功率: 25/25 (100.0%)
+2025-08-20 19:32:48,278 - INFO - 詳細結果を保存: test_results_20250820_193248.json
+2025-08-20 19:39:05,196 - INFO - === TaxMCP外部テスト開始 ===
+2025-08-20 19:39:05,197 - INFO - テスト対象: http://192.168.0.222:8000
+2025-08-20 19:39:05,197 - INFO - テスト回数: 5
+2025-08-20 19:39:05,197 - INFO - 
+--- テスト反復 1/5 ---
+2025-08-20 19:39:05,197 - INFO - 実行中: health_check
+2025-08-20 19:39:05,198 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 19:39:05,241 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:39:05.313256', 'version': '1.0.0'}
+2025-08-20 19:39:06,249 - INFO - 実行中: individual_tax
+2025-08-20 19:39:06,249 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 19:39:06,249 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:39:06,256 - INFO - 個人所得税計算成功
+2025-08-20 19:39:06,257 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:39:07,271 - INFO - 実行中: corporate_tax
+2025-08-20 19:39:07,272 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 19:39:07,272 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:39:07,280 - INFO - 法人税計算成功
+2025-08-20 19:39:07,280 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:39:08,294 - INFO - 実行中: tax_answer_search
+2025-08-20 19:39:08,294 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 19:39:08,295 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:39:08,717 - INFO - タックスアンサー検索成功
+2025-08-20 19:39:08,718 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:39:09,721 - INFO - 実行中: law_search
+2025-08-20 19:39:09,721 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 19:39:09,722 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:39:10,014 - INFO - 法令検索成功
+2025-08-20 19:39:10,015 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:39:11,024 - INFO - 
+--- テスト反復 2/5 ---
+2025-08-20 19:39:11,024 - INFO - 実行中: health_check
+2025-08-20 19:39:11,024 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 19:39:11,030 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:39:11.103186', 'version': '1.0.0'}
+2025-08-20 19:39:12,048 - INFO - 実行中: individual_tax
+2025-08-20 19:39:12,048 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 19:39:12,048 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:39:12,055 - INFO - 個人所得税計算成功
+2025-08-20 19:39:12,056 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:39:13,063 - INFO - 実行中: corporate_tax
+2025-08-20 19:39:13,063 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 19:39:13,064 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:39:13,070 - INFO - 法人税計算成功
+2025-08-20 19:39:13,070 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:39:14,087 - INFO - 実行中: tax_answer_search
+2025-08-20 19:39:14,088 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 19:39:14,088 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:39:14,395 - INFO - タックスアンサー検索成功
+2025-08-20 19:39:14,395 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:39:15,401 - INFO - 実行中: law_search
+2025-08-20 19:39:15,401 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 19:39:15,401 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
