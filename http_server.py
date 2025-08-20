@@ -130,6 +130,113 @@ async def calculate_income_tax(income_details: IncomeDetails):
         logger.error("Failed to calculate income tax", error=str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/v1/calculate/individual")
+async def calculate_individual_tax(request: Dict[str, Any]):
+    """Calculate individual tax."""
+    try:
+        # Extract data from request
+        income = request.get("income", 0)
+        deductions = request.get("deductions", 480000)
+        
+        # Use the existing tax calculator
+        result = tax_calculator.calculate_income_tax(
+            annual_income=income,
+            basic_deduction=deductions
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error("Failed to calculate individual tax", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/calculate/corporate")
+async def calculate_corporate_tax(request: Dict[str, Any]):
+    """Calculate corporate tax."""
+    try:
+        revenue = request.get("revenue", 0)
+        expenses = request.get("expenses", 0)
+        
+        # Calculate annual income
+        annual_income = revenue - expenses
+        
+        # Use corporate tax calculator
+        result = corporate_tax_calculator.calculate_corporate_tax(
+            annual_income=annual_income,
+            tax_year=request.get("tax_year", 2025),
+            prefecture=request.get("prefecture", "東京都"),
+            capital=request.get("capital", 100000000),
+            deductions=request.get("deductions", 0)
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error("Failed to calculate corporate tax", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/search/tax-answer")
+async def search_tax_answer(request: Dict[str, Any]):
+    """Search tax answers."""
+    try:
+        query = request.get("query", "")
+        
+        # Use RAG integration for legal reference search
+        results = await rag_integration.search_legal_reference(query)
+        
+        # Format results for tax answer search
+        formatted_results = []
+        for info in results:
+            if "タックスアンサー" in info.source or "tax_answer" in info.category:
+                formatted_results.append({
+                    "title": info.title,
+                    "content": info.content,
+                    "url": info.url,
+                    "source": info.source,
+                    "relevance_score": info.relevance_score
+                })
+        
+        return {
+            "query": query,
+            "results": formatted_results,
+            "count": len(formatted_results)
+        }
+        
+    except Exception as e:
+        logger.error("Failed to search tax answers", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/v1/search/law")
+async def search_law(request: Dict[str, Any]):
+    """Search law documents."""
+    try:
+        query = request.get("query", "")
+        
+        # Use RAG integration for legal reference search
+        results = await rag_integration.search_legal_reference(query)
+        
+        # Format results for law document search
+        formatted_results = []
+        for info in results:
+            if "法令" in info.source or "law" in info.category or "法人税法" in info.title or "所得税法" in info.title:
+                formatted_results.append({
+                    "title": info.title,
+                    "content": info.content,
+                    "url": info.url,
+                    "source": info.source,
+                    "relevance_score": info.relevance_score
+                })
+        
+        return {
+            "query": query,
+            "results": formatted_results,
+            "count": len(formatted_results)
+        }
+        
+    except Exception as e:
+        logger.error("Failed to search law documents", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == "__main__":
     logger.info(
         "Starting Japanese Tax Calculator HTTP Server",

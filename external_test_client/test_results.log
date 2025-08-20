@@ -346,3 +346,1934 @@
 2025-08-20 10:22:22,199 - INFO - 
 全体成功率: 0/25 (0.0%)
 2025-08-20 10:22:22,201 - INFO - 詳細結果を保存: test_results_20250820_102222.json
+2025-08-20 18:56:35,421 - INFO - === TaxMCP外部テスト開始 ===
+2025-08-20 18:56:35,422 - INFO - テスト対象: http://192.168.0.222:8000
+2025-08-20 18:56:35,422 - INFO - テスト回数: 5
+2025-08-20 18:56:35,423 - INFO - 
+--- テスト反復 1/5 ---
+2025-08-20 18:56:35,423 - INFO - 実行中: health_check
+2025-08-20 18:56:35,423 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:56:35,469 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:56:35.533482', 'version': '1.0.0'}
+2025-08-20 18:56:36,521 - INFO - 実行中: individual_tax
+2025-08-20 18:56:36,521 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:56:36,521 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:56:36,528 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:37,544 - INFO - 実行中: corporate_tax
+2025-08-20 18:56:37,545 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:56:37,545 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:56:37,552 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:38,567 - INFO - 実行中: tax_answer_search
+2025-08-20 18:56:38,567 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:56:38,568 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:56:38,573 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:39,585 - INFO - 実行中: law_search
+2025-08-20 18:56:39,585 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:56:39,586 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:56:39,592 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:40,601 - INFO - 
+--- テスト反復 2/5 ---
+2025-08-20 18:56:40,601 - INFO - 実行中: health_check
+2025-08-20 18:56:40,602 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:56:40,608 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:56:40.672509', 'version': '1.0.0'}
+2025-08-20 18:56:41,619 - INFO - 実行中: individual_tax
+2025-08-20 18:56:41,619 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:56:41,619 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:56:41,622 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:42,628 - INFO - 実行中: corporate_tax
+2025-08-20 18:56:42,628 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:56:42,629 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:56:42,634 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:43,648 - INFO - 実行中: tax_answer_search
+2025-08-20 18:56:43,648 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:56:43,648 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:56:43,655 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:44,668 - INFO - 実行中: law_search
+2025-08-20 18:56:44,668 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:56:44,668 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:56:44,674 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:45,684 - INFO - 
+--- テスト反復 3/5 ---
+2025-08-20 18:56:45,684 - INFO - 実行中: health_check
+2025-08-20 18:56:45,685 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:56:45,691 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:56:45.755056', 'version': '1.0.0'}
+2025-08-20 18:56:46,707 - INFO - 実行中: individual_tax
+2025-08-20 18:56:46,707 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:56:46,707 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:56:46,714 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:47,724 - INFO - 実行中: corporate_tax
+2025-08-20 18:56:47,724 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:56:47,725 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:56:47,731 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:48,745 - INFO - 実行中: tax_answer_search
+2025-08-20 18:56:48,745 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:56:48,745 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:56:48,751 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:49,766 - INFO - 実行中: law_search
+2025-08-20 18:56:49,766 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:56:49,767 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:56:49,773 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:50,785 - INFO - 
+--- テスト反復 4/5 ---
+2025-08-20 18:56:50,785 - INFO - 実行中: health_check
+2025-08-20 18:56:50,785 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:56:50,791 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:56:50.855934', 'version': '1.0.0'}
+2025-08-20 18:56:51,803 - INFO - 実行中: individual_tax
+2025-08-20 18:56:51,803 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:56:51,804 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:56:51,810 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:52,824 - INFO - 実行中: corporate_tax
+2025-08-20 18:56:52,824 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:56:52,825 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:56:52,830 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:53,846 - INFO - 実行中: tax_answer_search
+2025-08-20 18:56:53,846 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:56:53,846 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:56:53,852 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:54,868 - INFO - 実行中: law_search
+2025-08-20 18:56:54,868 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:56:54,869 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:56:54,876 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:55,884 - INFO - 
+--- テスト反復 5/5 ---
+2025-08-20 18:56:55,884 - INFO - 実行中: health_check
+2025-08-20 18:56:55,885 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:56:55,891 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:56:55.954730', 'version': '1.0.0'}
+2025-08-20 18:56:56,905 - INFO - 実行中: individual_tax
+2025-08-20 18:56:56,905 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:56:56,905 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:56:56,912 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:57,924 - INFO - 実行中: corporate_tax
+2025-08-20 18:56:57,924 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:56:57,925 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:56:57,931 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:58,938 - INFO - 実行中: tax_answer_search
+2025-08-20 18:56:58,938 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:56:58,939 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:56:58,944 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:56:59,960 - INFO - 実行中: law_search
+2025-08-20 18:56:59,960 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:56:59,961 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:56:59,966 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:00,979 - INFO - 
+=== テスト結果サマリー ===
+2025-08-20 18:57:00,979 - INFO - corporate_tax: 0/5 成功 (0.0%) 平均時間: 0.007秒
+2025-08-20 18:57:00,979 - INFO - individual_tax: 0/5 成功 (0.0%) 平均時間: 0.006秒
+2025-08-20 18:57:00,979 - INFO - tax_answer_search: 0/5 成功 (0.0%) 平均時間: 0.006秒
+2025-08-20 18:57:00,979 - INFO - health_check: 5/5 成功 (100.0%) 平均時間: 0.014秒
+2025-08-20 18:57:00,981 - INFO - law_search: 0/5 成功 (0.0%) 平均時間: 0.007秒
+2025-08-20 18:57:00,981 - INFO - 
+全体成功率: 5/25 (20.0%)
+2025-08-20 18:57:00,981 - INFO - 詳細結果を保存: test_results_20250820_185700.json
+2025-08-20 18:57:17,462 - INFO - === TaxMCP外部テスト開始 ===
+2025-08-20 18:57:17,463 - INFO - テスト対象: http://192.168.0.222:8000
+2025-08-20 18:57:17,463 - INFO - テスト回数: 5
+2025-08-20 18:57:17,463 - INFO - 
+--- テスト反復 1/5 ---
+2025-08-20 18:57:17,463 - INFO - 実行中: health_check
+2025-08-20 18:57:17,464 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:57:17,555 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:57:17.619487', 'version': '1.0.0'}
+2025-08-20 18:57:18,568 - INFO - 実行中: individual_tax
+2025-08-20 18:57:18,568 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:57:18,569 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:57:18,575 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:19,590 - INFO - 実行中: corporate_tax
+2025-08-20 18:57:19,590 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:57:19,590 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:57:19,596 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:20,607 - INFO - 実行中: tax_answer_search
+2025-08-20 18:57:20,607 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:57:20,608 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:57:20,614 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:21,629 - INFO - 実行中: law_search
+2025-08-20 18:57:21,629 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:57:21,630 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:57:21,636 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:22,652 - INFO - 
+--- テスト反復 2/5 ---
+2025-08-20 18:57:22,652 - INFO - 実行中: health_check
+2025-08-20 18:57:22,653 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:57:22,659 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:57:22.723829', 'version': '1.0.0'}
+2025-08-20 18:57:23,677 - INFO - 実行中: individual_tax
+2025-08-20 18:57:23,677 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:57:23,677 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:57:23,684 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:24,700 - INFO - 実行中: corporate_tax
+2025-08-20 18:57:24,700 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:57:24,701 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:57:24,717 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:25,721 - INFO - 実行中: tax_answer_search
+2025-08-20 18:57:25,721 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:57:25,721 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:57:25,728 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:26,744 - INFO - 実行中: law_search
+2025-08-20 18:57:26,744 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:57:26,745 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:57:26,753 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:27,768 - INFO - 
+--- テスト反復 3/5 ---
+2025-08-20 18:57:27,768 - INFO - 実行中: health_check
+2025-08-20 18:57:27,768 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:57:27,775 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:57:27.839338', 'version': '1.0.0'}
+2025-08-20 18:57:28,789 - INFO - 実行中: individual_tax
+2025-08-20 18:57:28,789 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:57:28,789 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:57:28,796 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:29,809 - INFO - 実行中: corporate_tax
+2025-08-20 18:57:29,809 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:57:29,809 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:57:29,816 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:30,818 - INFO - 実行中: tax_answer_search
+2025-08-20 18:57:30,818 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:57:30,819 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:57:30,825 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:31,832 - INFO - 実行中: law_search
+2025-08-20 18:57:31,832 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:57:31,832 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:57:31,848 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:32,861 - INFO - 
+--- テスト反復 4/5 ---
+2025-08-20 18:57:32,861 - INFO - 実行中: health_check
+2025-08-20 18:57:32,861 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:57:32,868 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:57:32.931870', 'version': '1.0.0'}
+2025-08-20 18:57:33,878 - INFO - 実行中: individual_tax
+2025-08-20 18:57:33,878 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:57:33,878 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:57:33,894 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:34,898 - INFO - 実行中: corporate_tax
+2025-08-20 18:57:34,899 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:57:34,899 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:57:34,905 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:35,915 - INFO - 実行中: tax_answer_search
+2025-08-20 18:57:35,915 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:57:35,916 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:57:35,921 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:36,929 - INFO - 実行中: law_search
+2025-08-20 18:57:36,929 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:57:36,929 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:57:36,936 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:37,951 - INFO - 
+--- テスト反復 5/5 ---
+2025-08-20 18:57:37,951 - INFO - 実行中: health_check
+2025-08-20 18:57:37,951 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:57:37,957 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:57:38.021678', 'version': '1.0.0'}
+2025-08-20 18:57:38,969 - INFO - 実行中: individual_tax
+2025-08-20 18:57:38,969 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:57:38,969 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:57:38,976 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:39,986 - INFO - 実行中: corporate_tax
+2025-08-20 18:57:39,986 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:57:39,986 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:57:39,992 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:40,995 - INFO - 実行中: tax_answer_search
+2025-08-20 18:57:40,995 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:57:40,995 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:57:41,014 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:42,030 - INFO - 実行中: law_search
+2025-08-20 18:57:42,031 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:57:42,031 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:57:42,037 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:43,047 - INFO - 
+=== テスト結果サマリー ===
+2025-08-20 18:57:43,047 - INFO - health_check: 5/5 成功 (100.0%) 平均時間: 0.024秒
+2025-08-20 18:57:43,047 - INFO - tax_answer_search: 0/5 成功 (0.0%) 平均時間: 0.010秒
+2025-08-20 18:57:43,048 - INFO - individual_tax: 0/5 成功 (0.0%) 平均時間: 0.009秒
+2025-08-20 18:57:43,048 - INFO - law_search: 0/5 成功 (0.0%) 平均時間: 0.010秒
+2025-08-20 18:57:43,048 - INFO - corporate_tax: 0/5 成功 (0.0%) 平均時間: 0.009秒
+2025-08-20 18:57:43,048 - INFO - 
+全体成功率: 5/25 (20.0%)
+2025-08-20 18:57:43,049 - INFO - 詳細結果を保存: test_results_20250820_185743.json
+2025-08-20 18:57:53,219 - INFO - === TaxMCP外部テスト開始 ===
+2025-08-20 18:57:53,220 - INFO - テスト対象: http://192.168.0.222:8000
+2025-08-20 18:57:53,220 - INFO - テスト回数: 5
+2025-08-20 18:57:53,220 - INFO - 
+--- テスト反復 1/5 ---
+2025-08-20 18:57:53,220 - INFO - 実行中: health_check
+2025-08-20 18:57:53,220 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:57:53,293 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:57:53.357636', 'version': '1.0.0'}
+2025-08-20 18:57:54,306 - INFO - 実行中: individual_tax
+2025-08-20 18:57:54,306 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:57:54,306 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:57:54,314 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:55,328 - INFO - 実行中: corporate_tax
+2025-08-20 18:57:55,329 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:57:55,329 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:57:55,336 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:56,351 - INFO - 実行中: tax_answer_search
+2025-08-20 18:57:56,351 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:57:56,351 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:57:56,358 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:57,375 - INFO - 実行中: law_search
+2025-08-20 18:57:57,375 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:57:57,376 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:57:57,382 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:57:58,386 - INFO - 
+--- テスト反復 2/5 ---
+2025-08-20 18:57:58,386 - INFO - 実行中: health_check
+2025-08-20 18:57:58,387 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:57:58,392 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:57:58.457184', 'version': '1.0.0'}
+2025-08-20 18:57:59,406 - INFO - 実行中: individual_tax
+2025-08-20 18:57:59,406 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:57:59,407 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:57:59,413 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:00,429 - INFO - 実行中: corporate_tax
+2025-08-20 18:58:00,429 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:58:00,430 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:58:00,435 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:01,443 - INFO - 実行中: tax_answer_search
+2025-08-20 18:58:01,443 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:58:01,444 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:58:01,450 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:02,464 - INFO - 実行中: law_search
+2025-08-20 18:58:02,464 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:58:02,465 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:58:02,471 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:03,482 - INFO - 
+--- テスト反復 3/5 ---
+2025-08-20 18:58:03,483 - INFO - 実行中: health_check
+2025-08-20 18:58:03,483 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:58:03,489 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:58:03.553363', 'version': '1.0.0'}
+2025-08-20 18:58:04,504 - INFO - 実行中: individual_tax
+2025-08-20 18:58:04,505 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:58:04,505 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:58:04,511 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:05,520 - INFO - 実行中: corporate_tax
+2025-08-20 18:58:05,521 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:58:05,521 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:58:05,526 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:06,535 - INFO - 実行中: tax_answer_search
+2025-08-20 18:58:06,535 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:58:06,536 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:58:06,542 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:07,553 - INFO - 実行中: law_search
+2025-08-20 18:58:07,553 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:58:07,554 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:58:07,559 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:08,574 - INFO - 
+--- テスト反復 4/5 ---
+2025-08-20 18:58:08,574 - INFO - 実行中: health_check
+2025-08-20 18:58:08,574 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:58:08,580 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:58:08.644828', 'version': '1.0.0'}
+2025-08-20 18:58:09,593 - INFO - 実行中: individual_tax
+2025-08-20 18:58:09,593 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:58:09,593 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:58:09,599 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:10,612 - INFO - 実行中: corporate_tax
+2025-08-20 18:58:10,612 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:58:10,613 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:58:10,628 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:11,633 - INFO - 実行中: tax_answer_search
+2025-08-20 18:58:11,633 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:58:11,633 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:58:11,640 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:12,650 - INFO - 実行中: law_search
+2025-08-20 18:58:12,650 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:58:12,650 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:58:12,657 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:13,664 - INFO - 
+--- テスト反復 5/5 ---
+2025-08-20 18:58:13,665 - INFO - 実行中: health_check
+2025-08-20 18:58:13,665 - INFO - ヘルスチェック: http://192.168.0.222:8000/health
+2025-08-20 18:58:13,672 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:58:13.736387', 'version': '1.0.0'}
+2025-08-20 18:58:14,679 - INFO - 実行中: individual_tax
+2025-08-20 18:58:14,679 - INFO - 個人所得税計算テスト: http://192.168.0.222:8000/api/v1/calculate/individual
+2025-08-20 18:58:14,679 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:58:14,685 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:15,696 - INFO - 実行中: corporate_tax
+2025-08-20 18:58:15,697 - INFO - 法人税計算テスト: http://192.168.0.222:8000/api/v1/calculate/corporate
+2025-08-20 18:58:15,697 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:58:15,703 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:16,716 - INFO - 実行中: tax_answer_search
+2025-08-20 18:58:16,716 - INFO - タックスアンサー検索テスト: http://192.168.0.222:8000/api/v1/search/tax-answer
+2025-08-20 18:58:16,716 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:58:16,724 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:17,736 - INFO - 実行中: law_search
+2025-08-20 18:58:17,736 - INFO - 法令検索テスト: http://192.168.0.222:8000/api/v1/search/law
+2025-08-20 18:58:17,736 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:58:17,742 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:18,755 - INFO - 
+=== テスト結果サマリー ===
+2025-08-20 18:58:18,755 - INFO - tax_answer_search: 0/5 成功 (0.0%) 平均時間: 0.007秒
+2025-08-20 18:58:18,756 - INFO - health_check: 5/5 成功 (100.0%) 平均時間: 0.020秒
+2025-08-20 18:58:18,756 - INFO - law_search: 0/5 成功 (0.0%) 平均時間: 0.007秒
+2025-08-20 18:58:18,756 - INFO - individual_tax: 0/5 成功 (0.0%) 平均時間: 0.007秒
+2025-08-20 18:58:18,756 - INFO - corporate_tax: 0/5 成功 (0.0%) 平均時間: 0.009秒
+2025-08-20 18:58:18,756 - INFO - 
+全体成功率: 5/25 (20.0%)
+2025-08-20 18:58:18,757 - INFO - 詳細結果を保存: test_results_20250820_185818.json
+2025-08-20 18:58:37,678 - INFO - === TaxMCP外部テスト開始 ===
+2025-08-20 18:58:37,678 - INFO - テスト対象: http://localhost:8000
+2025-08-20 18:58:37,678 - INFO - テスト回数: 5
+2025-08-20 18:58:37,678 - INFO - 
+--- テスト反復 1/5 ---
+2025-08-20 18:58:37,678 - INFO - 実行中: health_check
+2025-08-20 18:58:37,679 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 18:58:37,947 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:58:37.946583', 'version': '1.0.0'}
+2025-08-20 18:58:38,966 - INFO - 実行中: individual_tax
+2025-08-20 18:58:38,966 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 18:58:38,967 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:58:38,968 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:39,970 - INFO - 実行中: corporate_tax
+2025-08-20 18:58:39,970 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 18:58:39,970 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:58:39,972 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:40,978 - INFO - 実行中: tax_answer_search
+2025-08-20 18:58:40,978 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 18:58:40,979 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:58:40,980 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:41,993 - INFO - 実行中: law_search
+2025-08-20 18:58:41,993 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 18:58:41,993 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:58:41,995 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:43,006 - INFO - 
+--- テスト反復 2/5 ---
+2025-08-20 18:58:43,006 - INFO - 実行中: health_check
+2025-08-20 18:58:43,006 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 18:58:43,009 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:58:43.007921', 'version': '1.0.0'}
+2025-08-20 18:58:44,024 - INFO - 実行中: individual_tax
+2025-08-20 18:58:44,024 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 18:58:44,024 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:58:44,026 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:45,031 - INFO - 実行中: corporate_tax
+2025-08-20 18:58:45,031 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 18:58:45,031 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:58:45,032 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:46,049 - INFO - 実行中: tax_answer_search
+2025-08-20 18:58:46,050 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 18:58:46,050 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:58:46,051 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:47,058 - INFO - 実行中: law_search
+2025-08-20 18:58:47,058 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 18:58:47,058 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:58:47,059 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:48,066 - INFO - 
+--- テスト反復 3/5 ---
+2025-08-20 18:58:48,066 - INFO - 実行中: health_check
+2025-08-20 18:58:48,067 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 18:58:48,068 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:58:48.067653', 'version': '1.0.0'}
+2025-08-20 18:58:49,069 - INFO - 実行中: individual_tax
+2025-08-20 18:58:49,069 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 18:58:49,069 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:58:49,071 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:50,084 - INFO - 実行中: corporate_tax
+2025-08-20 18:58:50,084 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 18:58:50,084 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:58:50,086 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:51,092 - INFO - 実行中: tax_answer_search
+2025-08-20 18:58:51,093 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 18:58:51,093 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:58:51,094 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:52,109 - INFO - 実行中: law_search
+2025-08-20 18:58:52,109 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 18:58:52,109 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:58:52,111 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:53,117 - INFO - 
+--- テスト反復 4/5 ---
+2025-08-20 18:58:53,117 - INFO - 実行中: health_check
+2025-08-20 18:58:53,117 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 18:58:53,119 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:58:53.118180', 'version': '1.0.0'}
+2025-08-20 18:58:54,121 - INFO - 実行中: individual_tax
+2025-08-20 18:58:54,121 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 18:58:54,121 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:58:54,122 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:55,125 - INFO - 実行中: corporate_tax
+2025-08-20 18:58:55,126 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 18:58:55,126 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:58:55,127 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:56,130 - INFO - 実行中: tax_answer_search
+2025-08-20 18:58:56,130 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 18:58:56,130 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:58:56,131 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:57,139 - INFO - 実行中: law_search
+2025-08-20 18:58:57,139 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 18:58:57,139 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:58:57,141 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:58:58,148 - INFO - 
+--- テスト反復 5/5 ---
+2025-08-20 18:58:58,148 - INFO - 実行中: health_check
+2025-08-20 18:58:58,149 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 18:58:58,151 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T18:58:58.149767', 'version': '1.0.0'}
+2025-08-20 18:58:59,154 - INFO - 実行中: individual_tax
+2025-08-20 18:58:59,154 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 18:58:59,154 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 18:58:59,155 - ERROR - 個人所得税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:59:00,173 - INFO - 実行中: corporate_tax
+2025-08-20 18:59:00,173 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 18:59:00,173 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 18:59:00,175 - ERROR - 法人税計算失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:59:01,186 - INFO - 実行中: tax_answer_search
+2025-08-20 18:59:01,186 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 18:59:01,186 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 18:59:01,188 - ERROR - タックスアンサー検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:59:02,196 - INFO - 実行中: law_search
+2025-08-20 18:59:02,197 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 18:59:02,197 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 18:59:02,198 - ERROR - 法令検索失敗: 404 - {"detail":"Not Found"}
+2025-08-20 18:59:03,210 - INFO - 
+=== テスト結果サマリー ===
+2025-08-20 18:59:03,211 - INFO - law_search: 0/5 成功 (0.0%) 平均時間: 0.002秒
+2025-08-20 18:59:03,211 - INFO - corporate_tax: 0/5 成功 (0.0%) 平均時間: 0.002秒
+2025-08-20 18:59:03,211 - INFO - individual_tax: 0/5 成功 (0.0%) 平均時間: 0.002秒
+2025-08-20 18:59:03,211 - INFO - tax_answer_search: 0/5 成功 (0.0%) 平均時間: 0.002秒
+2025-08-20 18:59:03,211 - INFO - health_check: 5/5 成功 (100.0%) 平均時間: 0.055秒
+2025-08-20 18:59:03,211 - INFO - 
+全体成功率: 5/25 (20.0%)
+2025-08-20 18:59:03,212 - INFO - 詳細結果を保存: test_results_20250820_185903.json
+2025-08-20 19:00:38,741 - INFO - === TaxMCP外部テスト開始 ===
+2025-08-20 19:00:38,742 - INFO - テスト対象: http://localhost:8000
+2025-08-20 19:00:38,742 - INFO - テスト回数: 5
+2025-08-20 19:00:38,742 - INFO - 
+--- テスト反復 1/5 ---
+2025-08-20 19:00:38,742 - INFO - 実行中: health_check
+2025-08-20 19:00:38,742 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:00:38,993 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:00:38.992731', 'version': '1.0.0'}
+2025-08-20 19:00:40,001 - INFO - 実行中: individual_tax
+2025-08-20 19:00:40,001 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:00:40,001 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:00:40,004 - INFO - 個人所得税計算成功
+2025-08-20 19:00:40,005 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:00:41,008 - INFO - 実行中: corporate_tax
+2025-08-20 19:00:41,008 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:00:41,008 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:00:41,011 - ERROR - 法人税計算失敗: 500 - {"detail":"JapaneseCorporateTaxCalculator.calculate_corporate_tax() got an unexpected keyword argument 'revenue'"}
+2025-08-20 19:00:42,018 - INFO - 実行中: tax_answer_search
+2025-08-20 19:00:42,018 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:00:42,018 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:00:42,020 - ERROR - タックスアンサー検索失敗: 500 - {"detail":"'RAGIntegration' object has no attribute 'search_tax_answers'"}
+2025-08-20 19:00:43,037 - INFO - 実行中: law_search
+2025-08-20 19:00:43,038 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:00:43,038 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:00:43,040 - ERROR - 法令検索失敗: 500 - {"detail":"'RAGIntegration' object has no attribute 'search_law_documents'"}
+2025-08-20 19:00:44,058 - INFO - 
+--- テスト反復 2/5 ---
+2025-08-20 19:00:44,058 - INFO - 実行中: health_check
+2025-08-20 19:00:44,058 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:00:44,059 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:00:44.059109', 'version': '1.0.0'}
+2025-08-20 19:00:45,070 - INFO - 実行中: individual_tax
+2025-08-20 19:00:45,070 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:00:45,071 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:00:45,072 - INFO - 個人所得税計算成功
+2025-08-20 19:00:45,072 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:00:46,088 - INFO - 実行中: corporate_tax
+2025-08-20 19:00:46,088 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:00:46,088 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:00:46,090 - ERROR - 法人税計算失敗: 500 - {"detail":"JapaneseCorporateTaxCalculator.calculate_corporate_tax() got an unexpected keyword argument 'revenue'"}
+2025-08-20 19:00:47,094 - INFO - 実行中: tax_answer_search
+2025-08-20 19:00:47,094 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:00:47,095 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:00:47,096 - ERROR - タックスアンサー検索失敗: 500 - {"detail":"'RAGIntegration' object has no attribute 'search_tax_answers'"}
+2025-08-20 19:00:48,101 - INFO - 実行中: law_search
+2025-08-20 19:00:48,101 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:00:48,101 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:00:48,103 - ERROR - 法令検索失敗: 500 - {"detail":"'RAGIntegration' object has no attribute 'search_law_documents'"}
+2025-08-20 19:00:49,109 - INFO - 
+--- テスト反復 3/5 ---
+2025-08-20 19:00:49,109 - INFO - 実行中: health_check
+2025-08-20 19:00:49,109 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:00:49,110 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:00:49.110040', 'version': '1.0.0'}
+2025-08-20 19:00:50,116 - INFO - 実行中: individual_tax
+2025-08-20 19:00:50,116 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:00:50,117 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:00:50,118 - INFO - 個人所得税計算成功
+2025-08-20 19:00:50,118 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:00:51,131 - INFO - 実行中: corporate_tax
+2025-08-20 19:00:51,132 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:00:51,132 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:00:51,134 - ERROR - 法人税計算失敗: 500 - {"detail":"JapaneseCorporateTaxCalculator.calculate_corporate_tax() got an unexpected keyword argument 'revenue'"}
+2025-08-20 19:00:52,143 - INFO - 実行中: tax_answer_search
+2025-08-20 19:00:52,143 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:00:52,143 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:00:52,145 - ERROR - タックスアンサー検索失敗: 500 - {"detail":"'RAGIntegration' object has no attribute 'search_tax_answers'"}
+2025-08-20 19:00:53,153 - INFO - 実行中: law_search
+2025-08-20 19:00:53,153 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:00:53,153 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:00:53,155 - ERROR - 法令検索失敗: 500 - {"detail":"'RAGIntegration' object has no attribute 'search_law_documents'"}
+2025-08-20 19:00:54,162 - INFO - 
+--- テスト反復 4/5 ---
+2025-08-20 19:00:54,162 - INFO - 実行中: health_check
+2025-08-20 19:00:54,162 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:00:54,164 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:00:54.163926', 'version': '1.0.0'}
+2025-08-20 19:00:55,166 - INFO - 実行中: individual_tax
+2025-08-20 19:00:55,166 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:00:55,167 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:00:55,169 - INFO - 個人所得税計算成功
+2025-08-20 19:00:55,169 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:00:56,183 - INFO - 実行中: corporate_tax
+2025-08-20 19:00:56,183 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:00:56,184 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:00:56,186 - ERROR - 法人税計算失敗: 500 - {"detail":"JapaneseCorporateTaxCalculator.calculate_corporate_tax() got an unexpected keyword argument 'revenue'"}
+2025-08-20 19:00:57,191 - INFO - 実行中: tax_answer_search
+2025-08-20 19:00:57,191 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:00:57,192 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:00:57,194 - ERROR - タックスアンサー検索失敗: 500 - {"detail":"'RAGIntegration' object has no attribute 'search_tax_answers'"}
+2025-08-20 19:00:58,201 - INFO - 実行中: law_search
+2025-08-20 19:00:58,201 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:00:58,201 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:00:58,203 - ERROR - 法令検索失敗: 500 - {"detail":"'RAGIntegration' object has no attribute 'search_law_documents'"}
+2025-08-20 19:00:59,213 - INFO - 
+--- テスト反復 5/5 ---
+2025-08-20 19:00:59,214 - INFO - 実行中: health_check
+2025-08-20 19:00:59,214 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:00:59,215 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:00:59.215303', 'version': '1.0.0'}
+2025-08-20 19:01:00,219 - INFO - 実行中: individual_tax
+2025-08-20 19:01:00,219 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:01:00,219 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:01:00,221 - INFO - 個人所得税計算成功
+2025-08-20 19:01:00,222 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:01:01,238 - INFO - 実行中: corporate_tax
+2025-08-20 19:01:01,238 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:01:01,238 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:01:01,241 - ERROR - 法人税計算失敗: 500 - {"detail":"JapaneseCorporateTaxCalculator.calculate_corporate_tax() got an unexpected keyword argument 'revenue'"}
+2025-08-20 19:01:02,257 - INFO - 実行中: tax_answer_search
+2025-08-20 19:01:02,257 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:01:02,258 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:01:02,260 - ERROR - タックスアンサー検索失敗: 500 - {"detail":"'RAGIntegration' object has no attribute 'search_tax_answers'"}
+2025-08-20 19:01:03,263 - INFO - 実行中: law_search
+2025-08-20 19:01:03,263 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:01:03,264 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:01:03,265 - ERROR - 法令検索失敗: 500 - {"detail":"'RAGIntegration' object has no attribute 'search_law_documents'"}
+2025-08-20 19:01:04,273 - INFO - 
+=== テスト結果サマリー ===
+2025-08-20 19:01:04,273 - INFO - tax_answer_search: 0/5 成功 (0.0%) 平均時間: 0.003秒
+2025-08-20 19:01:04,273 - INFO - corporate_tax: 0/5 成功 (0.0%) 平均時間: 0.003秒
+2025-08-20 19:01:04,274 - INFO - law_search: 0/5 成功 (0.0%) 平均時間: 0.002秒
+2025-08-20 19:01:04,274 - INFO - individual_tax: 5/5 成功 (100.0%) 平均時間: 0.003秒
+2025-08-20 19:01:04,274 - INFO - health_check: 5/5 成功 (100.0%) 平均時間: 0.052秒
+2025-08-20 19:01:04,274 - INFO - 
+全体成功率: 10/25 (40.0%)
+2025-08-20 19:01:04,276 - INFO - 詳細結果を保存: test_results_20250820_190104.json
+2025-08-20 19:03:00,486 - INFO - === TaxMCP外部テスト開始 ===
+2025-08-20 19:03:00,486 - INFO - テスト対象: http://localhost:8000
+2025-08-20 19:03:00,487 - INFO - テスト回数: 5
+2025-08-20 19:03:00,487 - INFO - 
+--- テスト反復 1/5 ---
+2025-08-20 19:03:00,487 - INFO - 実行中: health_check
+2025-08-20 19:03:00,487 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:03:00,757 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:03:00.756235', 'version': '1.0.0'}
+2025-08-20 19:03:01,769 - INFO - 実行中: individual_tax
+2025-08-20 19:03:01,770 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:03:01,770 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:03:01,772 - INFO - 個人所得税計算成功
+2025-08-20 19:03:01,772 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:03:02,789 - INFO - 実行中: corporate_tax
+2025-08-20 19:03:02,789 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:03:02,789 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:03:02,791 - ERROR - 法人税計算失敗: 500 - {"detail":"'JapaneseTaxCalculator' object has no attribute 'calculate_corporate_tax'"}
+2025-08-20 19:03:03,798 - INFO - 実行中: tax_answer_search
+2025-08-20 19:03:03,798 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:03:03,798 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:03:04,322 - INFO - タックスアンサー検索成功
+2025-08-20 19:03:04,323 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:03:05,334 - INFO - 実行中: law_search
+2025-08-20 19:03:05,335 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:03:05,335 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:03:05,907 - INFO - 法令検索成功
+2025-08-20 19:03:05,907 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:03:06,912 - INFO - 
+--- テスト反復 2/5 ---
+2025-08-20 19:03:06,912 - INFO - 実行中: health_check
+2025-08-20 19:03:06,912 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:03:06,914 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:03:06.913455', 'version': '1.0.0'}
+2025-08-20 19:03:07,918 - INFO - 実行中: individual_tax
+2025-08-20 19:03:07,918 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:03:07,919 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:03:07,920 - INFO - 個人所得税計算成功
+2025-08-20 19:03:07,921 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:03:08,923 - INFO - 実行中: corporate_tax
+2025-08-20 19:03:08,923 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:03:08,923 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:03:08,926 - ERROR - 法人税計算失敗: 500 - {"detail":"'JapaneseTaxCalculator' object has no attribute 'calculate_corporate_tax'"}
+2025-08-20 19:03:09,933 - INFO - 実行中: tax_answer_search
+2025-08-20 19:03:09,933 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:03:09,933 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:03:10,684 - INFO - タックスアンサー検索成功
+2025-08-20 19:03:10,684 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:03:11,698 - INFO - 実行中: law_search
+2025-08-20 19:03:11,698 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:03:11,699 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:03:12,049 - INFO - 法令検索成功
+2025-08-20 19:03:12,049 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:03:13,060 - INFO - 
+--- テスト反復 3/5 ---
+2025-08-20 19:03:13,060 - INFO - 実行中: health_check
+2025-08-20 19:03:13,061 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:03:13,062 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:03:13.062067', 'version': '1.0.0'}
+2025-08-20 19:03:14,067 - INFO - 実行中: individual_tax
+2025-08-20 19:03:14,067 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:03:14,067 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:03:14,069 - INFO - 個人所得税計算成功
+2025-08-20 19:03:14,069 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:03:15,075 - INFO - 実行中: corporate_tax
+2025-08-20 19:03:15,075 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:03:15,076 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:03:15,077 - ERROR - 法人税計算失敗: 500 - {"detail":"'JapaneseTaxCalculator' object has no attribute 'calculate_corporate_tax'"}
+2025-08-20 19:03:16,086 - INFO - 実行中: tax_answer_search
+2025-08-20 19:03:16,086 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:03:16,086 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:03:16,856 - INFO - タックスアンサー検索成功
+2025-08-20 19:03:16,857 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:03:17,867 - INFO - 実行中: law_search
+2025-08-20 19:03:17,868 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:03:17,868 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:03:18,143 - INFO - 法令検索成功
+2025-08-20 19:03:18,144 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:03:19,150 - INFO - 
+--- テスト反復 4/5 ---
+2025-08-20 19:03:19,151 - INFO - 実行中: health_check
+2025-08-20 19:03:19,151 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:03:19,152 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:03:19.151836', 'version': '1.0.0'}
+2025-08-20 19:03:20,168 - INFO - 実行中: individual_tax
+2025-08-20 19:03:20,168 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:03:20,168 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:03:20,169 - INFO - 個人所得税計算成功
+2025-08-20 19:03:20,171 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:03:21,177 - INFO - 実行中: corporate_tax
+2025-08-20 19:03:21,177 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:03:21,177 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:03:21,179 - ERROR - 法人税計算失敗: 500 - {"detail":"'JapaneseTaxCalculator' object has no attribute 'calculate_corporate_tax'"}
+2025-08-20 19:03:22,180 - INFO - 実行中: tax_answer_search
+2025-08-20 19:03:22,180 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:03:22,180 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:03:22,929 - INFO - タックスアンサー検索成功
+2025-08-20 19:03:22,929 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:03:23,940 - INFO - 実行中: law_search
+2025-08-20 19:03:23,941 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:03:23,941 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:03:24,773 - INFO - 法令検索成功
+2025-08-20 19:03:24,773 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:03:25,784 - INFO - 
+--- テスト反復 5/5 ---
+2025-08-20 19:03:25,784 - INFO - 実行中: health_check
+2025-08-20 19:03:25,784 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:03:25,785 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:03:25.785549', 'version': '1.0.0'}
+2025-08-20 19:03:26,792 - INFO - 実行中: individual_tax
+2025-08-20 19:03:26,792 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:03:26,792 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:03:26,794 - INFO - 個人所得税計算成功
+2025-08-20 19:03:26,794 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:03:27,796 - INFO - 実行中: corporate_tax
+2025-08-20 19:03:27,796 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:03:27,796 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:03:27,798 - ERROR - 法人税計算失敗: 500 - {"detail":"'JapaneseTaxCalculator' object has no attribute 'calculate_corporate_tax'"}
+2025-08-20 19:03:28,813 - INFO - 実行中: tax_answer_search
+2025-08-20 19:03:28,813 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:03:28,813 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:03:29,444 - INFO - タックスアンサー検索成功
+2025-08-20 19:03:29,444 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:03:30,451 - INFO - 実行中: law_search
+2025-08-20 19:03:30,451 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:03:30,451 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:03:30,833 - INFO - 法令検索成功
+2025-08-20 19:03:30,834 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:03:31,849 - INFO - 
+=== テスト結果サマリー ===
+2025-08-20 19:03:31,849 - INFO - tax_answer_search: 5/5 成功 (100.0%) 平均時間: 0.686秒
+2025-08-20 19:03:31,849 - INFO - health_check: 5/5 成功 (100.0%) 平均時間: 0.055秒
+2025-08-20 19:03:31,849 - INFO - law_search: 5/5 成功 (100.0%) 平均時間: 0.483秒
+2025-08-20 19:03:31,850 - INFO - corporate_tax: 0/5 成功 (0.0%) 平均時間: 0.002秒
+2025-08-20 19:03:31,850 - INFO - individual_tax: 5/5 成功 (100.0%) 平均時間: 0.003秒
+2025-08-20 19:03:31,850 - INFO - 
+全体成功率: 20/25 (80.0%)
+2025-08-20 19:03:31,851 - INFO - 詳細結果を保存: test_results_20250820_190331.json
+2025-08-20 19:04:46,675 - INFO - === TaxMCP外部テスト開始 ===
+2025-08-20 19:04:46,675 - INFO - テスト対象: http://localhost:8000
+2025-08-20 19:04:46,675 - INFO - テスト回数: 5
+2025-08-20 19:04:46,675 - INFO - 
+--- テスト反復 1/5 ---
+2025-08-20 19:04:46,676 - INFO - 実行中: health_check
+2025-08-20 19:04:46,676 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:04:46,941 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:04:46.940111', 'version': '1.0.0'}
+2025-08-20 19:04:47,959 - INFO - 実行中: individual_tax
+2025-08-20 19:04:47,959 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:04:47,959 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:04:47,961 - INFO - 個人所得税計算成功
+2025-08-20 19:04:47,961 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:04:48,963 - INFO - 実行中: corporate_tax
+2025-08-20 19:04:48,963 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:04:48,963 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:04:48,965 - INFO - 法人税計算成功
+2025-08-20 19:04:48,965 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:04:49,970 - INFO - 実行中: tax_answer_search
+2025-08-20 19:04:49,970 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:04:49,970 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:04:50,292 - INFO - タックスアンサー検索成功
+2025-08-20 19:04:50,292 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:04:51,301 - INFO - 実行中: law_search
+2025-08-20 19:04:51,302 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:04:51,302 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:04:51,654 - INFO - 法令検索成功
+2025-08-20 19:04:51,654 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:04:52,658 - INFO - 
+--- テスト反復 2/5 ---
+2025-08-20 19:04:52,658 - INFO - 実行中: health_check
+2025-08-20 19:04:52,659 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:04:52,660 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:04:52.660005', 'version': '1.0.0'}
+2025-08-20 19:04:53,672 - INFO - 実行中: individual_tax
+2025-08-20 19:04:53,673 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:04:53,673 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:04:53,674 - INFO - 個人所得税計算成功
+2025-08-20 19:04:53,675 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:04:54,677 - INFO - 実行中: corporate_tax
+2025-08-20 19:04:54,677 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:04:54,678 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:04:54,679 - INFO - 法人税計算成功
+2025-08-20 19:04:54,679 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:04:55,696 - INFO - 実行中: tax_answer_search
+2025-08-20 19:04:55,696 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:04:55,697 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:04:55,963 - INFO - タックスアンサー検索成功
+2025-08-20 19:04:55,963 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:04:56,979 - INFO - 実行中: law_search
+2025-08-20 19:04:56,979 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:04:56,979 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:04:57,385 - INFO - 法令検索成功
+2025-08-20 19:04:57,385 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:04:58,402 - INFO - 
+--- テスト反復 3/5 ---
+2025-08-20 19:04:58,402 - INFO - 実行中: health_check
+2025-08-20 19:04:58,402 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:04:58,404 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:04:58.403335', 'version': '1.0.0'}
+2025-08-20 19:04:59,409 - INFO - 実行中: individual_tax
+2025-08-20 19:04:59,409 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:04:59,409 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:04:59,411 - INFO - 個人所得税計算成功
+2025-08-20 19:04:59,411 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:05:00,428 - INFO - 実行中: corporate_tax
+2025-08-20 19:05:00,428 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:05:00,428 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:05:00,430 - INFO - 法人税計算成功
+2025-08-20 19:05:00,430 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:05:01,433 - INFO - 実行中: tax_answer_search
+2025-08-20 19:05:01,433 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:05:01,433 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:05:01,818 - INFO - タックスアンサー検索成功
+2025-08-20 19:05:01,818 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:05:02,827 - INFO - 実行中: law_search
+2025-08-20 19:05:02,827 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:05:02,827 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:05:03,078 - INFO - 法令検索成功
+2025-08-20 19:05:03,078 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:05:04,093 - INFO - 
+--- テスト反復 4/5 ---
+2025-08-20 19:05:04,093 - INFO - 実行中: health_check
+2025-08-20 19:05:04,093 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:05:04,094 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:05:04.094349', 'version': '1.0.0'}
+2025-08-20 19:05:05,100 - INFO - 実行中: individual_tax
+2025-08-20 19:05:05,101 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:05:05,101 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:05:05,102 - INFO - 個人所得税計算成功
+2025-08-20 19:05:05,103 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:05:06,106 - INFO - 実行中: corporate_tax
+2025-08-20 19:05:06,106 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:05:06,106 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:05:06,108 - INFO - 法人税計算成功
+2025-08-20 19:05:06,108 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:05:07,124 - INFO - 実行中: tax_answer_search
+2025-08-20 19:05:07,124 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:05:07,125 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:05:07,382 - INFO - タックスアンサー検索成功
+2025-08-20 19:05:07,382 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:05:08,392 - INFO - 実行中: law_search
+2025-08-20 19:05:08,392 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:05:08,393 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:05:08,652 - INFO - 法令検索成功
+2025-08-20 19:05:08,652 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:05:09,662 - INFO - 
+--- テスト反復 5/5 ---
+2025-08-20 19:05:09,662 - INFO - 実行中: health_check
+2025-08-20 19:05:09,662 - INFO - ヘルスチェック: http://localhost:8000/health
+2025-08-20 19:05:09,664 - INFO - ヘルスチェック成功: {'status': 'healthy', 'timestamp': '2025-08-20T19:05:09.663172', 'version': '1.0.0'}
+2025-08-20 19:05:10,680 - INFO - 実行中: individual_tax
+2025-08-20 19:05:10,680 - INFO - 個人所得税計算テスト: http://localhost:8000/api/v1/calculate/individual
+2025-08-20 19:05:10,680 - INFO - テストデータ: {
+  "income": 5000000,
+  "deductions": 480000,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "city": "新宿区"
+}
+2025-08-20 19:05:10,682 - INFO - 個人所得税計算成功
+2025-08-20 19:05:10,682 - INFO - 計算結果: {
+  "annual_income": 5000000,
+  "taxable_income": 3080000,
+  "income_tax": 210500,
+  "effective_rate": 4.21,
+  "marginal_rate": 10.0,
+  "deductions_applied": {
+    "basic_deduction": 480000,
+    "employment_income_deduction": 1440000,
+    "dependent_deduction": 0,
+    "spouse_deduction": 0,
+    "social_insurance_deduction": 0,
+    "life_insurance_deduction": 0,
+    "earthquake_insurance_deduction": 0,
+    "medical_expense_deduction": 0,
+    "donation_deduction": 0,
+    "total_deductions": 1920000
+  },
+  "tax_year": 2025
+}
+2025-08-20 19:05:11,698 - INFO - 実行中: corporate_tax
+2025-08-20 19:05:11,698 - INFO - 法人税計算テスト: http://localhost:8000/api/v1/calculate/corporate
+2025-08-20 19:05:11,698 - INFO - テストデータ: {
+  "revenue": 100000000,
+  "expenses": 80000000,
+  "tax_year": 2025,
+  "company_type": "普通法人",
+  "capital": 50000000
+}
+2025-08-20 19:05:11,701 - INFO - 法人税計算成功
+2025-08-20 19:05:11,701 - INFO - 計算結果: {
+  "gross_income": 20000000,
+  "taxable_income": 20000000,
+  "corporate_tax": 4680000,
+  "local_corporate_tax": 486720,
+  "business_tax": 1271999,
+  "total_tax": 6438719,
+  "effective_rate": 32.19,
+  "tax_year": 2025,
+  "prefecture": "東京都",
+  "company_type": "small_corporation_high",
+  "deductions_applied": {
+    "total_deductions": 0
+  }
+}
+2025-08-20 19:05:12,714 - INFO - 実行中: tax_answer_search
+2025-08-20 19:05:12,714 - INFO - タックスアンサー検索テスト: http://localhost:8000/api/v1/search/tax-answer
+2025-08-20 19:05:12,715 - INFO - 検索クエリ: {
+  "query": "給与所得控除",
+  "limit": 5
+}
+2025-08-20 19:05:13,046 - INFO - タックスアンサー検索成功
+2025-08-20 19:05:13,046 - INFO - 検索結果: {
+  "query": "給与所得控除",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:05:14,063 - INFO - 実行中: law_search
+2025-08-20 19:05:14,063 - INFO - 法令検索テスト: http://localhost:8000/api/v1/search/law
+2025-08-20 19:05:14,064 - INFO - 検索クエリ: {
+  "query": "所得税法",
+  "limit": 3
+}
+2025-08-20 19:05:14,445 - INFO - 法令検索成功
+2025-08-20 19:05:14,446 - INFO - 検索結果: {
+  "query": "所得税法",
+  "results": [],
+  "count": 0
+}
+2025-08-20 19:05:15,450 - INFO - 
+=== テスト結果サマリー ===
+2025-08-20 19:05:15,450 - INFO - law_search: 5/5 成功 (100.0%) 平均時間: 0.331秒
+2025-08-20 19:05:15,451 - INFO - individual_tax: 5/5 成功 (100.0%) 平均時間: 0.003秒
+2025-08-20 19:05:15,451 - INFO - tax_answer_search: 5/5 成功 (100.0%) 平均時間: 0.313秒
+2025-08-20 19:05:15,451 - INFO - health_check: 5/5 成功 (100.0%) 平均時間: 0.054秒
+2025-08-20 19:05:15,451 - INFO - corporate_tax: 5/5 成功 (100.0%) 平均時間: 0.002秒
+2025-08-20 19:05:15,451 - INFO - 
+全体成功率: 25/25 (100.0%)
+2025-08-20 19:05:15,453 - INFO - 詳細結果を保存: test_results_20250820_190515.json
