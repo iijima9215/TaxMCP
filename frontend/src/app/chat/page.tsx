@@ -292,7 +292,7 @@ export default function ChatPage() {
                       ul: ({node, ...props}) => <ul className="list-disc list-inside mb-2" {...props} />,
                       ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-2" {...props} />,
                       li: ({node, ...props}) => <li className="mb-1" {...props} />,
-                      code: ({node, inline, ...props}) => 
+                      code: ({node, inline, ...props}: any) => 
                         inline ? (
                           <code className="bg-gray-100 px-1 py-0.5 rounded text-sm" {...props} />
                         ) : (

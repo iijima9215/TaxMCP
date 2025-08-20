@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
       try {
         // すべてのtool_callsを並列処理
         const toolResults = await Promise.all(
-          choice.message.tool_calls.map(async (toolCall) => {
+          choice.message.tool_calls.map(async (toolCall: any) => {
             const functionName = toolCall.function.name;
             const functionArgs = JSON.parse(toolCall.function.arguments);
             
