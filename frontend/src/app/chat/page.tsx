@@ -285,6 +285,19 @@ export default function ChatPage() {
                     remarkPlugins={[remarkGfm, remarkMath]}
                     rehypePlugins={[rehypeKatex]}
                     components={{
+                      // Math display components
+                      div: ({node, className, children, ...props}: any) => {
+                        if (className === 'math math-display') {
+                          return <div className="math-display my-4 text-center" {...props}>{children}</div>;
+                        }
+                        return <div {...props}>{children}</div>;
+                      },
+                      span: ({node, className, children, ...props}: any) => {
+                        if (className === 'math math-inline') {
+                          return <span className="math-inline" {...props}>{children}</span>;
+                        }
+                        return <span {...props}>{children}</span>;
+                      },
                       h1: ({node, ...props}) => <h1 className="text-xl font-bold mb-2" {...props} />,
                       h2: ({node, ...props}) => <h2 className="text-lg font-semibold mb-2" {...props} />,
                       h3: ({node, ...props}) => <h3 className="text-md font-semibold mb-1" {...props} />,
