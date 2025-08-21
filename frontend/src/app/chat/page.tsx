@@ -292,12 +292,19 @@ export default function ChatPage() {
                       ul: ({node, ...props}) => <ul className="list-disc list-inside mb-2" {...props} />,
                       ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-2" {...props} />,
                       li: ({node, ...props}) => <li className="mb-1" {...props} />,
-                      code: ({node, inline, ...props}: any) => 
-                        inline ? (
-                          <code className="bg-gray-100 px-1 py-0.5 rounded text-sm" {...props} />
+                      code: ({node, inline, className, children, ...props}: any) => {
+                        const match = /language-(\w+)/.exec(className || '');
+                        const isInline = inline || !match;
+                        return isInline ? (
+                          <code className="bg-gray-100 px-1 py-0.5 rounded text-sm" {...props}>
+                            {children}
+                          </code>
                         ) : (
-                          <code className="block bg-gray-100 p-2 rounded text-sm overflow-x-auto" {...props} />
-                        ),
+                          <code className="block bg-gray-100 p-2 rounded text-sm overflow-x-auto" {...props}>
+                            {children}
+                          </code>
+                        );
+                      },
                       pre: ({node, ...props}) => <pre className="bg-gray-100 p-2 rounded overflow-x-auto mb-2" {...props} />,
                       blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-300 pl-4 italic mb-2" {...props} />,
                       table: ({node, ...props}) => <table className="border-collapse border border-gray-300 mb-2" {...props} />,
