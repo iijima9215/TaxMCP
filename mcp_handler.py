@@ -275,7 +275,7 @@ class MCPHandler:
                         },
                         "is_foreign_corporation": {
                             "type": "boolean",
-                            "default": false,
+                            "default": False,
                             "description": "外国法人かどうか（軽減税率適用判定に影響）"
                         }
                     },
