@@ -621,7 +621,7 @@ class JapaneseCorporateTaxCalculator:
         local_corporate_tax = int(corporate_tax * local_corporate_tax_rate)
         
         # Calculate business tax
-        business_tax = self._calculate_business_tax(taxable_income, prefecture)
+        business_tax = self._calculate_business_tax(taxable_income, prefecture, capital)
         
         # Calculate total tax
         total_tax = corporate_tax + local_corporate_tax + business_tax
@@ -643,23 +643,73 @@ class JapaneseCorporateTaxCalculator:
             "deductions_applied": {"total_deductions": deductions}
         }
     
-    def _calculate_business_tax(self, taxable_income: int, prefecture: str) -> int:
-        """Calculate business tax based on income brackets."""
-        brackets = self._business_tax_rates.get(prefecture, self._business_tax_rates["default"])
+    def _calculate_business_tax(self, taxable_income: int, prefecture: str, capital: int = 0) -> int:
+        """Calculate business tax based on income brackets and company type.
+        
+        Args:
+            taxable_income: 課税所得金額
+            prefecture: 都道府県
+            capital: 資本金額（デフォルト0）
+        
+        Returns:
+            int: 計算された事業税額
+        """
+        # 都道府県の税率を取得（存在しない場合はデフォルト）
+        prefecture_rates = self._business_tax_rates.get(prefecture, None)
+        if isinstance(prefecture_rates, str):
+            # 文字列の場合は参照先を取得
+            prefecture_rates = self._business_tax_rates[prefecture_rates]
+        elif prefecture_rates is None:
+            # 存在しない場合はデフォルト
+            prefecture_rates = self._business_tax_rates["default"]
+        
+        # 会社区分を判定
+        if capital > 100000000:  # 1億円超
+            corporation_type = "普通法人_資本金1億円超"
+        else:
+            corporation_type = "普通法人_資本金1億円以下"
+        
+        # 計算方式は基本的に所得割
+        tax_calculation = "所得割"
+        
+        # 法人区分に対応する税率を取得
+        if corporation_type not in prefecture_rates:
+            # 該当する法人区分がない場合は普通法人として扱う
+            if capital > 100000000:
+                corporation_type = "普通法人_資本金1億円超"
+            else:
+                corporation_type = "普通法人_資本金1億円以下"
+        
+        corporation_rates = prefecture_rates[corporation_type]
+        
+        # 計算方式に対応する税率を取得
+        if tax_calculation not in corporation_rates:
+            # 該当する計算方式がない場合は所得割として扱う
+            tax_calculation = "所得割"
+        
+        calculation_rates = corporation_rates[tax_calculation]
         
         business_tax = 0
-        remaining_income = taxable_income
         
-        for bracket in brackets:
-            if remaining_income <= 0:
-                break
+        # 所得割の場合は段階的に計算
+        if tax_calculation == "所得割" and isinstance(calculation_rates, list):
+            remaining_income = taxable_income
             
-            bracket_max = bracket.max_income or float('inf')
-            bracket_income = min(remaining_income, bracket_max - bracket.min_income)
-            
-            if bracket_income > 0:
-                business_tax += int(bracket_income * bracket.rate)
-                remaining_income -= bracket_income
+            for bracket in calculation_rates:
+                if remaining_income <= 0:
+                    break
+                
+                bracket_max = bracket["max"] or float('inf')
+                bracket_income = min(remaining_income, bracket_max - bracket["min"])
+                
+                if bracket_income > 0:
+                    # 標準税率を使用（超過税率は現在未使用）
+                    business_tax += int(bracket_income * bracket["rate"])
+                    remaining_income -= bracket_income
+        else:
+            # 単一税率の場合（収入割、付加価値割、資本割）
+            rate = calculation_rates["rate"]
+            business_tax = int(taxable_income * rate)
         
         return business_tax
     

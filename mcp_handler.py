@@ -272,6 +272,11 @@ class MCPHandler:
                             "minimum": 0,
                             "default": 0,
                             "description": "仮払税金（円）"
+                        },
+                        "is_foreign_corporation": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "外国法人かどうか（軽減税率適用判定に影響）"
                         }
                     },
                     "required": ["accounting_profit"]
@@ -481,7 +486,8 @@ class MCPHandler:
                     deduction_items=deduction_items,
                     tax_credit_items=tax_credit_items,
                     interim_payments=arguments.get('interim_payments', 0),
-                    prepaid_taxes=arguments.get('prepaid_taxes', 0)
+                    prepaid_taxes=arguments.get('prepaid_taxes', 0),
+                    is_foreign_corporation=arguments.get('is_foreign_corporation', False)
                 )
                 
                 # Log audit

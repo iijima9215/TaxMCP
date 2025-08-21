@@ -1,0 +1,309 @@
+{
+  "company_info": {
+    "company_name": "株式会社サンプル製作所",
+    "company_number": "1234567890123",
+    "business_year_start": "2024-04-01",
+    "business_year_end": "2025-03-31",
+    "address": "東京都港区",
+    "capital": 50000000,
+    "employee_count": 45
+  },
+  "basic_calculation_data": {
+    "accounting_profit": 12000000,
+    "tax_year": 2025,
+    "prefecture": "東京都",
+    "capital": 50000000
+  },
+  "profit_loss_items": {
+    "net_profit": 12000000,
+    "dividend_income": 150000,
+    "interest_income": 80000,
+    "interest_expense": 450000,
+    "miscellaneous_income": 200000,
+    "miscellaneous_loss": 120000
+  },
+  "entertainment_and_donation": {
+    "entertainment_expenses": 800000,
+    "donation_expenses": 100000
+  },
+  "depreciation_and_reserves": {
+    "depreciation_expense": 2500000,
+    "bad_debt_reserve": 300000,
+    "bonus_reserve": 1200000,
+    "retirement_benefit_reserve": 800000
+  },
+  "loss_carryforward": {
+    "loss_carryforward_balance": 0,
+    "current_loss_carryforward_deduction": 0,
+    "loss_carryforward_end_balance": 0
+  },
+  "retained_earnings_and_tax": {
+    "current_retained_earnings": 8000000,
+    "current_corporate_tax": 1800000,
+    "prepaid_corporate_tax": 900000
+  },
+  "interim_and_withholding": {
+    "interim_payment": 900000,
+    "estimated_tax_payment": 450000,
+    "withholding_tax": 120000
+  },
+  "research_and_development": {
+    "research_expenses": 1500000
+  },
+  "salary_expansion_tax_credit": {
+    "target_salary_amount": 180000000,
+    "previous_year_salary_amount": 175000000
+  },
+  "depreciation_asset_details": {
+    "asset_acquisition_cost": 15000000,
+    "acquisition_date": "2024-06-15",
+    "useful_life": 10,
+    "depreciation_method": "定率法",
+    "current_year_depreciation": 2250000,
+    "accumulated_depreciation": 2250000,
+    "book_value": 12750000
+  },
+  "addition_items": [
+    {
+      "name": "寄附金損金不算入額",
+      "amount": 50000,
+      "description": "一般寄附金の損金算入限度超過額",
+      "related_form": "別表四・十四"
+    },
+    {
+      "name": "交際費損金不算入額",
+      "amount": 200000,
+      "description": "交際費等の損金算入限度超過額（年800万円超過分）",
+      "related_form": "別表四・十五"
+    },
+    {
+      "name": "過大役員給与",
+      "amount": 0,
+      "description": "定期同額給与・事前確定給与の要件外部分",
+      "related_form": "別表四"
+    },
+    {
+      "name": "過大支払利息",
+      "amount": 0,
+      "description": "過大部分は損金不算入",
+      "related_form": "別表四"
+    },
+    {
+      "name": "減価償却超過額",
+      "amount": 150000,
+      "description": "会計償却額が税法償却限度額を超えた部分",
+      "related_form": "別表四・十六"
+    },
+    {
+      "name": "引当金繰入超過額",
+      "amount": 80000,
+      "description": "会計計上が税法限度を超えた部分",
+      "related_form": "別表四"
+    },
+    {
+      "name": "受取配当金益金算入額",
+      "amount": 150000,
+      "description": "損益計算書に計上された受取配当金全額",
+      "related_form": "別表四・六"
+    },
+    {
+      "name": "留保金課税対象額",
+      "amount": 0,
+      "description": "同族会社留保所得に対する加算課税（非同族会社のため0）",
+      "related_form": "別表三"
+    },
+    {
+      "name": "法人税・住民税・事業税",
+      "amount": 1800000,
+      "description": "本税自体は損金不算入",
+      "related_form": "別表五（二）"
+    }
+  ],
+  "deduction_items": [
+    {
+      "name": "受取配当金益金不算入額",
+      "amount": 120000,
+      "description": "法人間配当の益金不算入（持株比率25%以上）",
+      "related_form": "別表四・六"
+    },
+    {
+      "name": "減価償却不足額",
+      "amount": 0,
+      "description": "会計償却額が税法償却限度額を下回った部分",
+      "related_form": "別表四・十六"
+    },
+    {
+      "name": "繰延資産償却不足額",
+      "amount": 0,
+      "description": "税法認容額との差額",
+      "related_form": "別表四"
+    },
+    {
+      "name": "特別償却費",
+      "amount": 300000,
+      "description": "中小企業投資促進税制による特別償却",
+      "related_form": "別表四・九・十六"
+    },
+    {
+      "name": "引当金・準備金繰入認容額",
+      "amount": 0,
+      "description": "税法上認められる部分",
+      "related_form": "別表四"
+    },
+    {
+      "name": "繰越欠損金控除額",
+      "amount": 0,
+      "description": "青色申告法人の赤字控除（当期は黒字のため0）",
+      "related_form": "別表四・七"
+    },
+    {
+      "name": "災害損失金控除額",
+      "amount": 0,
+      "description": "災害損失の繰越控除",
+      "related_form": "別表七"
+    },
+    {
+      "name": "グループ法人譲渡益繰延",
+      "amount": 0,
+      "description": "グループ内資産移転の益金繰延",
+      "related_form": "別表二十"
+    }
+  ],
+  "tax_credit_items": [
+    {
+      "name": "研究開発税制（試験研究費控除）",
+      "amount": 150000,
+      "description": "試験研究費1,500万円の10%控除",
+      "related_form": "別表六（八）"
+    },
+    {
+      "name": "中小企業投資促進税制",
+      "amount": 100000,
+      "description": "機械装置等の取得価額の7%控除",
+      "related_form": "別表六（十八）"
+    },
+    {
+      "name": "所得拡大促進税制",
+      "amount": 75000,
+      "description": "給与等支給額の増加額の15%控除",
+      "related_form": "別表六（二十六）"
+    },
+    {
+      "name": "外国税額控除",
+      "amount": 0,
+      "description": "国外で課税された税額を控除（海外事業なし）",
+      "related_form": "別表六（三）"
+    },
+    {
+      "name": "エネルギー環境投資促進税制",
+      "amount": 0,
+      "description": "環境関連設備投資の控除",
+      "related_form": "別表六（九）"
+    },
+    {
+      "name": "情報基盤強化税制",
+      "amount": 50000,
+      "description": "DX投資促進税制による控除",
+      "related_form": "別表六（九）"
+    },
+    {
+      "name": "中小企業者特別控除",
+      "amount": 0,
+      "description": "中小企業者等の特別控除",
+      "related_form": "別表六"
+    }
+  ],
+  "payment_and_prepaid": {
+    "interim_payments": 900000,
+    "prepaid_taxes": 120000
+  },
+  "sample_calculation_request": {
+    "name": "calculate_enhanced_corporate_tax",
+    "arguments": {
+      "accounting_profit": 12000000,
+      "tax_year": 2025,
+      "prefecture": "東京都",
+      "capital": 50000000,
+      "addition_items": [
+        {
+          "name": "寄附金損金不算入額",
+          "amount": 50000,
+          "description": "一般寄附金の損金算入限度超過額",
+          "related_form": "別表四・十四"
+        },
+        {
+          "name": "交際費損金不算入額",
+          "amount": 200000,
+          "description": "交際費等の損金算入限度超過額",
+          "related_form": "別表四・十五"
+        },
+        {
+          "name": "減価償却超過額",
+          "amount": 150000,
+          "description": "会計償却額が税法償却限度額を超えた部分",
+          "related_form": "別表四・十六"
+        },
+        {
+          "name": "引当金繰入超過額",
+          "amount": 80000,
+          "description": "会計計上が税法限度を超えた部分",
+          "related_form": "別表四"
+        },
+        {
+          "name": "受取配当金益金算入額",
+          "amount": 150000,
+          "description": "損益計算書に計上された受取配当金全額",
+          "related_form": "別表四・六"
+        },
+        {
+          "name": "法人税・住民税・事業税",
+          "amount": 1800000,
+          "description": "本税自体は損金不算入",
+          "related_form": "別表五（二）"
+        }
+      ],
+      "deduction_items": [
+        {
+          "name": "受取配当金益金不算入額",
+          "amount": 120000,
+          "description": "法人間配当の益金不算入",
+          "related_form": "別表四・六"
+        },
+        {
+          "name": "特別償却費",
+          "amount": 300000,
+          "description": "中小企業投資促進税制による特別償却",
+          "related_form": "別表四・九・十六"
+        }
+      ],
+      "tax_credit_items": [
+        {
+          "name": "研究開発税制（試験研究費控除）",
+          "amount": 150000,
+          "description": "試験研究費の税額控除",
+          "related_form": "別表六（八）"
+        },
+        {
+          "name": "中小企業投資促進税制",
+          "amount": 100000,
+          "description": "機械装置等の取得価額の7%控除",
+          "related_form": "別表六（十八）"
+        },
+        {
+          "name": "所得拡大促進税制",
+          "amount": 75000,
+          "description": "給与等支給額の増加額の15%控除",
+          "related_form": "別表六（二十六）"
+        },
+        {
+          "name": "情報基盤強化税制",
+          "amount": 50000,
+          "description": "DX投資促進税制による控除",
+          "related_form": "別表六（九）"
+        }
+      ],
+      "interim_payments": 900000,
+      "prepaid_taxes": 120000
+    }
+  }
+}
