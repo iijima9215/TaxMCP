@@ -77,7 +77,8 @@ const taxCalculationFunctions = [
 // MCPサーバーに関数を呼び出す
 async function callMcpFunction(toolName: string, args: any) {
   try {
-    const response = await fetch('http://localhost:8000/mcp', {
+    const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:8000';
+    const response = await fetch(`${mcpServerUrl}/mcp`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

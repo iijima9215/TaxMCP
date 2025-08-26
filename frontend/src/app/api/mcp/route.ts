@@ -5,8 +5,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { method, params } = body;
 
-    // MCPサーバーのエンドポイント（http://localhost:8000）
-    const mcpResponse = await fetch('http://localhost:8000/mcp', {
+    // MCPサーバーのエンドポイント（環境変数から取得）
+    const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:8000';
+    const mcpResponse = await fetch(`${mcpServerUrl}/mcp`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -38,7 +39,8 @@ export async function POST(request: NextRequest) {
 // 利用可能なMCP機能の一覧を取得
 export async function GET() {
   try {
-    const mcpResponse = await fetch('http://localhost:8000/mcp', {
+    const mcpServerUrl = process.env.MCP_SERVER_URL || 'http://localhost:8000';
+    const mcpResponse = await fetch(`${mcpServerUrl}/mcp`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
