@@ -47,16 +47,36 @@ class Settings(BaseSettings):
     business_tax_rate_mid_excess: float = Field(default=0.0565, description="事業税超過税率（中所得）(5.665%)")
     business_tax_rate_high_excess: float = Field(default=0.0748, description="事業税超過税率（高所得）(7.48%)")
     
+    # enhanced_corporate_tax.pyで使用される事業税率設定（互換性のため）
+    business_tax_rate_income_low: float = Field(default=0.035, description="事業税率（低所得）(3.5%)")
+    business_tax_rate_income_low_excess: float = Field(default=0.0375, description="事業税超過税率（低所得）(3.75%)")
+    business_tax_rate_income_mid: float = Field(default=0.053, description="事業税率（中所得）(5.3%)")
+    business_tax_rate_income_mid_excess: float = Field(default=0.0565, description="事業税超過税率（中所得）(5.665%)")
+    business_tax_rate_income_high: float = Field(default=0.07, description="事業税率（高所得）(7.0%)")
+    business_tax_rate_income_high_excess: float = Field(default=0.0748, description="事業税超過税率（高所得）(7.48%)")
+    business_tax_rate_value_added: float = Field(default=0.012, description="付加価値割税率 (1.2%)")
+    business_tax_rate_capital: float = Field(default=0.005, description="資本割税率 (0.5%)")
+    
     # 住民税率設定
     resident_tax_income_rate: float = Field(default=0.07, description="住民税法人税割税率 (7%)")
     resident_tax_equal_capital_50m_below: int = Field(default=70000, description="住民税均等割（資本金5000万円以下）")
     resident_tax_equal_capital_50m_1b: int = Field(default=180000, description="住民税均等割（資本金5000万円超～10億円以下）")
     resident_tax_equal_capital_1b_above: int = Field(default=290000, description="住民税均等割（資本金10億円超）")
     
+    # enhanced_corporate_tax.pyで使用される住民税設定（互換性のため）
+    resident_tax_equal_50m_below: int = Field(default=70000, description="住民税均等割（資本金5000万円以下）")
+    resident_tax_equal_50m_1b: int = Field(default=180000, description="住民税均等割（資本金5000万円超～10億円以下）")
+    resident_tax_equal_1b_above: int = Field(default=290000, description="住民税均等割（資本金10億円超）")
+    
     # 計算設定
     default_rounding_enabled: bool = Field(default=True, description="デフォルトの丸め処理有効化")
     rounding_precision: int = Field(default=0, description="丸め精度（小数点以下桁数）")
     rounding_method: str = Field(default="round_half_up", description="丸め方法: round_half_up, truncate, no_rounding")
+    
+    # .env.localで使用される計算設定（互換性のため）
+    calculation_rounding_enabled: bool = Field(default=True, description="丸め処理の有効化")
+    calculation_rounding_precision: int = Field(default=0, description="丸め精度（小数点以下桁数）")
+    calculation_rounding_method: str = Field(default="ROUND_HALF_UP", description="丸め方法")
     
     # Development Settings
     debug: bool = Field(default=False, description="Debug mode")
