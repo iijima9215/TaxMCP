@@ -31,7 +31,7 @@ export default function ChatPage() {
   const [showTemplatePanel, setShowTemplatePanel] = useState(false);
   const [templateSettings, setTemplateSettings] = useState<TemplateSettings>({
     enabled: true,
-    commonInstruction: `指定の無い限り、以下の前提条件で法人税の計算として扱うこと：
+    instruction: `指定の無い限り、以下の前提条件で法人税の計算として扱うこと：
 
 【法人の種類】
 ・中小企業（資本金1億円以下または従業員数300人以下）として計算
