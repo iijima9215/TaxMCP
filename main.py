@@ -997,6 +997,301 @@ def get_corporate_tax_default_items(
         raise
 
 
+@app.tool(
+    name="calculate_corporate_tax_with_custom_rates",
+    description="カスタム税率を指定して法人税を計算します。税率の丸め処理を制御できます。"
+)
+@validate_and_sanitize(['accounting_profit', 'capital'])
+def calculate_corporate_tax_with_custom_rates(
+    accounting_profit: int = Field(..., ge=0, description="当期純利益（会計利益）（円）"),
+    tax_year: int = Field(default=2025, ge=2020, le=2030, description="課税年度"),
+    prefecture: str = Field(default="東京都", description="都道府県"),
+    capital: int = Field(default=50000000, ge=1000000, description="資本金（円）"),
+    corporate_tax_rate: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="法人税率（0.0-1.0）。未指定時はデフォルト税率を使用"),
+    local_corporate_tax_rate: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="地方法人税率（0.0-1.0）。未指定時はデフォルト税率を使用"),
+    business_tax_rate: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="事業税率（0.0-1.0）。未指定時はデフォルト税率を使用"),
+    resident_tax_rate: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="住民税法人税割税率（0.0-1.0）。未指定時はデフォルト税率を使用"),
+    disable_rounding: bool = Field(default=False, description="税額の丸め処理を無効にするかどうか")
+) -> Dict[str, Any]:
+    """カスタム税率を指定した法人税計算"""
+    
+    # 税率パラメータの検証
+    custom_rates = {
+        "corporate_tax_rate": corporate_tax_rate,
+        "local_corporate_tax_rate": local_corporate_tax_rate,
+        "business_tax_rate": business_tax_rate,
+        "resident_tax_rate": resident_tax_rate
+    }
+    
+    # 税率の妥当性チェック
+    for rate_name, rate_value in custom_rates.items():
+        if rate_value is not None:
+            if rate_value < 0.0 or rate_value > 1.0:
+                raise ValueError(f"{rate_name}は0.0から1.0の範囲で指定してください: {rate_value}")
+            if rate_value > 0.5:  # 50%を超える税率は警告
+                logger.warning(f"高い税率が指定されました: {rate_name}={rate_value}")
+    
+    logger.info(
+        "Corporate tax calculation with custom rates requested",
+        accounting_profit=accounting_profit,
+        tax_year=tax_year,
+        prefecture=prefecture,
+        capital=capital,
+        corporate_tax_rate=corporate_tax_rate,
+        disable_rounding=disable_rounding
+    )
+    
+    try:
+        # 監査ログ記録
+        audit_logger.log_calculation_request(
+            calculation_type="corporate_tax_custom_rates",
+            parameters={
+                "accounting_profit": accounting_profit,
+                "tax_year": tax_year,
+                "prefecture": prefecture,
+                "capital": capital,
+                "corporate_tax_rate": corporate_tax_rate,
+                "local_corporate_tax_rate": local_corporate_tax_rate,
+                "business_tax_rate": business_tax_rate,
+                "resident_tax_rate": resident_tax_rate,
+                "disable_rounding": disable_rounding
+            }
+        )
+        
+        # カスタム税率での法人税計算実行
+        result = enhanced_corporate_tax_calculator.calculate_corporate_tax_with_custom_rates(
+            accounting_profit=accounting_profit,
+            tax_year=tax_year,
+            prefecture=prefecture,
+            capital=capital,
+            corporate_tax_rate=corporate_tax_rate,
+            local_corporate_tax_rate=local_corporate_tax_rate,
+            business_tax_rate=business_tax_rate,
+            resident_tax_rate=resident_tax_rate,
+            disable_rounding=disable_rounding
+        )
+        
+        logger.info(
+            "Corporate tax calculation with custom rates completed",
+            total_tax=result.get("総合納付税額", 0),
+            effective_rate=result.get("実効税率", 0)
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error("Corporate tax calculation with custom rates failed", error=str(e))
+        raise
+
+
+@app.tool(
+    name="get_system_config",
+    description="システムの設定値を確認します。税率設定、丸め処理設定、その他の設定値を表示します。"
+)
+def get_system_config() -> Dict[str, Any]:
+    """システムの設定値を取得"""
+    
+    logger.info("System configuration requested")
+    
+    try:
+        config_info = {
+            "税率設定": {
+                "法人税率": {
+                    "大法人": settings.corporate_tax_rate_large,
+                    "中小法人（800万円以下）": settings.corporate_tax_rate_small,
+                    "中小法人（800万円超）": settings.corporate_tax_rate_small_high
+                },
+                "地方法人税率": settings.local_corporate_tax_rate,
+                "事業税率": {
+                    "所得割（低）": settings.business_tax_rate_income_low,
+                    "所得割（中）": settings.business_tax_rate_income_mid,
+                    "所得割（高）": settings.business_tax_rate_income_high,
+                    "付加価値割": settings.business_tax_rate_value_added,
+                    "資本割": settings.business_tax_rate_capital
+                },
+                "住民税率": {
+                    "法人税割": settings.resident_tax_income_rate,
+                    "均等割（5000万円以下）": settings.resident_tax_equal_50m_below,
+                    "均等割（5000万円超～10億円以下）": settings.resident_tax_equal_50m_1b,
+                    "均等割（10億円超）": settings.resident_tax_equal_1b_above
+                }
+            },
+            "計算設定": {
+                "丸め処理有効": settings.calculation_rounding_enabled,
+                "丸め精度": settings.calculation_rounding_precision,
+                "丸め方法": settings.calculation_rounding_method
+            },
+            "サーバー設定": {
+                "サーバー名": settings.server_name,
+                "バージョン": settings.server_version,
+                "ログレベル": settings.log_level
+            }
+        }
+        
+        logger.info("System configuration retrieved successfully")
+        return config_info
+        
+    except Exception as e:
+        logger.error("Failed to get system configuration", error=str(e))
+        raise
+
+
+@app.tool(
+    name="update_system_config",
+    description="システムの設定値を更新します。税率や丸め処理設定を動的に変更できます。"
+)
+def update_system_config(
+    corporate_tax_rate_large: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="大法人税率（0.0-1.0）"),
+    corporate_tax_rate_small: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="中小法人税率（800万円以下）"),
+    corporate_tax_rate_small_high: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="中小法人税率（800万円超）"),
+    local_corporate_tax_rate: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="地方法人税率"),
+    business_tax_rate_income_low: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="事業税所得割（低）"),
+    business_tax_rate_income_mid: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="事業税所得割（中）"),
+    business_tax_rate_income_high: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="事業税所得割（高）"),
+    business_tax_rate_value_added: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="事業税付加価値割"),
+    business_tax_rate_capital: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="事業税資本割"),
+    resident_tax_income_rate: Optional[float] = Field(default=None, ge=0.0, le=1.0, description="住民税法人税割"),
+    resident_tax_equal_50m_below: Optional[int] = Field(default=None, ge=0, description="住民税均等割（5000万円以下）"),
+    resident_tax_equal_50m_1b: Optional[int] = Field(default=None, ge=0, description="住民税均等割（5000万円超～10億円以下）"),
+    resident_tax_equal_1b_above: Optional[int] = Field(default=None, ge=0, description="住民税均等割（10億円超）"),
+    calculation_rounding_enabled: Optional[bool] = Field(default=None, description="丸め処理有効化"),
+    calculation_rounding_precision: Optional[int] = Field(default=None, ge=0, le=10, description="丸め精度（小数点以下桁数）"),
+    calculation_rounding_method: Optional[str] = Field(default=None, description="丸め方法（ROUND_HALF_UP等）")
+) -> Dict[str, Any]:
+    """システムの設定値を更新"""
+    
+    logger.info("System configuration update requested")
+    
+    try:
+        updated_settings = {}
+        
+        # 法人税率の更新
+        if corporate_tax_rate_large is not None:
+            settings.corporate_tax_rate_large = corporate_tax_rate_large
+            updated_settings["corporate_tax_rate_large"] = corporate_tax_rate_large
+            
+        if corporate_tax_rate_small is not None:
+            settings.corporate_tax_rate_small = corporate_tax_rate_small
+            updated_settings["corporate_tax_rate_small"] = corporate_tax_rate_small
+            
+        if corporate_tax_rate_small_high is not None:
+            settings.corporate_tax_rate_small_high = corporate_tax_rate_small_high
+            updated_settings["corporate_tax_rate_small_high"] = corporate_tax_rate_small_high
+            
+        # 地方法人税率の更新
+        if local_corporate_tax_rate is not None:
+            settings.local_corporate_tax_rate = local_corporate_tax_rate
+            updated_settings["local_corporate_tax_rate"] = local_corporate_tax_rate
+            
+        # 事業税率の更新
+        if business_tax_rate_income_low is not None:
+            settings.business_tax_rate_income_low = business_tax_rate_income_low
+            updated_settings["business_tax_rate_income_low"] = business_tax_rate_income_low
+            
+        if business_tax_rate_income_mid is not None:
+            settings.business_tax_rate_income_mid = business_tax_rate_income_mid
+            updated_settings["business_tax_rate_income_mid"] = business_tax_rate_income_mid
+            
+        if business_tax_rate_income_high is not None:
+            settings.business_tax_rate_income_high = business_tax_rate_income_high
+            updated_settings["business_tax_rate_income_high"] = business_tax_rate_income_high
+            
+        if business_tax_rate_value_added is not None:
+            settings.business_tax_rate_value_added = business_tax_rate_value_added
+            updated_settings["business_tax_rate_value_added"] = business_tax_rate_value_added
+            
+        if business_tax_rate_capital is not None:
+            settings.business_tax_rate_capital = business_tax_rate_capital
+            updated_settings["business_tax_rate_capital"] = business_tax_rate_capital
+            
+        # 住民税率の更新
+        if resident_tax_income_rate is not None:
+            settings.resident_tax_income_rate = resident_tax_income_rate
+            updated_settings["resident_tax_income_rate"] = resident_tax_income_rate
+            
+        if resident_tax_equal_50m_below is not None:
+            settings.resident_tax_equal_50m_below = resident_tax_equal_50m_below
+            updated_settings["resident_tax_equal_50m_below"] = resident_tax_equal_50m_below
+            
+        if resident_tax_equal_50m_1b is not None:
+            settings.resident_tax_equal_50m_1b = resident_tax_equal_50m_1b
+            updated_settings["resident_tax_equal_50m_1b"] = resident_tax_equal_50m_1b
+            
+        if resident_tax_equal_1b_above is not None:
+            settings.resident_tax_equal_1b_above = resident_tax_equal_1b_above
+            updated_settings["resident_tax_equal_1b_above"] = resident_tax_equal_1b_above
+            
+        # 計算設定の更新
+        if calculation_rounding_enabled is not None:
+            settings.calculation_rounding_enabled = calculation_rounding_enabled
+            updated_settings["calculation_rounding_enabled"] = calculation_rounding_enabled
+            
+        if calculation_rounding_precision is not None:
+            settings.calculation_rounding_precision = calculation_rounding_precision
+            updated_settings["calculation_rounding_precision"] = calculation_rounding_precision
+            
+        if calculation_rounding_method is not None:
+            settings.calculation_rounding_method = calculation_rounding_method
+            updated_settings["calculation_rounding_method"] = calculation_rounding_method
+        
+        result = {
+            "status": "success",
+            "message": "設定が正常に更新されました",
+            "updated_settings": updated_settings,
+            "note": "設定の変更は現在のセッションでのみ有効です。永続化するには環境変数または.envファイルを更新してください。"
+        }
+        
+        logger.info(
+            "System configuration updated successfully",
+            updated_count=len(updated_settings)
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error("Failed to update system configuration", error=str(e))
+        raise
+
+
+@app.tool(
+    name="get_tax_rates_info",
+    description="MCPで使用されている税率情報を取得します。デフォルト税率や税率の設定方法を確認できます。"
+)
+def get_tax_rates_info(
+    tax_year: int = Field(default=2025, ge=2020, le=2030, description="課税年度"),
+    prefecture: str = Field(default="東京都", description="都道府県"),
+    capital: int = Field(default=50000000, ge=1000000, description="資本金（円）")
+) -> Dict[str, Any]:
+    """MCPで使用されている税率情報を取得"""
+    
+    logger.info(
+        "Tax rates info requested",
+        tax_year=tax_year,
+        prefecture=prefecture,
+        capital=capital
+    )
+    
+    try:
+        # 税率情報を取得
+        rates_info = enhanced_corporate_tax_calculator.get_tax_rates_info(
+            tax_year=tax_year,
+            prefecture=prefecture,
+            capital=capital
+        )
+        
+        logger.info(
+            "Tax rates info retrieved",
+            tax_year=tax_year,
+            prefecture=prefecture
+        )
+        
+        return rates_info
+        
+    except Exception as e:
+        logger.error("Failed to get tax rates info", error=str(e))
+        raise
+
+
 if __name__ == "__main__":
     logger.info(
         "Starting Japanese Tax Calculator MCP Server",

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Any
 from enum import Enum
 import math
+from config import settings
 
 
 @dataclass
@@ -87,22 +88,22 @@ class EnhancedCorporateTaxCalculator:
         self._resident_tax_rates = self._get_resident_tax_rates()
     
     def _get_corporate_tax_rates(self) -> Dict[int, Dict[str, float]]:
-        """法人税率を取得"""
+        """法人税率を取得（config.pyの設定値を使用）"""
         return {
             2025: {
-                "large_corporation": 0.232,  # 23.2% for large corporations
-                "small_corporation": 0.15,   # 15% for small corporations (income ≤ 8M yen)
-                "small_corporation_high": 0.232  # 23.2% for small corporations (income > 8M yen)
+                "large_corporation": settings.corporate_tax_rate_large,
+                "small_corporation": settings.corporate_tax_rate_small,
+                "small_corporation_high": settings.corporate_tax_rate_small_high
             },
             2024: {
-                "large_corporation": 0.232,
-                "small_corporation": 0.15,
-                "small_corporation_high": 0.232
+                "large_corporation": settings.corporate_tax_rate_large,
+                "small_corporation": settings.corporate_tax_rate_small,
+                "small_corporation_high": settings.corporate_tax_rate_small_high
             },
             2023: {
-                "large_corporation": 0.232,
-                "small_corporation": 0.15,
-                "small_corporation_high": 0.232
+                "large_corporation": settings.corporate_tax_rate_large,
+                "small_corporation": settings.corporate_tax_rate_small,
+                "small_corporation_high": settings.corporate_tax_rate_small_high
             }
         }
     
@@ -127,20 +128,20 @@ class EnhancedCorporateTaxCalculator:
                 # 1号 普通法人（資本金1億円以下）、公益法人等、人格のない社団等
                 "普通法人_資本金1億円以下": {
                     "所得割": [
-                        {"min": 0, "max": 4000000, "rate": 0.035, "超過税率": 0.0375},  # 3.5% / 3.75%
-                        {"min": 4000001, "max": 8000000, "rate": 0.053, "超過税率": 0.0565},  # 5.3% / 5.665%
-                        {"min": 8000001, "max": None, "rate": 0.07, "超過税率": 0.0748}  # 7.0% / 7.48%
+                        {"min": 0, "max": 4000000, "rate": settings.business_tax_rate_income_low, "超過税率": settings.business_tax_rate_income_low_excess},
+                        {"min": 4000001, "max": 8000000, "rate": settings.business_tax_rate_income_mid, "超過税率": settings.business_tax_rate_income_mid_excess},
+                        {"min": 8000001, "max": None, "rate": settings.business_tax_rate_income_high, "超過税率": settings.business_tax_rate_income_high_excess}
                     ]
                 },
                 # 1号 普通法人（資本金1億円超）
                 "普通法人_資本金1億円超": {
                     "所得割": [
-                        {"min": 0, "max": 4000000, "rate": 0.035, "超過税率": 0.0375},
-                        {"min": 4000001, "max": 8000000, "rate": 0.053, "超過税率": 0.0565},
-                        {"min": 8000001, "max": None, "rate": 0.07, "超過税率": 0.0748}
+                        {"min": 0, "max": 4000000, "rate": settings.business_tax_rate_income_low, "超過税率": settings.business_tax_rate_income_low_excess},
+                        {"min": 4000001, "max": 8000000, "rate": settings.business_tax_rate_income_mid, "超過税率": settings.business_tax_rate_income_mid_excess},
+                        {"min": 8000001, "max": None, "rate": settings.business_tax_rate_income_high, "超過税率": settings.business_tax_rate_income_high_excess}
                     ],
-                    "付加価値割": {"rate": 0.0037},  # 0.37%
-                    "資本割": {"rate": 0.00086}  # 0.086%
+                    "付加価値割": {"rate": settings.business_tax_rate_value_added},
+                    "資本割": {"rate": settings.business_tax_rate_capital}
                 },
                 # 2号 特定法人（資本金1億円超の特定業種）
                 "特定法人": {
@@ -173,31 +174,31 @@ class EnhancedCorporateTaxCalculator:
         }
     
     def _get_local_corporate_tax_rates(self) -> Dict[int, float]:
-        """地方法人税率を取得"""
+        """地方法人税率を取得（config.pyの設定値を使用）"""
         return {
-            2025: 0.103,  # 10.3%
-            2024: 0.103,
-            2023: 0.103
+            2025: settings.local_corporate_tax_rate,
+            2024: settings.local_corporate_tax_rate,
+            2023: settings.local_corporate_tax_rate
         }
     
     def _get_resident_tax_rates(self) -> Dict[str, Dict[str, Any]]:
-        """住民税率を取得"""
+        """住民税率を取得（config.pyの設定値を使用）"""
         return {
             "東京都": {
                 "equal_rate": {  # 均等割
-                    "capital_50m_below": 70000,    # 資本金5000万円以下
-                    "capital_50m_1b": 180000,      # 資本金5000万円超～10億円以下
-                    "capital_1b_above": 290000     # 資本金10億円超
+                    "capital_50m_below": settings.resident_tax_equal_50m_below,
+                    "capital_50m_1b": settings.resident_tax_equal_50m_1b,
+                    "capital_1b_above": settings.resident_tax_equal_1b_above
                 },
-                "income_rate": 0.07  # 法人税割 7%
+                "income_rate": settings.resident_tax_income_rate
             },
             "default": {
                 "equal_rate": {
-                    "capital_50m_below": 70000,
-                    "capital_50m_1b": 180000,
-                    "capital_1b_above": 290000
+                    "capital_50m_below": settings.resident_tax_equal_50m_below,
+                    "capital_50m_1b": settings.resident_tax_equal_50m_1b,
+                    "capital_1b_above": settings.resident_tax_equal_1b_above
                 },
-                "income_rate": 0.07
+                "income_rate": settings.resident_tax_income_rate
             }
         }
     
@@ -752,6 +753,243 @@ class EnhancedCorporateTaxCalculator:
             capital=capital,
             company_type=company_type
         )
+    
+    def calculate_corporate_tax_with_custom_rates(
+        self,
+        accounting_profit: int,
+        tax_year: int = 2025,
+        prefecture: str = "東京都",
+        capital: int = 50000000,
+        corporate_tax_rate: Optional[float] = None,
+        local_corporate_tax_rate: Optional[float] = None,
+        business_tax_rate: Optional[float] = None,
+        resident_tax_rate: Optional[float] = None,
+        disable_rounding: Optional[bool] = None
+    ) -> Dict[str, Any]:
+        """カスタム税率を指定した法人税計算
+        
+        Args:
+            accounting_profit: 当期純利益（会計利益）
+            tax_year: 課税年度
+            prefecture: 都道府県
+            capital: 資本金
+            corporate_tax_rate: カスタム法人税率（0.0-1.0）
+            local_corporate_tax_rate: カスタム地方法人税率（0.0-1.0）
+            business_tax_rate: カスタム事業税率（0.0-1.0）
+            resident_tax_rate: カスタム住民税法人税割税率（0.0-1.0）
+            disable_rounding: 税額の丸め処理を無効にするかどうか
+            
+        Returns:
+            Dict[str, Any]: 法人税計算結果
+        """
+        
+        # 入力検証
+        if accounting_profit < 0:
+            raise ValueError("会計利益は負の値にできません")
+        
+        # 丸め処理設定の決定
+        if disable_rounding is None:
+            disable_rounding = not settings.calculation_rounding_enabled
+        
+        # デフォルト項目を設定
+        addition_items = self._get_default_addition_items(accounting_profit)
+        deduction_items = self._get_default_deduction_items(accounting_profit)
+        
+        # 1. 課税所得金額の算出
+        total_additions = sum(item.amount for item in addition_items)
+        total_deductions = sum(item.amount for item in deduction_items)
+        taxable_income = max(0, accounting_profit + total_additions - total_deductions)
+        
+        # 2. 税率の決定（カスタム税率またはデフォルト税率）
+        if corporate_tax_rate is None:
+            # デフォルト税率を使用
+            tax_rates = self._corporate_tax_rates.get(tax_year, self._corporate_tax_rates[2023])
+            if capital <= 100000000:  # 中小法人
+                if taxable_income <= 8000000:
+                    effective_corporate_tax_rate = tax_rates["small_corporation"]
+                else:
+                    # 800万円以下は15%、超過分は23.2%
+                    low_income_tax = 8000000 * tax_rates["small_corporation"]
+                    high_income_tax = (taxable_income - 8000000) * tax_rates["small_corporation_high"]
+                    corporate_tax_base = low_income_tax + high_income_tax
+                    effective_corporate_tax_rate = corporate_tax_base / taxable_income if taxable_income > 0 else 0
+            else:  # 大法人
+                effective_corporate_tax_rate = tax_rates["large_corporation"]
+        else:
+            effective_corporate_tax_rate = corporate_tax_rate
+        
+        # 3. 法人税額の計算
+        if corporate_tax_rate is None and capital <= 100000000 and taxable_income > 8000000:
+            # 中小法人の段階税率適用（既に計算済み）
+            pass
+        else:
+            # 単一税率適用
+            if disable_rounding:
+                corporate_tax_base = taxable_income * effective_corporate_tax_rate
+            else:
+                corporate_tax_base = int(taxable_income * effective_corporate_tax_rate)
+        
+        # 4. 地方法人税
+        if local_corporate_tax_rate is None:
+            local_corporate_tax_rate = self._local_corporate_tax_rates.get(tax_year, 0.103)
+        
+        if disable_rounding:
+            local_corporate_tax = corporate_tax_base * local_corporate_tax_rate
+        else:
+            local_corporate_tax = int(corporate_tax_base * local_corporate_tax_rate)
+        
+        # 5. 事業税
+        if business_tax_rate is None:
+            business_tax = self._calculate_business_tax(taxable_income, prefecture, capital, tax_year)
+        else:
+            if disable_rounding:
+                business_tax = taxable_income * business_tax_rate
+            else:
+                business_tax = int(taxable_income * business_tax_rate)
+        
+        # 6. 住民税
+        if resident_tax_rate is None:
+            resident_tax_equal, resident_tax_income = self._calculate_resident_tax(
+                corporate_tax_base, capital, prefecture
+            )
+        else:
+            # 均等割はデフォルト値を使用
+            rates = self._resident_tax_rates.get(prefecture, self._resident_tax_rates["default"])
+            if capital <= 50000000:
+                resident_tax_equal = rates["equal_rate"]["capital_50m_below"]
+            elif capital <= 1000000000:
+                resident_tax_equal = rates["equal_rate"]["capital_50m_1b"]
+            else:
+                resident_tax_equal = rates["equal_rate"]["capital_1b_above"]
+            
+            # 法人税割はカスタム税率を使用
+            if disable_rounding:
+                resident_tax_income = corporate_tax_base * resident_tax_rate
+            else:
+                resident_tax_income = int(corporate_tax_base * resident_tax_rate)
+        
+        # 7. 特別法人事業税
+        company_info = self._determine_company_type(capital, tax_year)
+        if disable_rounding:
+            special_business_tax = business_tax * 0.37  # 簡略化（実際は会社区分による）
+        else:
+            special_business_tax = self._calculate_special_business_tax(business_tax, company_info, tax_year)
+        
+        # 8. 税額控除
+        tax_credit_items = self._get_default_tax_credit_items(corporate_tax_base)
+        total_tax_credits = sum(item.amount for item in tax_credit_items)
+        total_tax_credits = min(total_tax_credits, corporate_tax_base)
+        
+        if disable_rounding:
+            corporate_tax_after_credits = corporate_tax_base - total_tax_credits
+        else:
+            corporate_tax_after_credits = int(corporate_tax_base - total_tax_credits)
+        
+        # 9. 総合計算
+        if disable_rounding:
+            local_tax_total = resident_tax_equal + resident_tax_income + business_tax + special_business_tax
+            total_tax_payment = corporate_tax_after_credits + local_corporate_tax + local_tax_total
+        else:
+            local_tax_total = int(resident_tax_equal + resident_tax_income + business_tax + special_business_tax)
+            total_tax_payment = int(corporate_tax_after_credits + local_corporate_tax + local_tax_total)
+        
+        # 実効税率
+        effective_rate = (total_tax_payment / accounting_profit * 100) if accounting_profit > 0 else 0
+        
+        return {
+            "基本情報": {
+                "当期純利益": accounting_profit,
+                "課税所得金額": taxable_income,
+                "税年度": tax_year,
+                "都道府県": prefecture,
+                "資本金": capital,
+                "丸め処理": "無効" if disable_rounding else "有効"
+            },
+            "適用税率": {
+                "法人税率": f"{effective_corporate_tax_rate:.4f}" if corporate_tax_rate else "デフォルト",
+                "地方法人税率": f"{local_corporate_tax_rate:.4f}" if local_corporate_tax_rate != self._local_corporate_tax_rates.get(tax_year, 0.103) else "デフォルト",
+                "事業税率": f"{business_tax_rate:.4f}" if business_tax_rate else "デフォルト",
+                "住民税法人税割税率": f"{resident_tax_rate:.4f}" if resident_tax_rate else "デフォルト"
+            },
+            "税額計算": {
+                "法人税額": corporate_tax_base,
+                "地方法人税": local_corporate_tax,
+                "事業税": business_tax,
+                "特別法人事業税": special_business_tax,
+                "住民税均等割": resident_tax_equal,
+                "住民税法人税割": resident_tax_income,
+                "税額控除合計": total_tax_credits,
+                "控除後法人税額": corporate_tax_after_credits
+            },
+            "最終結果": {
+                "総合納付税額": total_tax_payment,
+                "実効税率": round(effective_rate, 4) if disable_rounding else round(effective_rate, 2)
+            }
+        }
+    
+    def get_tax_rates_info(
+        self,
+        tax_year: int = 2025,
+        prefecture: str = "東京都",
+        capital: int = 50000000
+    ) -> Dict[str, Any]:
+        """MCPで使用されている税率情報を取得
+        
+        Args:
+            tax_year: 課税年度
+            prefecture: 都道府県
+            capital: 資本金
+            
+        Returns:
+            Dict[str, Any]: 税率情報
+        """
+        
+        # 法人税率
+        corporate_rates = self._corporate_tax_rates.get(tax_year, self._corporate_tax_rates[2023])
+        
+        # 地方法人税率
+        local_corporate_rate = self._local_corporate_tax_rates.get(tax_year, 0.103)
+        
+        # 住民税率
+        resident_rates = self._resident_tax_rates.get(prefecture, self._resident_tax_rates["default"])
+        
+        # 事業税率（簡略化）
+        business_rates = self._business_tax_rates.get(prefecture, self._business_tax_rates["default"])
+        
+        # 会社区分の判定
+        company_info = self._determine_company_type(capital, tax_year)
+        
+        return {
+            "税年度": tax_year,
+            "都道府県": prefecture,
+            "資本金": capital,
+            "会社区分": company_info["corporation_type"],
+            "法人税率": {
+                "大法人": f"{corporate_rates['large_corporation']:.1%}",
+                "中小法人（800万円以下）": f"{corporate_rates['small_corporation']:.1%}",
+                "中小法人（800万円超）": f"{corporate_rates['small_corporation_high']:.1%}",
+                "軽減税率適用可能": company_info["is_reduced_rate_applicable"]
+            },
+            "地方法人税率": f"{local_corporate_rate:.1%}",
+            "住民税率": {
+                "均等割": {
+                    "資本金5000万円以下": f"{resident_rates['equal_rate']['capital_50m_below']:,}円",
+                    "資本金5000万円超～10億円以下": f"{resident_rates['equal_rate']['capital_50m_1b']:,}円",
+                    "資本金10億円超": f"{resident_rates['equal_rate']['capital_1b_above']:,}円"
+                },
+                "法人税割": f"{resident_rates['income_rate']:.1%}"
+            },
+            "事業税率": {
+                "説明": "所得割、付加価値割、資本割など複数の税率が適用される場合があります",
+                "基本税率範囲": "3.5% ～ 7.48%（所得割）"
+            },
+            "注意事項": [
+                "税率は課税年度と会社の規模・種類により異なります",
+                "実際の計算では軽減税率の適用条件を確認してください",
+                "事業税は都道府県により税率が異なる場合があります",
+                "特別法人事業税は事業税額に対して課税されます"
+            ]
+        }
 
 
 # グローバルインスタンス
