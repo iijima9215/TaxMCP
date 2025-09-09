@@ -34,7 +34,7 @@ export default function ChatPage() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [mcpTools, setMcpTools] = useState<McpTool[]>([]);
-  const [showMcpPanel, setShowMcpPanel] = useState(false);
+  // const [showMcpPanel, setShowMcpPanel] = useState(false); // 削除済み
   const [showTemplatePanel, setShowTemplatePanel] = useState(false);
   const [templateSettings, setTemplateSettings] = useState<TemplateSettings>({
     enabled: true,
@@ -319,7 +319,7 @@ export default function ChatPage() {
             <h1 className="text-xl font-semibold text-gray-800">Chat with GPT-4o mini + MCP税務計算</h1>
             <p className="text-sm text-gray-600 mt-1">税務に関する質問をすると自動的にMCP機能が呼び出されます</p>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex justify-end">
             <button
               onClick={() => setShowTemplatePanel(!showTemplatePanel)}
               className={`px-4 py-2 rounded-lg focus:outline-none focus:ring-2 ${
@@ -329,12 +329,6 @@ export default function ChatPage() {
               }`}
             >
               {showTemplatePanel ? 'テンプレート設定を隠す' : 'テンプレート設定'}
-            </button>
-            <button
-              onClick={() => setShowMcpPanel(!showMcpPanel)}
-              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              {showMcpPanel ? 'サンプルを隠す' : 'サンプルコマンド'}
             </button>
           </div>
         </div>
@@ -490,33 +484,7 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* MCP Panel */}
-      {showMcpPanel && (
-        <div className="bg-green-50 border-b border-green-200 p-4">
-          <h2 className="text-lg font-semibold text-green-800 mb-2">サンプルコマンド - MCP税務計算機能</h2>
-          <p className="text-sm text-green-700 mb-3">以下のボタンをクリックして税務計算のサンプルを実行できます</p>
-          <div className="space-y-3">
-            <button
-              onClick={() => callMcpFunction('calculate_corporate_tax', { annual_income: 8000000 })}
-              className="w-full p-4 bg-white border border-green-300 rounded-lg hover:bg-green-100 text-left"
-            >
-              <div className="text-sm text-green-700">「当社は資本金3000万円の製造業で、今期の年間所得が800万円でした。中小企業の軽減税率15%が適用される範囲内での法人税額を計算してください。地方法人税や事業税も含めた総税額を知りたいです。」</div>
-            </button>
-            <button
-              onClick={() => callMcpFunction('calculate_enhanced_corporate_tax', { accounting_profit: 25000000, additions: 3000000, deductions: 1500000 })}
-              className="w-full p-4 bg-white border border-green-300 rounded-lg hover:bg-green-100 text-left"
-            >
-              <div className="text-sm text-green-700">「会計利益2500万円に対し、減価償却超過額200万円、交際費損金不算入100万円、受取配当金益金不算入50万円の調整があります。これらの加算減算項目を考慮した課税所得と法人税額を詳細に計算してください。」</div>
-            </button>
-            <button
-              onClick={() => callMcpFunction('search_legal_reference', { query: '法人税 軽減税率 中小企業' })}
-              className="w-full p-4 bg-white border border-green-300 rounded-lg hover:bg-green-100 text-left"
-            >
-              <div className="text-sm text-green-700">「中小企業の法人税軽減税率制度について詳しく教えてください。適用条件、税率、年間所得800万円以下の部分に適用される15%の軽減税率の具体的な計算方法と、超過部分の税率についても説明してください。」</div>
-            </button>
-          </div>
-        </div>
-      )}
+      {/* MCP Panel は削除済み（将来必要に応じて復元可能） */}
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
