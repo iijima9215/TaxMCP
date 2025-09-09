@@ -22,6 +22,13 @@ interface TemplateSettings {
   instruction: string;
 }
 
+interface InputConditionSettings {
+  enabled: boolean;
+  autoConvertNetProfit: boolean;
+  fiscalMonths: number;
+  capitalClassification: 'under_10m' | '10m_to_100m' | 'over_100m';
+}
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -45,10 +52,21 @@ export default function ChatPage() {
 ・一般事業（製造業・小売業等）：所得400万円以下 3.5%、400万円超800万円以下 5.3%、800万円超 6.7%
 ・特定の業種については該当する税率を適用
 
+【所得金額の解釈】
+・「所得1000万円」「所得500万円」等の入力は課税所得金額として処理すること
+・当期純利益と明記されていない限り、所得は課税所得として扱うこと
+
 【税額計算の回答方針】
 ・「税額は？」「税金はいくら？」等の質問に対しては、法人税のみでなく、法人税・住民税・事業税の3つすべてを計算して回答すること
 ・各税目の内訳と合計額を明確に示すこと`
   });
+  const [inputConditionSettings, setInputConditionSettings] = useState<InputConditionSettings>({
+    enabled: true,
+    autoConvertNetProfit: true,
+    fiscalMonths: 12,
+    capitalClassification: 'under_10m',
+  });
+  const [activeTab, setActiveTab] = useState<'basic' | 'conditions'>('basic');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -64,6 +82,8 @@ export default function ChatPage() {
     fetchMcpTools();
     // テンプレート設定を読み込み
     loadTemplateSettings();
+    // 入力条件設定を読み込み
+    loadInputConditionSettings();
   }, []);
 
   const loadTemplateSettings = () => {
@@ -84,6 +104,27 @@ export default function ChatPage() {
       setTemplateSettings(settings);
     } catch (error) {
       console.error('Failed to save template settings:', error);
+    }
+  };
+
+  const loadInputConditionSettings = () => {
+    try {
+      const saved = localStorage.getItem('taxmcp-input-conditions');
+      if (saved) {
+        const settings = JSON.parse(saved);
+        setInputConditionSettings(settings);
+      }
+    } catch (error) {
+      console.error('Failed to load input condition settings:', error);
+    }
+  };
+
+  const saveInputConditionSettings = (settings: InputConditionSettings) => {
+    try {
+      localStorage.setItem('taxmcp-input-conditions', JSON.stringify(settings));
+      setInputConditionSettings(settings);
+    } catch (error) {
+      console.error('Failed to save input condition settings:', error);
     }
   };
 
@@ -189,10 +230,36 @@ export default function ChatPage() {
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
+    // 入力条件設定を適用してメッセージを処理
+    let processedInput = input;
+    if (inputConditionSettings.enabled) {
+      // 当期純利益の自動読み替え
+      if (inputConditionSettings.autoConvertNetProfit) {
+        processedInput = processedInput.replace(/当期純利益/g, '税引前当期利益');
+      }
+      
+      // 事業年度月数の自動補完（「○ヶ月」の記載がない場合）
+      if (!processedInput.includes('ヶ月') && !processedInput.includes('か月') && !processedInput.includes('カ月')) {
+        if (inputConditionSettings.fiscalMonths !== 12) {
+          processedInput += `（事業年度：${inputConditionSettings.fiscalMonths}ヶ月）`;
+        }
+      }
+      
+      // 資本金分類の自動補完（資本金の記載がない場合）
+      if (!processedInput.includes('資本金') && !processedInput.includes('資本')) {
+        const capitalText = {
+          'under_10m': '資本金1000万円以下',
+          '10m_to_100m': '資本金1000万円超1億円以下', 
+          'over_100m': '資本金1億円超'
+        }[inputConditionSettings.capitalClassification];
+        processedInput += `（${capitalText}）`;
+      }
+    }
+
     // テンプレート設定が有効な場合、共通指示を追加
-    let messageContent = input;
+    let messageContent = processedInput;
     if (templateSettings.enabled && templateSettings.instruction.trim()) {
-      messageContent = `${templateSettings.instruction}\n\n${input}`;
+      messageContent = `${templateSettings.instruction}\n\n${processedInput}`;
     }
 
     const userMessage: Message = { role: 'user', content: input }; // 表示用は元のメッセージ
@@ -201,7 +268,7 @@ export default function ChatPage() {
     setInput('');
     setIsLoading(true);
 
-    // APIには共通指示付きのメッセージを送信
+    // APIには処理済みメッセージを送信
     const messagesForApi = [...messages, { role: 'user' as const, content: messageContent }];
 
     try {
@@ -279,42 +346,146 @@ export default function ChatPage() {
           <h2 className="text-lg font-semibold text-blue-800 mb-2">テンプレート設定</h2>
           <p className="text-sm text-blue-700 mb-3">すべてのメッセージに自動的に追加される共通指示を設定できます</p>
           
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={templateSettings.enabled}
-                  onChange={(e) => saveTemplateSettings({ ...templateSettings, enabled: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-blue-800">テンプレート機能を有効にする</span>
-              </label>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-blue-800 mb-2">
-                共通指示（すべてのメッセージの前に自動追加されます）
-              </label>
-              <textarea
-                value={templateSettings.instruction}
-                onChange={(e) => saveTemplateSettings({ ...templateSettings, instruction: e.target.value })}
-                placeholder="例: 指定の無い限り、法人税の計算として扱うこと"
-                className="w-full p-3 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                rows={3}
-                disabled={!templateSettings.enabled}
-              />
-            </div>
-            
-            <div className="bg-blue-100 p-3 rounded-lg">
-              <p className="text-sm text-blue-800 font-medium mb-1">プレビュー:</p>
-              <p className="text-sm text-blue-700">
-                {templateSettings.enabled && templateSettings.instruction.trim()
-                  ? `"${templateSettings.instruction}" + あなたのメッセージ`
-                  : 'あなたのメッセージのみ（テンプレート無効）'
-                }
-              </p>
-            </div>
+          <div className="flex space-x-4 mb-4">
+            <button
+              onClick={() => setActiveTab('basic')}
+              className={`px-4 py-2 rounded-t-lg ${activeTab === 'basic' ? 'bg-white text-blue-800 border-b-2 border-blue-500' : 'bg-blue-100 text-blue-600'}`}
+            >
+              基本テンプレート
+            </button>
+            <button
+              onClick={() => setActiveTab('conditions')}
+              className={`px-4 py-2 rounded-t-lg ${activeTab === 'conditions' ? 'bg-white text-blue-800 border-b-2 border-blue-500' : 'bg-blue-100 text-blue-600'}`}
+            >
+              入力条件設定
+            </button>
+          </div>
+
+          <div className="bg-white p-4 rounded-lg border border-blue-200">
+            {activeTab === 'basic' && (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={templateSettings.enabled}
+                      onChange={(e) => saveTemplateSettings({ ...templateSettings, enabled: e.target.checked })}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-blue-800">テンプレート機能を有効にする</span>
+                  </label>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-blue-800 mb-2">
+                    共通指示（すべてのメッセージの前に自動追加されます）
+                  </label>
+                  <textarea
+                    value={templateSettings.instruction}
+                    onChange={(e) => saveTemplateSettings({ ...templateSettings, instruction: e.target.value })}
+                    placeholder="例: 指定の無い限り、法人税の計算として扱うこと"
+                    className="w-full p-3 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={3}
+                    disabled={!templateSettings.enabled}
+                  />
+                </div>
+                
+                <div className="bg-blue-100 p-3 rounded-lg">
+                  <p className="text-sm text-blue-800 font-medium mb-1">プレビュー:</p>
+                  <p className="text-sm text-blue-700">
+                    {templateSettings.enabled && templateSettings.instruction.trim()
+                      ? `"${templateSettings.instruction}" + あなたのメッセージ`
+                      : 'あなたのメッセージのみ（テンプレート無効）'
+                    }
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'conditions' && (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={inputConditionSettings.enabled}
+                      onChange={(e) => saveInputConditionSettings({ ...inputConditionSettings, enabled: e.target.checked })}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-blue-800">入力条件設定を有効にする</span>
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-blue-800 mb-2">
+                    当期純利益の自動読み替え（税引前当期利益として扱う）
+                  </label>
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={inputConditionSettings.autoConvertNetProfit}
+                      onChange={(e) => saveInputConditionSettings({ ...inputConditionSettings, autoConvertNetProfit: e.target.checked })}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      disabled={!inputConditionSettings.enabled}
+                    />
+                    <span className="text-sm text-blue-800">有効</span>
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-blue-800 mb-2">
+                    事業年度月数（デフォルト値）
+                  </label>
+                  <input
+                    type="number"
+                    value={inputConditionSettings.fiscalMonths}
+                    onChange={(e) => saveInputConditionSettings({ ...inputConditionSettings, fiscalMonths: Math.min(12, Math.max(1, parseInt(e.target.value) || 12)) })}
+                    min={1}
+                    max={12}
+                    className="w-full p-3 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    disabled={!inputConditionSettings.enabled}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-blue-800 mb-2">
+                    資本金分類（デフォルト）
+                  </label>
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        checked={inputConditionSettings.capitalClassification === 'under_10m'}
+                        onChange={() => saveInputConditionSettings({ ...inputConditionSettings, capitalClassification: 'under_10m' })}
+                        className="text-blue-600 focus:ring-blue-500"
+                        disabled={!inputConditionSettings.enabled}
+                      />
+                      <span className="text-sm text-blue-800">1000万円以下</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        checked={inputConditionSettings.capitalClassification === '10m_to_100m'}
+                        onChange={() => saveInputConditionSettings({ ...inputConditionSettings, capitalClassification: '10m_to_100m' })}
+                        className="text-blue-600 focus:ring-blue-500"
+                        disabled={!inputConditionSettings.enabled}
+                      />
+                      <span className="text-sm text-blue-800">1000万円～1億円</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        checked={inputConditionSettings.capitalClassification === 'over_100m'}
+                        onChange={() => saveInputConditionSettings({ ...inputConditionSettings, capitalClassification: 'over_100m' })}
+                        className="text-blue-600 focus:ring-blue-500"
+                        disabled={!inputConditionSettings.enabled}
+                      />
+                      <span className="text-sm text-blue-800">1億円以上</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
