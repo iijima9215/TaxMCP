@@ -1,9 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// 環境変数から設定を読み込み
+const currentLlmApi = process.env.CURRENT_LLM_API || 'OpenAI';
+const openaiApiKey = process.env.OPENAI_API_KEY;
+const openaiModel = process.env.OPENAI_API_MODEL || 'gpt-4o-mini';
+const openrouterApiKey = process.env.OPENROUTER_API_KEY;
+const openrouterModel = process.env.OPENROUTER_API_MODEL || 'deepseek-chat-v3/1:free';
+
+// LLM APIクライアントの初期化
+let llmClient: OpenAI;
+let modelName: string;
+
+if (currentLlmApi === 'OpenRouter' && openrouterApiKey) {
+  // OpenRouter設定
+  llmClient = new OpenAI({
+    apiKey: openrouterApiKey,
+    baseURL: 'https://openrouter.ai/api/v1',
+  });
+  modelName = openrouterModel;
+} else {
+  // OpenAI設定（デフォルト）
+  llmClient = new OpenAI({
+    apiKey: openaiApiKey,
+  });
+  modelName = openaiModel;
+}
 
 // OpenAI Function Callingの関数定義
 const taxCalculationFunctions = [
@@ -138,8 +160,8 @@ export async function POST(request: NextRequest) {
       function: func
     })));
     
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+    const completion = await llmClient.chat.completions.create({
+      model: modelName,
       messages: messages,
       temperature: 0.7,
       tools: taxCalculationFunctions.map(func => ({
@@ -195,8 +217,8 @@ export async function POST(request: NextRequest) {
         
         console.log('Follow-up messages:', followUpMessages);
         
-        const followUpCompletion = await openai.chat.completions.create({
-          model: 'gpt-4o-mini',
+        const followUpCompletion = await llmClient.chat.completions.create({
+          model: modelName,
           messages: followUpMessages,
           temperature: 0.7
         });
